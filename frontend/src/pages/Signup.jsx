@@ -30,7 +30,7 @@ const Signup = () => {
             ...prev, [e.target.name] : e.target.value
         }));
     }
-    console.log("sign up data",formData)
+    // console.log("sign up data",formData)
     
     const accountTypeHandler = (type)=>{
         if(formData.accountType===type){
