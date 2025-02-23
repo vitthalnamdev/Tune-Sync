@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
   <ItemGroup>
-    <Folder Include="frontend\src\components\profile_component\" />
     <Folder Include="frontend\tune-sync\src\profile-page\Components\" />
   </ItemGroup>
 </Project>
