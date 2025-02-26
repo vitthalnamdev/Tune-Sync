@@ -5,8 +5,9 @@ import { IoMdEye } from "react-icons/io";
 import { IoIosEyeOff } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux"
-import { setsignupData } from '../../../slices/authSlice';
+import { setsignupData } from '../slices/authSlice';
 
+const dirname = __dirname;
 // import { sendOtp } from '../../../services/operations/authAPI';
 
 const Signup = () => {
