@@ -9,11 +9,11 @@ import Signup from './pages/Signup';
 
 function App() {
 
-
+  
   return (
     <div>
 
-      <Profile/>
+      <Home/>
      {/*<Navbar/>*/}
 
      {/* <Routes>*/}

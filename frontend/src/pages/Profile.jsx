@@ -11,33 +11,33 @@ const MusicProfilePage = () => {
     bio: "Music enthusiast who loves discovering new tracks and sharing them with friends. Let's listen together!",
     favoriteGenres: ["Electronic", "Indie Pop", "Alternative", "Hip-Hop", "Jazz"],
     currentlyListening: {
-      title: "Midnight City",
-      artist: "M83",
-      album: "Hurry Up, We're Dreaming",
-      coverUrl: "/api/placeholder/80/80"
+      // title: "Midnight City",
+      // artist: "M83",
+      // album: "Hurry Up, We're Dreaming",
+      // coverUrl: "/api/placeholder/80/80"
     },
     stats: {
-      sessionsHosted: 48,
-      sessionsJoined: 152,
-      tracksShared: 437,
-      followers: 89,
-      following: 124
+      // sessionsHosted: 48,
+      // sessionsJoined: 152,
+      // tracksShared: 437,
+      // followers: 89,
+      // following: 124
     },
     recentSessions: [
-      {
-        name: "Friday Night Vibes",
-        participants: 7,
-        tracks: 22,
-        isPrivate: false,
-        date: "Yesterday"
-      },
-      {
-        name: "Chill Study Session",
-        participants: 3,
-        tracks: 15,
-        isPrivate: true,
-        date: "3 days ago"
-      }
+      // {
+      //   name: "Friday Night Vibes",
+      //   participants: 7,
+      //   tracks: 22,
+      //   isPrivate: false,
+      //   date: "Yesterday"
+      // },
+      // {
+      //   name: "Chill Study Session",
+      //   participants: 3,
+      //   tracks: 15,
+      //   isPrivate: true,
+      //   date: "3 days ago"
+      // }
     ]
   });
 
@@ -134,7 +134,7 @@ const MusicProfilePage = () => {
                     <p className="text-xs text-gray-400">Shared</p>
                   </div>
                 </div>
-              </div>
+              </div>    
             </div>
           </div>
           
