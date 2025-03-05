@@ -6,6 +6,7 @@ import Friends from './pages/Friends';
 import Home from './pages/Home';
 import Profile from './pages/Profile'
 import Signup from './pages/Signup';
+import Search from './pages/Search';
 
 function App() {
 
@@ -13,7 +14,7 @@ function App() {
   return (
     <div>
 
-      <Home/>
+      <Search/>
      {/*<Navbar/>*/}
 
      {/* <Routes>*/}
