@@ -9,12 +9,14 @@ import Signup from './pages/Signup';
 import Search from './pages/Search';
 
 function App() {
-
+  
+  // fetch all the songs from the database.
+  // then send that array , to Home to display it.
   
   return (
     <div>
 
-      <Search/>
+      <Home/>
      {/*<Navbar/>*/}
 
      {/* <Routes>*/}
