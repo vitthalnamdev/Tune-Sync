@@ -17,6 +17,8 @@ function App() {
   return (
     <div>
 
+
+
     <Home/>
      {/*<Navbar/>*/}
 
