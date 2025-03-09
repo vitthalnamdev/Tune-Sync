@@ -8,11 +8,7 @@ const folderPath = './songs'; // Modify this to your folder path
 // Function to read metadata of all MP3 files in the folder
 function getMetadataOfSongs(folderPath, callback) {
   const songsMetadata = [];
-<<<<<<< HEAD
   
-=======
-
->>>>>>> daf5e2767462f922d14c1645417f23a641f97ee0
   // Read all files in the folder
   fs.readdir(folderPath, (err, files) => {
     if (err) {
