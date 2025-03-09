@@ -6,4 +6,4 @@ const hhh = () => {
   )
 }
 
-export default hhh
+export default hhh;
