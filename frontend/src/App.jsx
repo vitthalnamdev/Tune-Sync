@@ -15,9 +15,7 @@ function App() {
   // then send that array , to Home to display it.
   
   return (
-    <div>
-
-    <Home/>
+    <div> <Home/>
      {/*<Navbar/>*/}
 
      {/* <Routes>*/}
