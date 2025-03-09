@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import SearchPage from "./Search";
+import MusicProfilePage from './Profile';
+import Header from "../components/Home-Page-Components/Header";
+import Condition_Rendering from "../components/Home-Page-Components/Condition_Rendering";
 
 const MusicHomepage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
+  const [showProfilePage, setShowProfilePage] = useState(false);
   // Sample data for featured playlists
 
   const toggleSearchPage = () => {
     setShowSearchPage(!showSearchPage);
   };
+
+  const toggleProfilePage = () =>{
+    setShowProfilePage(!showProfilePage);
+  }
 
   const closeSearchPage = () => {
     setShowSearchPage(false);
@@ -97,75 +105,23 @@ const MusicHomepage = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header */}
-      <header className="sticky top-0 bg-gray-900/90 backdrop-blur-md z-50 border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <a href="#" className="text-2xl font-bold">
-              TuneSync<span className="text-purple-500">.</span>
-            </a>
+      <Header></Header>
+      {/* <Condition_Rendering>
+        showSearchPage = {showSearchPage} 
+      </Condition_Rendering> */}
 
-            <nav className="hidden md:block">
-              <ul className="flex space-x-8">
-                <li>
-                  <a href="#" className="text-white font-medium">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
-                  >
-                    Connect
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
-                  >
-                    Library
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
-                  >
-                    Artists
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
-                  >
-                    You
-                  </a>
-                </li>
-              </ul>
-            </nav>
-
-            <div className="flex space-x-4">
-              <button className="px-4 py-2 rounded-full border border-gray-600 text-white font-medium hover:border-white transition-colors">
-                Log In
-              </button>
-              <button className="px-4 py-2 rounded-full bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
-                Sign Up
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-
-      {showSearchPage && (
+       {showSearchPage && (
         <SearchPage 
           searchQuery={searchQuery} 
           setSearchQuery={setSearchQuery} 
           onClose={closeSearchPage} 
         />
       )}
+{/* 
+      {showProfilePage && (
+        <MusicProfilePage></MusicProfilePage>
+      )}    */}
+     
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pb-24">
@@ -190,6 +146,7 @@ const MusicHomepage = () => {
 
             <div className="max-w-xl mx-auto flex rounded-full overflow-hidden bg-gray-800" 
               onClick={(e) => {
+                console.log("Clicked");
                 e.stopPropagation(); // Prevent double triggering
                 toggleSearchPage();
               }}

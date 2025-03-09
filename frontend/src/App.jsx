@@ -1,12 +1,8 @@
 // frontend/src/App.js
 import React, { useState, useEffect } from 'react';
-import { Routes,Route} from "react-router-dom";
-import Navbar from './components/Navbar';
-import Friends from './pages/Friends';
 import Home from './pages/Home';
-import Profile from './pages/Profile'
-import Signup from './pages/Signup';
-import Search from './pages/Search';
+import { Routes, Route} from "react-router-dom";;
+ 
 
 function App() {
   
@@ -16,7 +12,7 @@ function App() {
   return (
     <div>
 
-      <Home/>
+    <Home/>
      {/*<Navbar/>*/}
 
      {/* <Routes>*/}

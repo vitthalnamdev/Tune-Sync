@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
+const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([
     "Luna Ray",
     "Neon Pulse",
@@ -38,7 +38,7 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
 
   // Handle search when query changes
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (params.searchQuery.trim() === '') {
       setTopResults([]);
       return;
     }
@@ -50,18 +50,18 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
       // Flatten and combine results for display
       const results = [
         ...mockSearchResults.artists.filter(artist => 
-          artist.name.toLowerCase().includes(searchQuery.toLowerCase())
+          artist.name.toLowerCase().includes(params.searchQuery.toLowerCase())
         ),
         ...mockSearchResults.songs.filter(song => 
-          song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+          song.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
+          song.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
         ),
         ...mockSearchResults.albums.filter(album => 
-          album.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          album.artist.toLowerCase().includes(searchQuery.toLowerCase())
+          album.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
+          album.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
         ),
         ...mockSearchResults.playlists.filter(playlist => 
-          playlist.title.toLowerCase().includes(searchQuery.toLowerCase())
+          playlist.title.toLowerCase().includes(params.searchQuery.toLowerCase())
         )
       ];
       
@@ -69,13 +69,13 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
       setIsLoading(false);
       
       // Add to recent searches if it's a new search
-      if (searchQuery.trim() !== '' && !recentSearches.includes(searchQuery)) {
-        setRecentSearches(prev => [searchQuery, ...prev.slice(0, 3)]);
+      if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
+        setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
       }
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [params.searchQuery]);
 
   // Clear a specific recent search
   const removeRecentSearch = (search) => {
@@ -94,7 +94,7 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex rounded-full overflow-hidden bg-gray-800 max-w-3xl mx-auto">
             <button
-              onClick={onClose}
+              onClick={params.onClose}
               className="p-4 text-gray-400 hover:text-white"
             >
               <svg
@@ -116,13 +116,13 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
               type="text"
               placeholder="Search for songs, artists, or podcasts..."
               className="flex-1 py-4 px-4 bg-transparent text-white focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={params.searchQuery}
+              onChange={(e) => params.setSearchQuery(e.target.value)}
               autoFocus
             />
-            {searchQuery && (
+            {params.searchQuery && (
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => params.setSearchQuery("")}
                 className="p-4 text-gray-400 hover:text-white"
               >
                 <svg
@@ -164,7 +164,7 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
           </div>
-        ) : searchQuery.trim() === "" ? (
+        ) : params.searchQuery.trim() === "" ? (
           // When no search query, show recent searches
           <div>
             {recentSearches.length > 0 && (
@@ -186,7 +186,7 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
                     >
                       <button
                         className="flex-1 text-left"
-                        onClick={() => setSearchQuery(search)}
+                        onClick={() => params.setSearchQuery(search)}
                       >
                         {search}
                       </button>
@@ -223,7 +223,7 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
                   <button
                     key={index}
                     className="bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left transition-colors"
-                    onClick={() => setSearchQuery(trend)}
+                    onClick={() => params.setSearchQuery(trend)}
                   >
                     {trend}
                   </button>
@@ -234,13 +234,13 @@ const SearchPage = ({ searchQuery, setSearchQuery, onClose }) => {
         ) : topResults.length === 0 ? (
           // No results found
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">No results found for "{searchQuery}"</p>
+            <p className="text-xl text-gray-400">No results found for "{params.searchQuery}"</p>
             <p className="text-gray-500 mt-2">Try searching for something else</p>
           </div>
         ) : (
           // Show search results
           <div>
-            <h2 className="text-xl font-bold mb-6">Top Results for "{searchQuery}"</h2>
+            <h2 className="text-xl font-bold mb-6">Top Results for "{params.searchQuery}"</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {topResults.slice(0, 4).map((result, index) => (
                 <div
