@@ -4,7 +4,7 @@ import MusicProfilePage from './Profile';
 import Header from "../components/Home-Page-Components/Header";
 import Condition_Rendering from "../components/Home-Page-Components/Condition_Rendering";
 
-const MusicHomepage = () => {
+const MusicHomepage = (params) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
   const [showProfilePage, setShowProfilePage] = useState(false);
@@ -101,11 +101,11 @@ const MusicHomepage = () => {
     "Classical",
     "Country",
   ];
-
+   
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header */}
-      <Header></Header>
+      <Header/>
       {/* <Condition_Rendering>
         showSearchPage = {showSearchPage} 
       </Condition_Rendering> */}
