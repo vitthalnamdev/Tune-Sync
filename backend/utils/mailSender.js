@@ -1,30 +1,29 @@
+// utils/mailSender.js
 const nodemailer = require("nodemailer");
 
-const mailSender = async (email, title, body)=>{
+const sender = async (email, title, body) => {
     try {
-        console.log("HELLO");
         let transporter = nodemailer.createTransport({
-            host:process.env.MAIL_HOST,
-            auth:{
+            host: process.env.MAIL_HOST,
+            auth: {
                 user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS
-            }
-        })
+                pass: process.env.MAIL_PASS,
+            },
+        });
 
         let info = await transporter.sendMail({
             from: 'Tune-Sync',
-            to:`${email}`,
+            to: `${email}`,
             subject: `${title}`,
-            html: `${body}`
-        })
+            html: `${body}`,
+        });
 
         console.log(info);
         return info;
-        
     } catch (error) {
-        console.log("HELLO");
         console.error(error);
+        throw error;
     }
-}
+};
 
-module.exports = {mailSender}
+module.exports = sender;  // Export the sender function directly

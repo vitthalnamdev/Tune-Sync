@@ -1,0 +1,60 @@
+import axios from "axios";
+
+// Load environment variables
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:4000/api/v1/auth"; 
+
+// Create an Axios instance with default settings
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+
+export const verify_email = async (email) => {
+  try {
+    const response = await api.post("/validEmail", { email });
+    return response.data.success;
+  } catch (error) {
+    console.error("Error Verifying email , check your internet connection", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const sendOtp = async (email) => {
+  try {
+    const response = await api.post("/sendotp", { email });
+    console.log("HELLO from auth" , response);
+    return response.data.success;
+  } catch (error) {
+    console.error("Error Sending otp , check your internet connection", error.response?.data || error.message);
+    throw error;
+  }
+};
+ 
+export const verifyotp = async (email , otp) => {
+  try {
+    const response = await api.post("/verifyotp", { email: email , otp: otp });
+    console.log("HELLO from auth" , response);
+    return response.data.success;
+  } catch (error) {
+    console.error("Error verifying otp , check your internet connection", error.response?.data || error.message);
+    throw error;
+  }
+};
+ 
+ 
+export const Insert_User = async (Data) => {
+  try {
+    const response = await api.post("/signup", {Data});
+    console.log("HELLO from auth" , response);
+    return response;
+  } catch (error) {
+    console.error("Error verifying otp , check your internet connection", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export default api;

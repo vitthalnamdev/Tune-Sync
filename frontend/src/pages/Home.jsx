@@ -2,21 +2,22 @@ import React, { useState } from "react";
 import SearchPage from "./Search";
 import MusicProfilePage from './Profile';
 import Header from "../components/Home-Page-Components/Header";
-import Condition_Rendering from "../components/Home-Page-Components/Condition_Rendering";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MusicHomepage = (params) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const data = location.state?.data;
+  console.log(data);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
-  const [showProfilePage, setShowProfilePage] = useState(false);
   // Sample data for featured playlists
-
+  const [profileData, setProfileData] = useState(data || "");
+  console.log(profileData);
   const toggleSearchPage = () => {
     setShowSearchPage(!showSearchPage);
   };
 
-  const toggleProfilePage = () =>{
-    setShowProfilePage(!showProfilePage);
-  }
 
   const closeSearchPage = () => {
     setShowSearchPage(false);
@@ -105,7 +106,7 @@ const MusicHomepage = (params) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header */}
-      <Header/>
+      <Header profileData = {profileData}/>
       {/* <Condition_Rendering>
         showSearchPage = {showSearchPage} 
       </Condition_Rendering> */}

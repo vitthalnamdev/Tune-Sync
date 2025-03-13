@@ -1,27 +1,22 @@
-const sendEmail = async (email) => { 
-  try {
-    const response = await fetch("http://localhost:4000/send-email", { // Adjust the URL based on your backend
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }), // Wrap email in an object if needed
-    });
-   
-    const result = await response.json();
-    console.log("Email sent:", result);
-    
-    if (result.success) {
-      return result;
-    } else {
-      alert("Failed to send email: " + result.error);
-    }
-  } catch (error) {
+import axios from "axios";
 
-    console.error("Error sending email:", error);
-    alert("Error sending email. Please try again.");
+// Create an Axios instance with default settings
+const api = axios.create({
+  baseURL: "http://localhost:4000/api/v1", // Replace with your backend URL
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Function to send OTP request
+export const sendOTP = async (email) => {
+  try {
+    const response = await api.post("/auth/sendOTP", { email });
+    return response.data;
+  } catch (error) {
+    console.error("Error sending OTP:", error.response?.data || error.message);
+    throw error;
   }
 };
 
-
-export default sendEmail;
+export default api;

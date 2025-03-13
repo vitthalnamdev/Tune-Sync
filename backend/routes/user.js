@@ -6,8 +6,10 @@ const {
     login,
     signUp,
     sendOTP,
-    
-  } = require("../controllers/Auth");
+    IsvalidOtp,
+    IsValidEmail,
+    IsValidUsername
+} = require("../controllers/Auth");
 
   // Route for user login
 router.post("/login", login)
@@ -18,5 +20,9 @@ router.post("/signup", signUp)
 // Route for sending OTP to the user's email
 router.post("/sendotp", sendOTP)
 
+router.post("/verifyotp", IsvalidOtp)
 
+router.post("/validEmail" , IsValidEmail)
+
+router.post("/validUsername" , IsValidUsername)
 module.exports = router

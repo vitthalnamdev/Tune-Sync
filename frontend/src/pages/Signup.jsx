@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-
-import { useDispatch, useSelector } from "react-redux";
-// import { setsignupData } from "../slices/authSlice";
+import { verify_email } from "../services/operations/auth";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import Success from "../components/Sign_up_Component/Success";
 import Header_Signup from "../components/Sign_up_Component/Header_Signup";
@@ -12,10 +11,9 @@ import Submit from "../components/Sign_up_Component/Submit_button";
 const SignUpForm = () => {
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
-
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -43,6 +41,7 @@ const SignUpForm = () => {
     }
   };
 
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -59,7 +58,6 @@ const SignUpForm = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email address is invalid";
     }
-
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
@@ -73,16 +71,43 @@ const SignUpForm = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const validEmail = async () => {
+    try {
+      const email = formData.email;
+      const response = await verify_email(email);
+      console.log(response);
 
-  const handleSubmit = (e) => {
+      if (response === false) {
+        console.log("HELLO");
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "Email already in use",
+        }));
+      }
+      return response;
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return false;  // Return false in case of an error
+    }
+  };
+
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      setIsSubmitting(true);
-      //dispatch(setsignupData(formData));
-      //send opt to verify email
-      const email = formData.email;
-    }
+    // Validate form first
+    const isFormValid = validateForm();
+    if (!isFormValid) return;
+
+    // Validate email asynchronously
+    const isEmailValid = await validEmail();
+    if (!isEmailValid) return; // Stop submission if email is already in use
+
+    // Proceed with submission
+    setIsSubmitting(true);
+    setIsRedirecting(true);
+    navigate("/verification-email", { state: { data: { formData: formData } } });
   };
 
   return (
@@ -91,27 +116,27 @@ const SignUpForm = () => {
         <div className="text-white">loading</div>
       ) : (
         <div className="min-h-screen  bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-          <Header_Signup/>
+          <Header_Signup />
           <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-md z-10">
             <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-indigo-500/10 sm:rounded-xl sm:px-10 border border-gray-800">
               {isSuccess ? (
                 <Success formdata={formData} />
               ) : (
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                 
-                  <Info 
-                   formData = {formData} handleChange = {handleChange}
-                   errors = {errors}
-                   showConfirmPassword = {showConfirmPassword}
-                   showPassword = {showPassword}
-                   setShowPassword = {setShowPassword}
-                   setShowConfirmPassword = {setShowConfirmPassword}
+
+                  <Info
+                    formData={formData} handleChange={handleChange}
+                    errors={errors}
+                    showConfirmPassword={showConfirmPassword}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setShowConfirmPassword={setShowConfirmPassword}
                   />
 
-                  <Submit isSubmitting = {isSubmitting} formData = {formData}/>
-            
-                  <Already_registered/>
-            
+                  <Submit handleSubmit={handleSubmit} isSubmitting={isSubmitting} isRedirecting={isRedirecting} />
+
+                  <Already_registered />
+
                 </form>
               )}
             </div>

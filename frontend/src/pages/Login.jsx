@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { login } from '../services/operations/authAPI';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 
@@ -77,7 +76,7 @@ const LoginForm = () => {
       
       // API call
       const { email, password } = formData;
-      dispatch(login(email, password, navigate, setIsSubmitting));
+      
       
       // For demo purposes, show success after 1.5s
       setTimeout(() => {

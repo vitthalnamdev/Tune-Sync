@@ -1,227 +1,212 @@
-import React, { useState } from 'react';
-import { User, Calendar, Mail, Phone, MapPin, Music, Headphones, Edit, Play, Share } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import Navbar from "../components/Home-Page-Components/Header"
 
-const MusicProfilePage = () => {
-  const [profile, setProfile] = useState({
-    name: "Alex Johnson",
-    username: "musiclover42",
-    location: "Los Angeles, CA",
-    email: "alex@musicapp.com",
-    joined: "March 2022",
-    bio: "Music enthusiast who loves discovering new tracks and sharing them with friends. Let's listen together!",
-    favoriteGenres: ["Electronic", "Indie Pop", "Alternative", "Hip-Hop", "Jazz"],
-    currentlyListening: {
-      // title: "Midnight City",
-      // artist: "M83",
-      // album: "Hurry Up, We're Dreaming",
-      // coverUrl: "/api/placeholder/80/80"
-    },
-    stats: {
-      // sessionsHosted: 48,
-      // sessionsJoined: 152,
-      // tracksShared: 437,
-      // followers: 89,
-      // following: 124
-    },
-    recentSessions: [
-      // {
-      //   name: "Friday Night Vibes",
-      //   participants: 7,
-      //   tracks: 22,
-      //   isPrivate: false,
-      //   date: "Yesterday"
-      // },
-      // {
-      //   name: "Chill Study Session",
-      //   participants: 3,
-      //   tracks: 15,
-      //   isPrivate: true,
-      //   date: "3 days ago"
-      // }
+const ProfilePage = ({ userData }) => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("profile");
+  const location = useLocation();
+  const data = location.state?.data;
+  console.log(data);
+  // Sample user data - replace with actual data from props
+  const user = userData || {
+    firstName: "Vitthal",
+    lastName: "Namdev",
+    userName: "vitthalnamdev",
+    profileImage: null, // Optional profile image
+    bio: "Music enthusiast and aspiring producer. I love discovering new artists and sharing playlists.",
+    favoriteGenres: ["Hip Hop", "Electronic", "Jazz", "Alternative"],
+    recentlyPlayed: [
+      { id: 1, title: "Midnight City", artist: "M83", albumArt: "/api/placeholder/60/60" },
+      { id: 2, title: "Redbone", artist: "Childish Gambino", albumArt: "/api/placeholder/60/60" },
+      { id: 3, title: "Flashing Lights", artist: "Kanye West", albumArt: "/api/placeholder/60/60" }
     ]
-  });
-
-  // Sample active rooms
-  const [activeRooms, setActiveRooms] = useState([
-    { name: "Global Indie Discoveries", members: 42, currentTrack: "The National - Smoke Detector" },
-    { name: "Lo-fi Study Room", members: 127, currentTrack: "Nujabes - Feather" },
-    { name: "Friday EDM Party", members: 64, currentTrack: "Disclosure - You & Me (Flume Remix)" }
-  ]);
-
+  };
+  
+  // First initial for the profile picture placeholder
+  const firstInitial = data?.firstName ? data.firstName.charAt(0).toUpperCase() : 'V';
+  const firstName = data?.firstName || user.firstName;
+  const lastName = data?.lastName || user.lastName;
+  const userName = data?.Username || user.userName;
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-100">Tune-Sync</h1>
-          <div className="flex gap-3">  
-            <button className="px-4 py-2 bg-purple-600 text-white rounded-md flex items-center gap-2 hover:bg-purple-700 transition-colors">
-              <Music size={16} />
-              <span>Create Room</span>
-            </button>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded-md flex items-center gap-2 hover:bg-gray-600 transition-colors">
-              <Edit size={16} />
-              <span>Edit Profile</span>
-            </button>
+      <Navbar/>
+      
+      {/* Profile Header with smooth gradient transition */}
+      <div className="relative">
+        {/* Semi-transparent overlay that extends from navbar */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-900 to-transparent z-10"></div>
+        
+        {/* Main profile gradient that starts with transparency to blend with navbar */}
+        <div className="pt-16 pb-10 bg-gradient-to-b from-gray-900/0 via-purple-900/90 to-gray-900">
+          <div className="container mx-auto px-4 pt-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              {/* Profile Picture */}
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-purple-600 flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-lg shadow-purple-900/50 z-20">
+                {firstInitial}
+              </div>
+              
+              {/* Profile Info */}
+              <div className="text-center md:text-left z-20">
+                <h1 className="text-3xl md:text-4xl font-bold text-white">
+                  {firstName} {lastName}
+                </h1>
+                <p className="text-purple-400 text-lg mt-1">@{userName}</p>
+                <p className="max-w-lg mt-4 text-gray-300">{user.bio}</p>
+                
+                <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
+                  {user.favoriteGenres.map((genre, index) => (
+                    <span 
+                      key={index} 
+                      className="px-3 py-1 bg-gray-800/80 backdrop-blur-sm rounded-full text-sm transition-all hover:bg-purple-800/50"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Left column - Profile card */}
-          <div className="w-full md:w-1/3">
-            <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-500 h-32 relative">
-                <div className="absolute -bottom-16 left-4">
-                  <div className="w-32 h-32 rounded-full border-4 border-gray-800 bg-gray-700 flex items-center justify-center overflow-hidden">
-                    {/* Placeholder avatar with user's initials */}
-                    <div className="w-full h-full bg-purple-900 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-purple-200">
-                        {profile.name.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                  </div>
+      
+      {/* Navigation Tabs */}
+      <div className="container mx-auto px-4 border-b border-gray-800">
+        <div className="flex overflow-x-auto">
+          <button 
+            className={`px-6 py-4 font-medium whitespace-nowrap ${activeTab === 'profile' ? 'text-purple-500 border-b-2 border-purple-500' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setActiveTab("profile")}
+          >
+            Profile
+          </button>
+          <button 
+            className={`px-6 py-4 font-medium whitespace-nowrap ${activeTab === 'playlists' ? 'text-purple-500 border-b-2 border-purple-500' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setActiveTab("playlists")}
+          >
+            Playlists
+          </button>
+          <button 
+            className={`px-6 py-4 font-medium whitespace-nowrap ${activeTab === 'following' ? 'text-purple-500 border-b-2 border-purple-500' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setActiveTab("following")}
+          >
+            Following
+          </button>
+          <button 
+            className={`px-6 py-4 font-medium whitespace-nowrap ${activeTab === 'activity' ? 'text-purple-500 border-b-2 border-purple-500' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setActiveTab("activity")}
+          >
+            Activity
+          </button>
+        </div>
+      </div>
+      
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        {activeTab === "profile" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Account Information */}
+            <div className="bg-gray-800 rounded-lg p-6 md:col-span-2">
+              <h2 className="text-xl font-bold mb-4">Account Information</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-gray-400 text-sm">First Name</h3>
+                  <p className="mt-1">{firstName}</p>
                 </div>
-              </div>
-              <div className="pt-16 pb-6 px-6">
-                <h2 className="text-2xl font-bold text-gray-100">{profile.name}</h2>
-                <p className="text-purple-400 font-medium">@{profile.username}</p>
                 
-                {/* <div className="mt-6 space-y-4">
-                  <div className="flex items-center gap-3 text-gray-300">
-                    <MapPin size={18} className="text-gray-400" />
-                    <span>{profile.location}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-300">
-                    <Mail size={18} className="text-gray-400" />
-                    <span>{profile.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-300">
-                    <Calendar size={18} className="text-gray-400" />
-                    <span>Joined {profile.joined}</span>
-                  </div>
-                </div> */}
-
-                {/* Currently listening */}
-                <div className="mt-6 p-3 bg-gray-700 rounded-lg flex items-center gap-3">
-                  <img 
-                    src={profile.currentlyListening.coverUrl} 
-                    alt="Album cover" 
-                    className="w-12 h-12 rounded"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{profile.currentlyListening.title}</p>
-                    <p className="text-sm text-gray-400 truncate">{profile.currentlyListening.artist}</p>
-                  </div>
-                  <button className="p-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-colors">
-                    <Play size={16} />
+                <div>
+                  <h3 className="text-gray-400 text-sm">Last Name</h3>
+                  <p className="mt-1">{lastName}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-gray-400 text-sm">Username</h3>
+                  <p className="mt-1">@{userName}</p>
+                </div>
+                
+                <div className="pt-4">
+                  <button className="px-4 py-2 bg-purple-600 rounded-md hover:bg-purple-700 transition-colors">
+                    Edit Profile
                   </button>
                 </div>
-
-                {/* Stats */}
-                <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-gray-700 p-2 rounded">
-                    <p className="text-lg font-bold">{profile.stats.sessionsHosted}</p>
-                    <p className="text-xs text-gray-400">Communities</p>
-                  </div>
-                  <div className="bg-gray-700 p-2 rounded">
-                    <p className="text-lg font-bold">{profile.stats.sessionsJoined}</p>
-                    <p className="text-xs text-gray-400">Joined</p>
-                  </div>
-                  <div className="bg-gray-700 p-2 rounded">
-                    <p className="text-lg font-bold">{profile.stats.tracksShared}</p>
-                    <p className="text-xs text-gray-400">Shared</p>
-                  </div>
-                </div>
-              </div>    
+              </div>
             </div>
-          </div>
-          
-          {/* Right column - Details */}
-          <div className="w-full md:w-2/3">
-            {/* About section */}
-            <div className="bg-gray-800 rounded-lg shadow p-6 mb-6">
-              <h3 className="text-lg font-bold text-gray-100 mb-4">About</h3>
-              <p className="text-gray-300">{profile.bio}</p>
+            
+            {/* Recently Played */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-bold mb-4">Recently Played</h2>
               
-              <h4 className="text-md font-medium text-gray-100 mt-4 mb-2">Favorite Genres</h4>
-              <div className="flex flex-wrap gap-2">
-                {profile.favoriteGenres.map((genre, index) => (
-                  <span 
-                    key={index}
-                    className="px-3 py-1 bg-gray-700 text-purple-300 rounded-full text-sm font-medium"
-                  >
-                    {genre}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            {/* Recent sessions */}
-            <div className="bg-gray-800 rounded-lg shadow p-6 mb-6">
-              <h3 className="text-lg font-bold text-gray-100 mb-4">Recent Listening Sessions</h3>
-              <div className="space-y-4">
-                {profile.recentSessions.map((session, index) => (
-                  <div key={index} className="border-l-2 border-purple-500 pl-4 py-2">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-medium text-gray-100">
-                        {session.name} 
-                        {session.isPrivate && (
-                          <span className="ml-2 px-1.5 py-0.5 bg-gray-700 text-gray-300 rounded text-xs">Private</span>
-                        )}
-                      </h4>
-                      <span className="text-sm text-gray-400">{session.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-purple-400 mt-1">
-                      <Headphones size={14} />
-                      <span className="text-sm">{session.participants} participants</span>
-                      <span className="text-gray-500">•</span>
-                      <Music size={14} />
-                      <span className="text-sm">{session.tracks} tracks</span>
-                    </div>
-                    <div className="mt-2 flex gap-2">
-                      <button className="text-xs px-2 py-1 bg-purple-600 hover:bg-purple-700 rounded text-white transition-colors">
-                        Replay
-                      </button>
-                      <button className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors flex items-center gap-1">
-                        <Share size={12} />
-                        Share
-                      </button>
+              <div className="space-y-3">
+                {user.recentlyPlayed.map(track => (
+                  <div key={track.id} className="flex items-center gap-3">
+                    <img 
+                      src={track.albumArt} 
+                      alt={`${track.title} album art`} 
+                      className="w-12 h-12 rounded"
+                    />
+                    <div>
+                      <p className="font-medium">{track.title}</p>
+                      <p className="text-sm text-gray-400">{track.artist}</p>
                     </div>
                   </div>
                 ))}
+                
+                <button className="w-full mt-2 px-4 py-2 border border-gray-600 rounded-md text-sm hover:border-white transition-colors">
+                  View Music History
+                </button>
               </div>
             </div>
             
-            {/* Active listening rooms */}
-            <div className="bg-gray-800 rounded-lg shadow p-6">
-              <h3 className="text-lg font-bold text-gray-100 mb-4">Alex's Rooms</h3>
-              <div className="space-y-4">
-                {activeRooms.map((room, index) => (
-                  <div key={index} className="p-4 bg-gray-700 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-medium text-gray-100">{room.name}</h4>
-                      <span className="text-sm bg-purple-600 px-2 py-0.5 rounded-full">
-                        {room.members} Members
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-300 mt-1">
-                      <span className="text-purple-400">Now playing:</span> {room.currentTrack}
-                    </p>
-                    <button className="mt-3 w-full py-2 bg-purple-600 hover:bg-purple-700 rounded text-white transition-colors flex items-center justify-center gap-2">
-                      <Headphones size={16} />
-                      Join Room
-                    </button>
-                  </div>
-                ))}
+            {/* Music Stats */}
+            <div className="bg-gray-800 rounded-lg p-6 md:col-span-3">
+              <h2 className="text-xl font-bold mb-4">Music Overview</h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <p className="text-gray-400 text-sm">Playlists</p>
+                  <p className="text-2xl font-bold mt-1">12</p>
+                </div>
+                
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <p className="text-gray-400 text-sm">Following</p>
+                  <p className="text-2xl font-bold mt-1">48</p>
+                </div>
+                
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <p className="text-gray-400 text-sm">Followers</p>
+                  <p className="text-2xl font-bold mt-1">27</p>
+                </div>
+                
+                <div className="bg-gray-700 p-4 rounded-lg">
+                  <p className="text-gray-400 text-sm">Favorite Artists</p>
+                  <p className="text-2xl font-bold mt-1">15</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        )}
+        
+        {activeTab === "playlists" && (
+          <div className="text-center py-16">
+            <p className="text-gray-400">Playlists tab content would appear here</p>
+          </div>
+        )}
+        
+        {activeTab === "following" && (
+          <div className="text-center py-16">
+            <p className="text-gray-400">Following tab content would appear here</p>
+          </div>
+        )}
+        
+        {activeTab === "activity" && (
+          <div className="text-center py-16">
+            <p className="text-gray-400">Activity tab content would appear here</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default MusicProfilePage;
+export default ProfilePage;

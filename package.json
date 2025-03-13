@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "jsmediatags": "^3.9.7",
+    "mongoose": "^8.12.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }
