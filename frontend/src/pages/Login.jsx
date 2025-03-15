@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { login } from "../services/operations/auth";
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",

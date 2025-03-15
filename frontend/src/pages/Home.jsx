@@ -1,9 +1,10 @@
+// line 536 may be a part of doubt , when token expires or I want to open Id of some other guy.
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/Home-Page-Components/Header";
+import Header from "../components/Navbar";
 import SearchPage from "./Search";
-
-// Component for a single playlist card
+import { fetchProfile } from "../services/operations/auth";
+ 
 const PlaylistCard = ({ playlist }) => (
   <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group">
     <div className="aspect-square overflow-hidden">
@@ -504,22 +505,40 @@ const getMockData = () => {
   return { featuredPlaylists, newReleases, genres };
 };
 
+
 // Main MusicHomepage component
 const MusicHomepage = (params) => {
   // Router hooks
   const location = useLocation();
   const navigate = useNavigate();
+  const [loading , setloading] = useState(true); 
 
   // Extract data from location state or params
   const data = location.state?.data || undefined;
+  const [profileData, setProfileData] = useState(() => 
+    data !== undefined ? data.user : {}
+  );
+
+  const getProfile = async () => {
+      try {
+        setTimeout(async () => {
+          const userData = await fetchProfile();
+          console.log("Fetched User:", userData);
+          setProfileData(userData);
+          setloading(false);
+        }, 1500);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        setloading(false);
+      }
+  };
+
+  // getting the data from token.
+  getProfile();
 
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
-  const [profileData, setProfileData] = useState(() => 
-    // data !== undefined ? data.user : params?.user ?? {}
-    params.user
-  );
   
   // Check if profile data needs to be set from params
   console.log(profileData); 
@@ -537,6 +556,14 @@ const MusicHomepage = (params) => {
     setShowSearchPage(false);
     setSearchQuery("");
   };
+  
+  if (loading) {
+    return (
+      <div className="bg-gray-800 text-white flex justify-center items-center h-screen">
+        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">

@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Navbar from "../components/Home-Page-Components/Header"
+import Navbar from "../components/Navbar"
 
 const ProfilePage = ({ userData }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
   const location = useLocation();
   const data = location.state?.data;
+  const showId = false;
   console.log(data);
   // Sample user data - replace with actual data from props
   const user = userData || {
-    firstName: "Vitthal",
+    firstName: "Pakshu",
     lastName: "Namdev",
     userName: "vitthalnamdev",
     profileImage: null, // Optional profile image
@@ -31,7 +32,7 @@ const ProfilePage = ({ userData }) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <Navbar/>
+      <Navbar showId = {showId}/>
       
       {/* Profile Header with smooth gradient transition */}
       <div className="relative">
