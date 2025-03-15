@@ -1,40 +1,44 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const User = require("../models/User");
 
-//auth
-exports.auth = async (req,res,next) =>{
+// Middleware for authenticating JWT token
+const verifyToken = async (req, res, next) => {
     try {
-        //token extract
-        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ","");
-
-        //if token missing ,then return response
-        if(!token){
+        // Extract token from cookies, body, or headers
+        const token = req.cookies?.token || 
+                      req.body?.token || 
+                      req.header("Authorization")?.replace("Bearer ", "");
+         
+        console.log("middleware reached" , token);
+        // If token is missing, return unauthorized error
+        if (!token) {
             return res.status(401).json({
-                success:false,
+                success: false,
                 message: "Token is missing",
-            })
-        }
-
-        // Verify the token
-        try {
-            const decode = await jwt.verify(token, process.env.JWT_SECRET);
-            console.log(decode);
-            req.user = decode;
-        } catch (error) {
-            //verification issue
-            return res.status(401).json({
-                success:false,
-                message:"Session is expire, please login again",
-                
             });
         }
-        next();
+
+        try {
+            // Verify the token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            console.log("Decoded User:", decoded);
+            req.user = decoded;
+            next();  // Move to next middleware or controller
+        } catch (error) {
+            // Handle invalid or expired token
+            return res.status(401).json({
+                success: false,
+                message: "Session expired, please login again",
+            });
+        }
+        
     } catch (error) {
-        console.log(error);
+        console.error("Error in auth middleware:", error);
         return res.status(500).json({
-            success:false,
-            message: "Something went wrong while validating token"
-        })
+            success: false,
+            message: "Something went wrong while validating token",
+        });
     }
-}
+};
+
+module.exports = verifyToken;

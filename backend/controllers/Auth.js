@@ -6,8 +6,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 
-
-
 // send otp
 exports.sendOTP = async (req, res) => {
     try {
@@ -48,7 +46,7 @@ exports.sendOTP = async (req, res) => {
         const otpPayload = { email, otp };
 
         result = await OTP.findOne({ email: email });
-        if(result){
+        if (result) {
             // delete the current otp.
             await OTP.findByIdAndDelete(result._id);
         }
@@ -76,17 +74,17 @@ exports.sendOTP = async (req, res) => {
 exports.signUp = async (req, res) => {
     try {
         // Fetch data from request body
-            const {
-                firstName,
-                lastName,
-                email,
-                password,
-                Username
-            } = req.body.Data;
-            console.log(req.body);
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            Username
+        } = req.body.Data;
+        console.log(req.body);
 
         // Hash password
-        console.log(firstName , lastName , email , password , Username);
+        console.log(firstName, lastName, email, password, Username);
 
         const hashedPassword = await bcrypt.hash(String(password), 10);
 
@@ -99,16 +97,26 @@ exports.signUp = async (req, res) => {
             Username: Username,
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
         });
-       
+
         // Convert Mongoose document to plain object and exclude password
         const userObject = user.toObject();
         delete userObject.password;  // Remove password from response
+
+        const token = jwt.sign({ id: userObject._id, email: userObject.email }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN, // Example: '7d'
+        });
+
+        // res.cookie("token", token, {
+        //     expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        //     httpOnly: true,
+        //   });
 
         // Return the created user object
         return res.status(200).json({
             success: true,
             message: "User registered successfully",
             user: userObject,  // Returning cleaned user object
+            token: token,
         });
 
     } catch (error) {
@@ -240,7 +248,7 @@ exports.login = async (req, res) => {
             const payload = {
                 email: user.email,
                 id: user._id,
-                accountType: user.accountType,
+                accountType: user.azccountType,
             }
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: "3d",

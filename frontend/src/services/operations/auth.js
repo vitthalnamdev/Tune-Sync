@@ -50,11 +50,49 @@ export const Insert_User = async (Data) => {
   try {
     const response = await api.post("/signup", {Data});
     console.log("HELLO from auth" , response);
+    if(response.data.success){
+      const token = response.data.token;
+      console.log("token is:" ,token)
+      localStorage.setItem("token" , token);
+    }
     return response;
   } catch (error) {
     console.error("Error verifying otp , check your internet connection", error.response?.data || error.message);
     throw error;
   }
 };
+
+// Function to fetch user profile (protected route)
+export const fetchProfile = async () => {
+  try {
+    // Get token from localStorage if not using cookies
+    const token = localStorage.getItem('token');
+    
+    const response = await api.get('/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    
+    if (response.data.success) {
+       return response.data.user;
+    }
+  } catch (error) {
+    console.error('Error fetching profile:', error.response?.data?.message || error.message);
+    throw error;  
+  }
+};
+
+export const login = async (email , password) => {
+  try {
+    const response = await api.post("/login", {email , password});
+    console.log("HELLO from auth" , response);
+    return response;
+  } catch (error) {
+    console.error("Error login , check your internet connection", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 
 export default api;
