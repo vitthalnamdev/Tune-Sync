@@ -1,57 +1,111 @@
 const fs = require('fs');
 const path = require('path');
-const jsmediatags = require('jsmediatags');
-const mongodb = require('mongoose');
-// Folder where your MP3 files are stored
-const folderPath = './songs'; // Modify this to your folder path
+const cloudinary = require('cloudinary').v2;
+const mongoose = require('mongoose');
+const jsmediatags = require('jsmediatags'); // Import jsmediatags
+require('dotenv').config();
 
-// Function to read metadata of all MP3 files in the folder
-function getMetadataOfSongs(folderPath, callback) {
-  const songsMetadata = [];
-  
-  // Read all files in the folder
-  fs.readdir(folderPath, (err, files) => {
-    if (err) {
-      console.log("Error reading folder:", err);
-      return;
-    }
+const Song = require("./models/Song");
 
-    // Filter out only MP3 files
-    const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
-
-    // Iterate over each MP3 file
-    let processedCount = 0; // Keep track of how many files have been processed
-
-    mp3Files.forEach((file, index) => {
-      const filePath = path.join(folderPath, file);
-
-      // Read metadata for each MP3 file using jsmediatags
-      jsmediatags.read(filePath, {
-        onSuccess: function(tag) {
-          const metadata = tag;
-
-          // Push the metadata into the array
-          songsMetadata.push(metadata);
-
-          processedCount++;
-
-          // Once all files are processed, invoke the callback
-          if (processedCount === mp3Files.length) {
-            callback(songsMetadata);
-          }
-        },
-        onError: function(error) {
-          console.log(`Error reading metadata of ${file}:`, error);
-        }
-      });
-    });
-  });
-}
-
-// Call the function to get metadata and print the result after all files are processed
-getMetadataOfSongs(folderPath, (songsMetadata) => { 
-    // insert every song into the database , if not present.
-   console.log(songsMetadata);
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name : process.env.CLOUD_NAME,
+  api_key : process.env.API_KEY,
+  api_secret : process.env.API_SECRET,
 });
 
-module.exports =  {getMetadataOfSongs};
+// MongoDB connection
+mongoose.connect(process.env.DATABASE_URL)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
+
+
+const folderPath = './songs'; // Modify this to your folder path
+
+
+
+// Function to process songs
+async function processSongs() {
+  const songsDir = path.join(__dirname, 'songs');
+
+  try {
+    const files = fs.readdirSync(songsDir);
+
+    for (const file of files) {
+      const filePath = path.join(songsDir, file);
+
+      // Extract metadata using jsmediatags
+      const metadata = await new Promise((resolve, reject) => {
+        jsmediatags.read(filePath, {
+          onSuccess: resolve,
+          onError: reject,
+        });
+      });
+
+      // Parse metadata
+      const tag = metadata.tags;
+      const title = tag.title || path.basename(file, path.extname(file));
+      const artist = tag.artist || 'Unknown Artist';
+      const album = tag.album || 'Unknown Album';
+      const genre = tag.genre || 'Unknown';
+
+
+      // Check if the song has embedded cover art
+      let coverImageResult = null;
+      if (tag.picture) {
+        const picture = tag.picture;
+        const tempImagePath = path.join(__dirname, 'temp', `${path.basename(file, path.extname(file))}.jpg`);
+
+        // Ensure the temp directory exists
+        if (!fs.existsSync(path.join(__dirname, 'temp'))) {
+          fs.mkdirSync(path.join(__dirname, 'temp'));
+        }
+
+        // Write the cover art to a temporary file
+        fs.writeFileSync(tempImagePath, Buffer.from(picture.data));
+
+        // Upload the cover image to Cloudinary
+        coverImageResult = await cloudinary.uploader.upload(tempImagePath, {
+          resource_type: 'image',
+          public_id: path.basename(file, path.extname(file)) + '_cover',
+        });
+
+        // Delete the temporary image file
+        fs.unlinkSync(tempImagePath);
+      }
+
+      // Upload the song to Cloudinary
+      const songUploadResult = await cloudinary.uploader.upload(filePath, {
+        resource_type: 'video',
+        public_id: path.basename(file, path.extname(file)),
+      });
+
+      console.log("cloudnary data",songUploadResult);
+      const duration = songUploadResult.duration;
+      // Create song document
+      const song = new Song({
+        title: title,
+        artist: artist,
+        album: album,
+        genre: genre,
+        duration: duration,
+        cloudinaryUrl: songUploadResult.secure_url,
+        coverImageUrl: coverImageResult ? coverImageResult.secure_url : null,
+        publicId: songUploadResult.public_id,
+      });
+
+      await song.save();
+      console.log(`Uploaded: ${file}`);
+    }
+  } catch (error) {
+    console.error('Error processing songs:', error);
+  } finally {
+    mongoose.connection.close();
+  }
+}
+
+processSongs();
