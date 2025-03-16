@@ -1,6 +1,6 @@
 const express=require("express");
 const app=express();
-// const {cloudinaryConnect} = require("./config/cloudinary");
+const {cloudinaryConnect} = require("./config/cloudinary");
 const dbConnect = require("./config/databse");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
