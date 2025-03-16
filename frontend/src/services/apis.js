@@ -8,6 +8,6 @@ export const endpoints ={
 }
 
 export const songEndpoints = {
-    AUTOSUGGETION_API: BASE_URL + "/songs/autosuggestion",
-    GET_SONG: BASE_URL + "/songs/song/:id"
+    AUTOSUGGETION_API: BASE_URL + "songs/autosuggestion",
+    GET_SONG: BASE_URL + "songs/song/:id"
 }

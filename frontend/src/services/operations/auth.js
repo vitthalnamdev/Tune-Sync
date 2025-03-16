@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Load environment variables
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:4000/api/v1/auth"; 
+const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:4000/api/v1/"; 
 
 // Create an Axios instance with default settings
 const api = axios.create({
