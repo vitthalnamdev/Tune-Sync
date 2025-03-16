@@ -21,12 +21,11 @@ const userSchema=new mongoose.Schema(
         image:{
             type:String,
         },
-        token:{
+        Username:{
             type:String,
+            unique:true
         }
-    },
-    { timestamps: true }
-
-)
+    }, { timestamps: true }
+);
 
 module.exports=mongoose.model("User", userSchema);

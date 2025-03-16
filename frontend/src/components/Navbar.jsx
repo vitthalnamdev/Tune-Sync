@@ -1,58 +1,92 @@
-import React, { useState } from 'react';
-import { Home, Search, Library, Heart, User, Volume2, Disc } from 'lucide-react';
+ 
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = () => {
-  const [activeTab, setActiveTab] = useState('home');
-
-  const tabs = [
-    { id: 'home', label: 'Home', icon: <Home size={20} /> },
-    { id: 'search', label: 'Search', icon: <Search size={20} /> },
-    { id: 'library', label: 'Library', icon: <Library size={20} /> },
-    { id: 'favorites', label: 'Favorites', icon: <Heart size={20} /> },
-    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
-  ];
-
+const Header = (params) => {
+  const navigate = useNavigate();
+  const userData = params.profileData;
+  const showId = (params.showId===undefined?true:false);
+  // Get first letter of firstName if userData exists
+  const firstInitial = userData?.firstName ? userData.firstName.charAt(0).toUpperCase() : '';
+  console.log(showId); 
   return (
-    <div className="relative flex h-14 items-center justify-center border-b-2 '">
-      {/* Top navigation bar */}
-      <div className="flex w-11/12 max-w-maxContent items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Disc className="text-green-500" size={28} />
-          <span className="text-white font-bold text-xl">Harmony</span>
-        </div>
-        
-        <div className=" md:flex items-center gap-8">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`flex items-center gap-2 px-2 py-1 rounded transition ${
-                activeTab === tab.id
-                  ? 'text-green-500 font-medium'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <button className="text-gray-400 hover:text-white">
-            <Volume2 size={20} />
-          </button>
-          <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white font-medium">
-            JS
+    <>
+      {/* Header */}
+      <header className="sticky top-0 bg-gray-900/90 backdrop-blur-md z-50 border-b border-gray-800">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <a href="#" className="text-2xl font-bold">
+              TuneSync<span className="text-purple-500">.</span>
+            </a>
+
+            <nav className="hidden md:block">
+              <ul className="flex space-x-8">
+                <li>
+                  <a href="/" className="text-white font-medium">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                  >
+                    Connect
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                  >
+                    Library
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                  >
+                    Artists
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            
+            <div className="flex space-x-4">
+              {(userData) ? (
+                // Profile icon with first initial when user is logged in - now larger
+                <div 
+                  className="w-12 h-12  rounded-full bg-purple-600 flex items-center justify-center text-white text-xl font-bold cursor-pointer hover:bg-purple-700 transition-colors"
+                  onClick={() => navigate("/profile" , {state : {data: userData}})}
+                  title={userData.firstName}
+                >
+                  {firstInitial}
+                </div>
+              ) : (showId && 
+                // Login and Signup buttons when no user is logged in
+                <>
+                  <button
+                    className="px-4 py-2 rounded-full border border-gray-600 text-white font-medium hover:border-white transition-colors"
+                    onClick={() => navigate("/Login")}
+                  >
+                    Log In
+                  </button>
+                  <button 
+                    className="px-4 py-2 rounded-full bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors"
+                    onClick={() => navigate("/Signup")}
+                  >
+                    Sign Up   
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      
-      
-      
-      
-    </div>
+      </header>
+    </>
   );
 };
 
-export default Navbar;
+export default Header;
+ 
