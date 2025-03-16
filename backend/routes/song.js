@@ -3,6 +3,9 @@ const router = express.Router()
 
 // Import the required controllers and middleware functions
 const {
+  auth
+} = require("../middlewares/auth");
+const {
     autoSuggetion,
     getSong
     
