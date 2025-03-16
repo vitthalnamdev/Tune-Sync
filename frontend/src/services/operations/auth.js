@@ -77,9 +77,11 @@ export const fetchProfile = async () => {
     if (response.data.success) {
        return response.data.user;
     }
+
+    return undefined;
   } catch (error) {
     console.error('Error fetching profile:', error.response?.data?.message || error.message);
-    throw error;  
+    return undefined;
   }
 };
 
@@ -87,6 +89,11 @@ export const login = async (email , password) => {
   try {
     const response = await api.post("/login", {email , password});
     console.log("HELLO from auth" , response);
+    if(response.data.success){
+      const token = response.data.token;
+      console.log("token is:" ,token)
+      localStorage.setItem("token" , token);
+    }
     return response;
   } catch (error) {
     console.error("Error login , check your internet connection", error.response?.data || error.message);

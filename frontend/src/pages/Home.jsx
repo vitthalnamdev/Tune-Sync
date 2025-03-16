@@ -1,5 +1,5 @@
 // line 536 may be a part of doubt , when token expires or I want to open Id of some other guy.
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Navbar";
 import SearchPage from "./Search";
@@ -509,17 +509,15 @@ const getMockData = () => {
 // Main MusicHomepage component
 const MusicHomepage = (params) => {
   // Router hooks
-  const location = useLocation();
+
   const navigate = useNavigate();
   const [loading , setloading] = useState(true); 
 
   // Extract data from location state or params
-  const data = location.state?.data || undefined;
-  const [profileData, setProfileData] = useState(() => 
-    data !== undefined ? data.user : {}
-  );
+  const [profileData, setProfileData] = useState({});
 
-  const getProfile = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
       try {
         setTimeout(async () => {
           const userData = await fetchProfile();
@@ -531,10 +529,10 @@ const MusicHomepage = (params) => {
         console.error("Failed to fetch profile:", error);
         setloading(false);
       }
-  };
+    };
 
-  // getting the data from token.
-  getProfile();
+    fetchData();
+  }, []);
 
   // State management
   const [searchQuery, setSearchQuery] = useState("");
