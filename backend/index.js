@@ -13,7 +13,7 @@ dbConnect();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors({origin:"https://oauth.pstmn.io/v1/browser-callback"}));
+app.use(cors());
 
 app.use(
     fileUpload({
