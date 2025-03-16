@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { fetchSuggetions } from "../services/operations/songsAPI";
 
 const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([
@@ -17,61 +18,64 @@ const SearchPage = (params) => {
   ];
   
   // Mock search results - in a real app, this would come from your API
-  const mockSearchResults = {
-    artists: [
-      { id: 1, name: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Artist" },
-      { id: 2, name: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Artist" },
-    ],
-    songs: [
-      { id: 1, title: "Midnight Shadows", artist: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Song" },
-      { id: 2, title: "Electric Dreams", artist: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Song" },
-    ],
-    albums: [
-      { id: 1, title: "Wilderness", artist: "The Explorers", imageUrl: "/api/placeholder/100/100", type: "Album" },
-      { id: 2, title: "Urban Poetry", artist: "Street Verses", imageUrl: "/api/placeholder/100/100", type: "Album" },
-    ],
-    playlists: [
-      { id: 1, title: "Today's Hits", description: "The biggest hits right now", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
-      { id: 2, title: "Chill Vibes", description: "Relaxing beats for your day", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
-    ]
-  };
+  // const mockSearchResults = {
+  //   artists: [
+  //     { id: 1, name: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Artist" },
+  //     { id: 2, name: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Artist" },
+  //   ],
+  //   songs: [
+  //     { id: 1, title: "Midnight Shadows", artist: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Song" },
+  //     { id: 2, title: "Electric Dreams", artist: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Song" },
+  //   ],
+  //   albums: [
+  //     { id: 1, title: "Wilderness", artist: "The Explorers", imageUrl: "/api/placeholder/100/100", type: "Album" },
+  //     { id: 2, title: "Urban Poetry", artist: "Street Verses", imageUrl: "/api/placeholder/100/100", type: "Album" },
+  //   ],
+  //   playlists: [
+  //     { id: 1, title: "Today's Hits", description: "The biggest hits right now", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
+  //     { id: 2, title: "Chill Vibes", description: "Relaxing beats for your day", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
+  //   ]
+  // };
 
   // Handle search when query changes
   useEffect(() => {
     if (params.searchQuery.trim() === '') {
       setTopResults([]);
+      setIsLoading(false);
       return;
     }
     
     setIsLoading(true);
     
     // Simulate API call with setTimeout
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async() => {
       // Flatten and combine results for display
-      const results = [
-        ...mockSearchResults.artists.filter(artist => 
-          artist.name.toLowerCase().includes(params.searchQuery.toLowerCase())
-        ),
-        ...mockSearchResults.songs.filter(song => 
-          song.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
-          song.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
-        ),
-        ...mockSearchResults.albums.filter(album => 
-          album.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
-          album.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
-        ),
-        ...mockSearchResults.playlists.filter(playlist => 
-          playlist.title.toLowerCase().includes(params.searchQuery.toLowerCase())
-        )
-      ];
+      const results = await fetchSuggetions(params.searchQuery);
+      console.log("response",results);
+      // const results = [
+      //   // ...mockSearchResults.artists.filter(artist => 
+      //   //   artist.name.toLowerCase().includes(params.searchQuery.toLowerCase())
+      //   // ),
+      //   // mockSearchResults.songs.filter(song => 
+      //   //   song.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
+      //   //   song.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
+      //   // ),
+      //   // ...mockSearchResults.albums.filter(album => 
+      //   //   album.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
+      //   //   album.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
+      //   // ),
+      //   // ...mockSearchResults.playlists.filter(playlist => 
+      //   //   playlist.title.toLowerCase().includes(params.searchQuery.toLowerCase())
+      //   // )
+      // ];
       
-      setTopResults(results);
+      setTopResults(results.songs);
       setIsLoading(false);
       
-      // Add to recent searches if it's a new search
-      if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
-        setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
-      }
+      // // Add to recent searches if it's a new search
+      // if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
+      //   setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
+      // }
     }, 300);
     
     return () => clearTimeout(timer);
@@ -245,10 +249,11 @@ const SearchPage = (params) => {
               {topResults.slice(0, 4).map((result, index) => (
                 <div
                   key={index}
+                  
                   className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors"
                 >
                   <img
-                    src={result.imageUrl}
+                    src={result.coverImageUrl}
                     alt={result.name || result.title}
                     className="w-12 h-12 rounded object-cover mr-4"
                   />
