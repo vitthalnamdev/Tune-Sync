@@ -74,14 +74,15 @@ exports.sendOTP = async (req, res) => {
 exports.signUp = async (req, res) => {
     try {
         // Fetch data from request body
+        
         const {
             firstName,
             lastName,
             email,
             password,
             Username
-        } = req.body.Data;
-        console.log(req.body);
+        } = req.body;
+        
 
         // Hash password
         console.log(firstName, lastName, email, password, Username);
