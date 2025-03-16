@@ -1,4 +1,5 @@
 const Song = require("../models/Song");
+const mongoose=require("mongoose");
 
 exports.autoSuggetion =  async (req, res) => {
     const query = req.query.q;
@@ -7,12 +8,17 @@ exports.autoSuggetion =  async (req, res) => {
     try {
       const suggestions = await Song.find(
         { title: { $regex: query, $options: "i" } }, // Case-insensitive match
-        { title: 1, artist: 1, _id: 0 } // Return only necessary fields
+        { title: 1, artist: 1, _id: 1, coverImageUrl:1} // Return only necessary fields
       ).limit(5); // Limit results
   
-      res.json(suggestions);
+      res.json({
+        success: true,
+        data: {
+          songs: suggestions
+        }
+      })
     } catch (error) {
-      res.status(500).json({ message:"error while autosuggestion",error: error.message });
+      res.status(500).json({success:false, message:"error while autosuggestion",error: error.message });
     }
 }
 

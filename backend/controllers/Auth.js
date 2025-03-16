@@ -81,7 +81,7 @@ exports.signUp = async (req, res) => {
             password,
             Username
         } = req.body.Data;
-        console.log(req.body);
+        
 
         // Hash password
         console.log(firstName, lastName, email, password, Username);
