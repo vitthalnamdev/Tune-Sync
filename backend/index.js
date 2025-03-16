@@ -1,6 +1,6 @@
 const express=require("express");
 const app=express();
-// const {cloudinaryConnect} = require("./config/cloudinary");
+const {cloudinaryConnect} = require("./config/cloudinary");
 const dbConnect = require("./config/databse");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -28,7 +28,7 @@ const songRoutes = require("./routes/song");
 app.use("/api/v1/auth",userRoutes);
 app.use("/api/v1/songs",songRoutes);
 cloudinaryConnect();
-dbConnect();
+
 
 app.listen(PORT,()=>{
     console.log(`server started successfully at ${PORT}`);
