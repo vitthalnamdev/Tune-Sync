@@ -14,7 +14,7 @@ const api = axios.create({
 
 export const verify_email = async (email) => {
   try {
-    const response = await api.post("/auth/validEmail", { email });
+    const response = await api.post("auth/validEmail", { email });
     return response.data.success;
   } catch (error) {
     console.error("Error Verifying email , check your internet connection", error.response?.data || error.message);

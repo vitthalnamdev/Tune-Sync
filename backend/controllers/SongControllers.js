@@ -8,7 +8,7 @@ exports.autoSuggetion =  async (req, res) => {
     try {
       const suggestions = await Song.find(
         { title: { $regex: query, $options: "i" } }, // Case-insensitive match
-        { title: 1, artist: 1, _id: 1, coverImageUrl:1} // Return only necessary fields
+        { title: 1, artist: 1, _id: 1, coverImageUrl:1 , cloudinaryUrl:1} // Return only necessary fields
       ).limit(5); // Limit results
   
       res.json({

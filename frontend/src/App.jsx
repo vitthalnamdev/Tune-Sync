@@ -8,12 +8,14 @@ import VerifyEmail from "./pages/verify_Email";
 import Set_username from "./pages/Set_username";
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
+import MusicPlayer from "./pages/Music_player"; 
+import { AudioProvider } from './pages/AudioProvider';
 
 function App() {
   
-
   return (
     <div>
+     <AudioProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Signup" element={<Signup />} />
@@ -22,6 +24,7 @@ function App() {
         <Route path="/verification-email" element={<VerifyEmail />} />
         <Route path="/set-username" element={<Set_username />} />
       </Routes>
+      </AudioProvider>
     </div>
   );
 }

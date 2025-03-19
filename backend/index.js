@@ -29,7 +29,9 @@ app.use("/api/v1/auth",userRoutes);
 app.use("/api/v1/songs",songRoutes);
 // cloudinaryConnect();
 dbConnect();
-
+app.get("/" , (req , res)=>{
+    res.send("Hello from server");
+})
 app.listen(PORT,()=>{
     console.log(`server started successfully at ${PORT}`);
 });

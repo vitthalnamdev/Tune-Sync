@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchSuggetions } from "../services/operations/songsAPI";
+import MusicPlayer from "./Music_player";
+import myImage from "./coverImage.jpg";
 
 const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([
@@ -8,35 +10,18 @@ const SearchPage = (params) => {
     "Classic Rock",
     "Today's Hits",
   ]);
-  
+  const [selectedSong, setSelectedSong] = useState(null);
   const [topResults, setTopResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const updatedUsers = topResults.map(song => ({
+    ...song,
+    coverImageUrl: song.coverImageUrl ?? myImage // Set default if null
+  }));
   // Sample categories for search suggestions
   const searchCategories = [
     "Artists", "Songs", "Albums", "Playlists", "Podcasts"
   ];
   
-  // Mock search results - in a real app, this would come from your API
-  // const mockSearchResults = {
-  //   artists: [
-  //     { id: 1, name: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Artist" },
-  //     { id: 2, name: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Artist" },
-  //   ],
-  //   songs: [
-  //     { id: 1, title: "Midnight Shadows", artist: "Luna Ray", imageUrl: "/api/placeholder/100/100", type: "Song" },
-  //     { id: 2, title: "Electric Dreams", artist: "Neon Pulse", imageUrl: "/api/placeholder/100/100", type: "Song" },
-  //   ],
-  //   albums: [
-  //     { id: 1, title: "Wilderness", artist: "The Explorers", imageUrl: "/api/placeholder/100/100", type: "Album" },
-  //     { id: 2, title: "Urban Poetry", artist: "Street Verses", imageUrl: "/api/placeholder/100/100", type: "Album" },
-  //   ],
-  //   playlists: [
-  //     { id: 1, title: "Today's Hits", description: "The biggest hits right now", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
-  //     { id: 2, title: "Chill Vibes", description: "Relaxing beats for your day", imageUrl: "/api/placeholder/100/100", type: "Playlist" },
-  //   ]
-  // };
-
   // Handle search when query changes
   useEffect(() => {
     if (params.searchQuery.trim() === '') {
@@ -47,40 +32,45 @@ const SearchPage = (params) => {
     
     setIsLoading(true);
     
-    // Simulate API call with setTimeout
+    // Fetch suggestions after a short delay
     const timer = setTimeout(async() => {
-      // Flatten and combine results for display
-      const results = await fetchSuggetions(params.searchQuery);
-      console.log("response",results);
-      // const results = [
-      //   // ...mockSearchResults.artists.filter(artist => 
-      //   //   artist.name.toLowerCase().includes(params.searchQuery.toLowerCase())
-      //   // ),
-      //   // mockSearchResults.songs.filter(song => 
-      //   //   song.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
-      //   //   song.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
-      //   // ),
-      //   // ...mockSearchResults.albums.filter(album => 
-      //   //   album.title.toLowerCase().includes(params.searchQuery.toLowerCase()) || 
-      //   //   album.artist.toLowerCase().includes(params.searchQuery.toLowerCase())
-      //   // ),
-      //   // ...mockSearchResults.playlists.filter(playlist => 
-      //   //   playlist.title.toLowerCase().includes(params.searchQuery.toLowerCase())
-      //   // )
-      // ];
-      
-      setTopResults(results.songs);
-      setIsLoading(false);
-      
-      // // Add to recent searches if it's a new search
-      // if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
-      //   setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
-      // }
+      try {
+        const results = await fetchSuggetions(params.searchQuery);
+        console.log(results);
+        setTopResults(results?.songs || []);
+        const updatedUsers = Array.isArray(results?.songs) ? results.songs.map(song => ({
+          ...song,
+          coverImageUrl: song.coverImageUrl ?? myImage, // Default cover image
+        })) : [];
+        console.log(updatedUsers);
+        setTopResults(updatedUsers || []);
+        // Add to recent searches if it's a new search
+        if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
+          setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
+        }
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setTopResults([]);
+      } finally {
+        setIsLoading(false);
+      }
     }, 300);
     
     return () => clearTimeout(timer);
   }, [params.searchQuery]);
 
+  // Handle song selection
+  const handleSongSelect = (song) => {
+    // Format the song data for the MusicPlayer component
+    params.setSong({
+      title: song.name || song.title,
+      artist: song.artist,
+      coverImage: song.coverImageUrl || myImage,
+      audioSrc: song.cloudinaryUrl || "",
+      duration: song.duration || 180 // Default to 3 minutes if duration not available
+    });
+  };
+  
   // Clear a specific recent search
   const removeRecentSearch = (search) => {
     setRecentSearches(recentSearches.filter(item => item !== search));
@@ -248,94 +238,76 @@ const SearchPage = (params) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {topResults.slice(0, 4).map((result, index) => (
                 <div
-                  key={index}
-                  
-                  className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors"
+                  key={index} 
+                  className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors cursor-pointer"
+                  onClick={() => handleSongSelect(result)}
                 >
-                  <div className=" w-[20%] bg-fuchsia-700 rounded-full  mr-4 overflow-hidden"> 
-                    <img
-                      src={result.coverImageUrl}
-                      alt={result.name || result.title}
-                      className=""
-                    />
-                  </div>
-                  
-                  <div className=" w-[75%]">
+                  <img
+                    src={result.coverImageUrl}
+                    alt={result.name || result.title}
+                    className="w-12 h-12 rounded object-cover mr-4"
+                  />
+                  <div>
                     <h3 className="font-medium">{result.name || result.title}</h3>
                     <p className="text-sm text-gray-400">
-                      {result.artist ? `${result.type} • ${result.artist}` : result.type}
+                      {result.artist ? `${result.type || 'Song'} • ${result.artist}` : (result.type || 'Song')}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
             
-            {/* Results by category */}
-            {topResults.some(r => r.type === "Artist") && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold mb-4">Artists</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {topResults.filter(r => r.type === "Artist").map((artist, index) => (
-                    <div key={index} className="text-center">
-                      <div className="aspect-square rounded-full overflow-hidden mb-2 mx-auto max-w-24">
-                        <img
-                          src={artist.imageUrl}
-                          alt={artist.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h4 className="font-medium truncate">{artist.name}</h4>
-                      <p className="text-xs text-gray-400">Artist</p>
+            {/* Songs section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-bold mb-4">Songs</h3>
+              <div className="space-y-2">
+                {topResults.map((song, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors cursor-pointer"
+                    onClick={() => handleSongSelect(song)}
+                  >
+                    <img
+                      src={song.coverImageUrl || "/api/placeholder/100/100"}
+                      alt={song.name || song.title}
+                      className="w-12 h-12 rounded object-cover mr-4"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium">{song.name || song.title}</h4>
+                      <p className="text-sm text-gray-400">{song.artist}</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {topResults.some(r => r.type === "Song") && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold mb-4">Songs</h3>
-                <div className="space-y-2">
-                  {topResults.filter(r => r.type === "Song").map((song, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors"
+                    <button 
+                      className="text-gray-400 hover:text-white p-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSongSelect(song);
+                      }}
                     >
-                      <img
-                        src={song.imageUrl}
-                        alt={song.title}
-                        className="w-12 h-12 rounded object-cover mr-4"
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-medium">{song.title}</h4>
-                        <p className="text-sm text-gray-400">{song.artist}</p>
-                      </div>
-                      <button className="text-gray-400 hover:text-white p-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
               </div>
-            )}
-            
-            {/* Similar sections for Albums and Playlists would go here */}
+            </div>
           </div>
         )}
       </div>
+      
+      {/* Music Player - Only show when a song is selected */}
+       <params.MusicPlayer song = {params.song}/>
     </div>
   );
 };
