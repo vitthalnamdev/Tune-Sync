@@ -14,7 +14,7 @@ const api = axios.create({
 
 export const verify_email = async (email) => {
   try {
-    const response = await api.post("/validEmail", { email });
+    const response = await api.post("/auth/validEmail", { email });
     return response.data.success;
   } catch (error) {
     console.error("Error Verifying email , check your internet connection", error.response?.data || error.message);
@@ -25,7 +25,7 @@ export const verify_email = async (email) => {
 
 export const sendOtp = async (email) => {
   try {
-    const response = await api.post("/sendotp", { email });
+    const response = await api.post("auth/sendotp", { email });
     console.log("HELLO from auth" , response);
     return response.data.success;
   } catch (error) {
@@ -36,7 +36,7 @@ export const sendOtp = async (email) => {
  
 export const verifyotp = async (email , otp) => {
   try {
-    const response = await api.post("/verifyotp", { email: email , otp: otp });
+    const response = await api.post("auth/verifyotp", { email: email , otp: otp });
     console.log("HELLO from auth" , response);
     return response.data.success;
   } catch (error) {
@@ -48,7 +48,7 @@ export const verifyotp = async (email , otp) => {
  
 export const Insert_User = async (Data) => {
   try {
-    const response = await api.post("/signup", {Data});
+    const response = await api.post("auth/signup", {Data});
     console.log("HELLO from auth" , response);
     if(response.data.success){
       const token = response.data.token;
@@ -68,7 +68,7 @@ export const fetchProfile = async () => {
     // Get token from localStorage if not using cookies
     const token = localStorage.getItem('token');
     
-    const response = await api.get('/profile', {
+    const response = await api.get('auth/profile', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -87,7 +87,7 @@ export const fetchProfile = async () => {
 
 export const login = async (email , password) => {
   try {
-    const response = await api.post("/login", {email , password});
+    const response = await api.post("auth/login", {email , password});
     console.log("HELLO from auth" , response);
     if(response.data.success){
       const token = response.data.token;
