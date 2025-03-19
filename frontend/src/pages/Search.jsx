@@ -252,12 +252,15 @@ const SearchPage = (params) => {
                   
                   className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors"
                 >
-                  <img
-                    src={result.coverImageUrl}
-                    alt={result.name || result.title}
-                    className="w-12 h-12 rounded object-cover mr-4"
-                  />
-                  <div>
+                  <div className=" w-[20%] bg-fuchsia-700 rounded-full  mr-4 overflow-hidden"> 
+                    <img
+                      src={result.coverImageUrl}
+                      alt={result.name || result.title}
+                      className=""
+                    />
+                  </div>
+                  
+                  <div className=" w-[75%]">
                     <h3 className="font-medium">{result.name || result.title}</h3>
                     <p className="text-sm text-gray-400">
                       {result.artist ? `${result.type} • ${result.artist}` : result.type}
