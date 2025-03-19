@@ -25,7 +25,7 @@ app.use(
 const userRoutes = require("./routes/user");
 const songRoutes = require("./routes/song");
 
-app.use("/api/v1/",userRoutes);
+app.use("/api/v1/auth",userRoutes);
 app.use("/api/v1/songs",songRoutes);
 // cloudinaryConnect();
 dbConnect();
