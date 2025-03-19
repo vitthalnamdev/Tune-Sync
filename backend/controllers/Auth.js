@@ -11,7 +11,8 @@ exports.sendOTP = async (req, res) => {
     try {
         //fatch email
         const { email } = req.body;
-
+         
+        console.log("email" , email);
         // check if user already exist
         const checkUserExist = await User.findOne({ email: email })
         // if user already exist than return a response
@@ -29,7 +30,7 @@ exports.sendOTP = async (req, res) => {
             lowerCaseAlphabets: false,
             specialChars: false,
         });
-        console.log("genereted opt: ", otp);
+        // console.log("genereted opt: ", otp);
 
         //check unique otp or not
         let result = await OTP.findOne({ otp: otp });
@@ -44,7 +45,7 @@ exports.sendOTP = async (req, res) => {
         }
 
         const otpPayload = { email, otp };
-
+        console.log("otppayload" , otpPayload);
         result = await OTP.findOne({ email: email });
         if (result) {
             // delete the current otp.
@@ -52,12 +53,13 @@ exports.sendOTP = async (req, res) => {
         }
         //create an entry for OTP 
         const otpbody = await OTP.create(otpPayload);
-        console.log(otpbody);
+        // console.log(otpbody);
 
         //return response successful
         res.status(200).json({
             success: true,
             message: "OTP Sent successfully",
+            
         });
 
     } catch (error) {

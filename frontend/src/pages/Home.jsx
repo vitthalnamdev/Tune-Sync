@@ -1,10 +1,13 @@
 // line 536 may be a part of doubt , when token expires or I want to open Id of some other guy.
-import React, { useState , useEffect} from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Navbar";
 import SearchPage from "./Search";
 import { fetchProfile } from "../services/operations/auth";
- 
+import MusicPlayer from "./Music_player";
+import myImage from "./coverImage.jpg";
+
+
 const PlaylistCard = ({ playlist }) => (
   <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group">
     <div className="aspect-square overflow-hidden">
@@ -151,109 +154,7 @@ const GenresSection = ({ genres }) => (
 );
 
 // Component for the music player
-const MusicPlayer = () => (
-  <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-6xl px-4">
-    <div className="bg-gray-800 rounded-lg p-4 flex items-center shadow-2xl">
-      <div className="w-14 h-14 rounded overflow-hidden mr-4">
-        <img
-          src="/api/placeholder/100/100"
-          alt="Now playing"
-          className="w-full h-full object-cover"
-        />
-      </div>
 
-      <div className="flex-1 min-w-0 mr-4">
-        <h4 className="font-medium text-sm">Midnight Shadows</h4>
-        <p className="text-gray-400 text-xs truncate">Luna Ray</p>
-      </div>
-
-      <div className="flex items-center space-x-4">
-        <button className="text-gray-400 hover:text-white">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-
-        <button className="bg-white text-black rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-            />
-          </svg>
-        </button>
-
-        <button className="text-gray-400 hover:text-white">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div className="hidden md:flex items-center flex-1 mx-4">
-        <span className="text-xs text-gray-400 min-w-[40px] text-right mr-2">
-          1:45
-        </span>
-        <div className="h-1 flex-1 bg-gray-700 rounded-full overflow-hidden">
-          <div className="h-full bg-purple-500 w-1/3"></div>
-        </div>
-        <span className="text-xs text-gray-400 min-w-[40px] ml-2">4:30</span>
-      </div>
-
-      <div className="hidden md:flex items-center">
-        <button className="text-gray-400 hover:text-white mr-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15.536 8.464a5 5 0 010 7.072M12 9.64a3 3 0 010 4.72m-3.536-8.727a8 8 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0110 4v16a1 1 0 01-1.707.707L3.586 16H2a1 1 0 01-1-1v-4a1 1 0 011-1h1.586z"
-            />
-          </svg>
-        </button>
-        <div className="w-20 h-1 bg-gray-700 rounded-full overflow-hidden">
-          <div className="h-full bg-gray-400 w-2/3"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 // Component for the footer
 const Footer = () => (
@@ -509,10 +410,17 @@ const getMockData = () => {
 // Main MusicHomepage component
 const MusicHomepage = (params) => {
   // Router hooks
-
-  const navigate = useNavigate();
-  const [loading , setloading] = useState(true); 
-
+  const [loading, setloading] = useState(true);
+  const [song, setSong] = useState({
+    title: "Midnight Shadows",
+    artist: "Luna Ray",
+    coverImage: myImage,
+    audioSrc: "",
+    duration: 270, 
+    currentTime: 0,
+    isPlaying: false,
+    audioRef: (new Audio())
+  });
   // Extract data from location state or params
   const [profileData, setProfileData] = useState({});
 
@@ -537,10 +445,10 @@ const MusicHomepage = (params) => {
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
-  
+
   // Check if profile data needs to be set from params
-  console.log(profileData); 
-   
+  console.log(profileData);
+
   // Get mock data for display
   const { featuredPlaylists, newReleases, genres } = getMockData();
 
@@ -554,7 +462,7 @@ const MusicHomepage = (params) => {
     setShowSearchPage(false);
     setSearchQuery("");
   };
-  
+
   if (loading) {
     return (
       <div className="bg-gray-800 text-white flex justify-center items-center h-screen">
@@ -574,6 +482,9 @@ const MusicHomepage = (params) => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onClose={closeSearchPage}
+          MusicPlayer={MusicPlayer}
+          setSong = {setSong}
+          song = {song}
         />
       )}
 
@@ -597,7 +508,7 @@ const MusicHomepage = (params) => {
       </main>
 
       {/* Music Player (fixed at bottom) */}
-      <MusicPlayer />
+      <MusicPlayer song={song} />
 
       {/* Footer */}
       <Footer />
