@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useAudio } from './AudioProvider';
+import { useAudio } from '../services/AudioProvider';
 
 const MusicPlayer = ({ song }) => {
   const { 

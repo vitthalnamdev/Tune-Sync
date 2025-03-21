@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { fetchSuggetions } from "../services/operations/songsAPI";
-import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 
 const SearchPage = (params) => {

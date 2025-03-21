@@ -9,7 +9,7 @@ import Set_username from "./pages/Set_username";
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
-import { AudioProvider } from './pages/AudioProvider';
+import { AudioProvider } from './services/AudioProvider';
 
 function App() {
   
