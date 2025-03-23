@@ -1,52 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { fetchSuggetions } from "../services/operations/songsAPI";
-import MusicPlayer from "./Music_player";
+import React, { useState, useEffect, useRef } from "react";
+import { fetchSuggetions , fetchArtists} from "../services/operations/songsAPI";
 import myImage from "./coverImage.jpg";
+import Navbar from "../components/Navbar"
 
 const SearchPage = (params) => {
-  const [recentSearches, setRecentSearches] = useState([
-    "Luna Ray",
-    "Neon Pulse",
-    "Classic Rock",
-    "Today's Hits",
-  ]);
+  const [recentSearches, setRecentSearches] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [topResults, setTopResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const updatedUsers = topResults.map(song => ({
+  const updatedUsers = topResults.map((song) => ({
     ...song,
-    coverImageUrl: song.coverImageUrl ?? myImage // Set default if null
+    coverImageUrl: song.coverImageUrl ?? myImage, // Set default if null
   }));
   // Sample categories for search suggestions
-  const searchCategories = [
-    "Artists", "Songs", "Albums", "Playlists", "Podcasts"
-  ];
-  
+ 
+
   // Handle search when query changes
   useEffect(() => {
-    if (params.searchQuery.trim() === '') {
+    if (params.searchQuery.trim() === "") {
       setTopResults([]);
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     
+    const getArtists = (artists) => {
+      let updatedArtists = "";
+      let flag = 0;
+      let count = 0;
+      artists.forEach((artist) => {
+        if (count >= 6) {flag = 1;return;}  
+        if (updatedArtists) updatedArtists += ", ";  
+        updatedArtists += artist.name;
+        count++;
+      });
+      if(flag){
+         updatedArtists+="...";
+      }
+      return updatedArtists;
+    }
+ 
     // Fetch suggestions after a short delay
-    const timer = setTimeout(async() => {
+    const timer = setTimeout(async () => {
       try {
-        const results = await fetchSuggetions(params.searchQuery);
-        console.log(results);
-        setTopResults(results?.songs || []);
-        const updatedUsers = Array.isArray(results?.songs) ? results.songs.map(song => ({
-          ...song,
-          coverImageUrl: song.coverImageUrl ?? myImage, // Default cover image
-        })) : [];
-        console.log(updatedUsers);
+        const responce = await fetchSuggetions(params.searchQuery);
+        setTopResults(responce?.data?.results || []);
+        const updatedUsers = Array.isArray(responce?.results)
+          ? responce.results.map((song, index) => (
+            {
+              title: song.name ?? "Placeholder",
+              coverImageUrl: song.image[Object.keys(song.image).length - 1].url ?? myImage, 
+              downloadUrl: song.downloadUrl[Object.keys(song.image).length - 1].url,
+              artists:getArtists(song.artists.primary),
+              duration:song.duration
+            }))
+          : [];
         setTopResults(updatedUsers || []);
         // Add to recent searches if it's a new search
-        if (params.searchQuery.trim() !== '' && !recentSearches.includes(params.searchQuery)) {
-          setRecentSearches(prev => [params.searchQuery, ...prev.slice(0, 3)]);
+        if (
+          params.searchQuery.trim() !== "" &&
+          !recentSearches.includes(params.searchQuery)
+        ) {
+          setRecentSearches((prev) => [
+            params.searchQuery,
+            ...prev.slice(0, 3),
+          ]);
         }
       } catch (error) {
         console.error("Error fetching search results:", error);
@@ -55,7 +74,7 @@ const SearchPage = (params) => {
         setIsLoading(false);
       }
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [params.searchQuery]);
 
@@ -64,16 +83,16 @@ const SearchPage = (params) => {
     // Format the song data for the MusicPlayer component
     params.setSong({
       title: song.name || song.title,
-      artist: song.artist,
+      artists: song.artists,
       coverImage: song.coverImageUrl || myImage,
-      audioSrc: song.cloudinaryUrl || "",
-      duration: song.duration || 180 // Default to 3 minutes if duration not available
+      audioSrc: song.downloadUrl || "",
+      duration: song.duration || 180, // Default to 3 minutes if duration not available
     });
   };
-  
+
   // Clear a specific recent search
   const removeRecentSearch = (search) => {
-    setRecentSearches(recentSearches.filter(item => item !== search));
+    setRecentSearches(recentSearches.filter((item) => item !== search));
   };
 
   // Clear all recent searches
@@ -81,8 +100,10 @@ const SearchPage = (params) => {
     setRecentSearches([]);
   };
 
+   
+
   return (
-    <div className="fixed inset-0 bg-gray-900 text-white z-50 overflow-y-auto pt-20 transition-opacity duration-300 ease-in-out">
+    <div className="fixed inset-0 bg-gray-900 text-white z-50 overflow-y-auto transition-opacity duration-300 ease-in-out">
       {/* Search Header */}
       <div className="sticky top-0 bg-gray-900 shadow-lg z-10">
         <div className="container mx-auto px-4 py-4">
@@ -136,18 +157,7 @@ const SearchPage = (params) => {
               </button>
             )}
           </div>
-          
-          {/* Search filters/categories */}
-          <div className="flex items-center justify-center mt-4 space-x-4 overflow-x-auto py-2">
-            {searchCategories.map((category, index) => (
-              <button
-                key={index}
-                className="px-4 py-1 rounded-full text-sm bg-gray-800 hover:bg-gray-700 transition-colors whitespace-nowrap"
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+
         </div>
       </div>
 
@@ -208,12 +218,21 @@ const SearchPage = (params) => {
                 </ul>
               </div>
             )}
-            
+
             {/* Trending Searches */}
             <div>
               <h2 className="text-xl font-bold mb-4">Trending Searches</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {["Hip Hop Hits", "Workout Playlists", "Focus Music", "Top Charts", "New Releases", "Chill Vibes", "Party Mix", "90s Nostalgia"].map((trend, index) => (
+                {[
+                  "Hip Hop Hits",
+                  "Workout Playlists",
+                  "Focus Music",
+                  "Top Charts",
+                  "New Releases",
+                  "Chill Vibes",
+                  "Party Mix",
+                  "90s Nostalgia",
+                ].map((trend, index) => (
                   <button
                     key={index}
                     className="bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left transition-colors"
@@ -228,17 +247,23 @@ const SearchPage = (params) => {
         ) : topResults.length === 0 ? (
           // No results found
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">No results found for "{params.searchQuery}"</p>
-            <p className="text-gray-500 mt-2">Try searching for something else</p>
+            <p className="text-xl text-gray-400">
+              No results found for "{params.searchQuery}"
+            </p>
+            <p className="text-gray-500 mt-2">
+              Try searching for something else
+            </p>
           </div>
         ) : (
           // Show search results
           <div>
-            <h2 className="text-xl font-bold mb-6">Top Results for "{params.searchQuery}"</h2>
+            <h2 className="text-xl font-bold mb-6">
+              Top Results for "{params.searchQuery}"
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {topResults.slice(0, 4).map((result, index) => (
                 <div
-                  key={index} 
+                  key={index}
                   className="flex items-center bg-gray-800 rounded-lg p-3 hover:bg-gray-700 transition-colors cursor-pointer"
                   onClick={() => handleSongSelect(result)}
                 >
@@ -248,15 +273,19 @@ const SearchPage = (params) => {
                     className="w-12 h-12 rounded object-cover mr-4"
                   />
                   <div>
-                    <h3 className="font-medium">{result.name || result.title}</h3>
+                    <h3 className="font-medium">
+                      {result.name || result.title}
+                    </h3>
                     <p className="text-sm text-gray-400">
-                      {result.artist ? `${result.type || 'Song'} • ${result.artist}` : (result.type || 'Song')}
+                      {result.artists
+                        ? `${result.type || "Song"} • ${result.artists}`
+                        : result.type || "Song"}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {/* Songs section */}
             <div className="mb-8">
               <h3 className="text-lg font-bold mb-4">Songs</h3>
@@ -274,9 +303,9 @@ const SearchPage = (params) => {
                     />
                     <div className="flex-1">
                       <h4 className="font-medium">{song.name || song.title}</h4>
-                      <p className="text-sm text-gray-400">{song.artist}</p>
+                      <p className="text-sm text-gray-400">{song.artists}</p>
                     </div>
-                    <button 
+                    <button
                       className="text-gray-400 hover:text-white p-2"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -305,9 +334,9 @@ const SearchPage = (params) => {
           </div>
         )}
       </div>
-      
+
       {/* Music Player - Only show when a song is selected */}
-       <params.MusicPlayer song = {params.song}/>
+      <params.MusicPlayer song={params.song} />
     </div>
   );
 };
