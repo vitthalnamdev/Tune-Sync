@@ -14,7 +14,6 @@ const MusicPlayer = ({ song }) => {
     seekTo,
     setAudioVolume
   } = useAudio();
-  
   const progressBarRef = useRef(null);
   const [formattedDuration, setFormattedDuration] = useState("0:00");
   
@@ -82,7 +81,7 @@ const MusicPlayer = ({ song }) => {
 
   // Get title, artist, and cover image from the current song or the prop
   const title = currentSong?.title || song?.title || "Unknown Title";
-  const artist = currentSong?.artist || song?.artist || "Unknown Artist";
+  const artists = currentSong?.artists || song?.artists || "Unknown Artist";
   const coverImage = currentSong?.coverImage || song?.coverImage || "coverImage.jpg";
 
   return (
@@ -92,7 +91,7 @@ const MusicPlayer = ({ song }) => {
         <div className="w-14 h-14 rounded overflow-hidden mr-4">
           <img
             src={coverImage}
-            alt={`${title} by ${artist}`}
+            alt={`${title} by ${artists}`}
             className="w-full h-full object-cover"
             onError={(e) => {
               e.target.src = "coverImage.jpg"; // Fallback to default image on error
@@ -103,7 +102,7 @@ const MusicPlayer = ({ song }) => {
         {/* Song info */}
         <div className="flex-1 min-w-0 mr-4">
           <h4 className="font-medium text-sm text-white">{title}</h4>
-          <p className="text-gray-400 text-xs truncate">{artist}</p>
+          <p className="text-gray-400 text-xs truncate">{artists}</p>
         </div>
 
         {/* Player controls */}
@@ -177,7 +176,7 @@ const MusicPlayer = ({ song }) => {
 
         {/* Progress bar */}
         <div className="hidden md:flex items-center flex-1 mx-4">
-          <span className="text-xs text-gray-400 min-w-[40px] text-right mr-2">
+          <span className="text-xs text-gray-400 min-w-[40px] text-right mr-2 ">
             {formatTime(currentTime)}
           </span>
           <div 

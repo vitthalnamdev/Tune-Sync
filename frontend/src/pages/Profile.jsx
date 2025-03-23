@@ -7,7 +7,6 @@ const ProfilePage = ({ userData }) => {
   const [activeTab, setActiveTab] = useState("profile");
   const location = useLocation();
   const data = location.state?.data;
-  const showId = false;
   console.log(data);
   // Sample user data - replace with actual data from props
   const user = userData || {
@@ -32,7 +31,6 @@ const ProfilePage = ({ userData }) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <Navbar showId = {showId}/>
       
       {/* Profile Header with smooth gradient transition */}
       <div className="relative">

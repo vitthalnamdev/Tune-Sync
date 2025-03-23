@@ -1,5 +1,5 @@
 const Song = require("../models/Song");
-const mongoose=require("mongoose");
+const { fetchSongs, fetchPlaylist , fetchArtist} = require('../services/apiService');
 
 exports.autoSuggetion =  async (req, res) => {
     const query = req.query.q;
@@ -24,18 +24,47 @@ exports.autoSuggetion =  async (req, res) => {
 
 
 exports.getSong = async (req, res) => {
-    const songId = req.params.id;
-  
-    if (!mongoose.Types.ObjectId.isValid(songId)) {
-      return res.status(400).json({ error: "Invalid song ID format" });
+    const query = req.query.q;
+    console.log(query)
+    if (!query) {
+      return res.status(400).json({ message: "Query parameter is required" });
     }
-  
     try {
-      const song = await Song.findById(songId);
-      if (!song) return res.status(404).json({ error: "Song not found" });
-  
-      res.json(song);
+      const songs = await fetchSongs(query);
+      res.status(200).json(songs);  // Send fetched songs as response
     } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+      console.error("Error fetching songs:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    } 
+     
+}
+
+exports.getPlaylist = async (req, res) => {
+  const query = req.params.id;
+  if (!query) {
+    return res.status(400).json({ message: "Query parameter is required" });
   }
+  try {
+    const songs = await fetchPlaylist(query);
+    res.status(200).json(songs);  // Send fetched songs as response
+  } catch (error) {
+    console.error("Error fetching songs:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } 
+}
+
+
+exports.getArtistsSongs = async (req, res) => {
+  const query = req.params.id;
+  
+  if (!query) {
+    return res.status(400).json({ message: "Query parameter is required" });
+  }
+  try {
+    const songs = await fetchArtist(query);
+    res.status(200).json(songs);  // Send fetched songs as response
+  } catch (error) {
+    console.error("Error fetching songs:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } 
+}

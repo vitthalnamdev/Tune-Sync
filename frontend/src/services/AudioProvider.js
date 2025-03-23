@@ -44,7 +44,6 @@ export const AudioProvider = ({ children }) => {
   // Load and play a song
   const loadSong = (song) => {
     const audio = audioRef.current;
-    
     // If it's the same song that was already loaded, don't reload
     if (currentSong && song.audioSrc === currentSong.audioSrc) {
       return;

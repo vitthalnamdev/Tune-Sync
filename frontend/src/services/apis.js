@@ -9,5 +9,7 @@ export const endpoints ={
 
 export const songEndpoints = {
     AUTOSUGGETION_API: BASE_URL + "songs/autosuggestion",
-    GET_SONG: BASE_URL + "songs/song/:id"
+    GET_SONG: BASE_URL + "songs/song/:id",
+    GET_PLAYLIST: BASE_URL + "songs/playlists/",
+    GET_ARTIST: BASE_URL + "songs/artists/"
 }

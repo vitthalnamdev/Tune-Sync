@@ -6,54 +6,12 @@ import SearchPage from "./Search";
 import { fetchProfile } from "../services/operations/auth";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
+import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 
 
-const PlaylistCard = ({ playlist }) => (
-  <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group">
-    <div className="aspect-square overflow-hidden">
-      <img
-        src={playlist.imageUrl}
-        alt={playlist.title}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-    </div>
-    <div className="p-4">
-      <h3 className="font-bold text-lg">{playlist.title}</h3>
-      <p className="text-gray-400 text-sm mt-1">{playlist.description}</p>
-    </div>
-  </div>
-);
 
-// Component for a single release card
-const ReleaseCard = ({ release }) => (
-  <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group">
-    <div className="aspect-square overflow-hidden">
-      <img
-        src={release.imageUrl}
-        alt={release.title}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-    </div>
-    <div className="p-4">
-      <h3 className="font-bold text-lg">{release.title}</h3>
-      <p className="text-gray-400 text-sm mt-1">{release.artist}</p>
-    </div>
-  </div>
-);
 
-// Component for a genre tile
-const GenreTile = ({ genre }) => (
-  <div
-    className="h-24 rounded-lg flex items-center justify-center font-semibold bg-gradient-to-r from-purple-900 to-indigo-800 hover:from-purple-800 hover:to-indigo-700 hover:scale-105 transition-all cursor-pointer"
-    style={{
-      backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/api/placeholder/300/300')`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}
-  >
-    {genre}
-  </div>
-);
+
 
 // Component for the hero section
 const HeroSection = ({ searchQuery, setSearchQuery, toggleSearchPage }) => (
@@ -98,63 +56,107 @@ const HeroSection = ({ searchQuery, setSearchQuery, toggleSearchPage }) => (
 );
 
 // Component for featured playlists section
-const FeaturedPlaylists = ({ playlists }) => (
-  <section className="my-12 relative">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-bold">Featured Playlists</h2>
+// Updated PlaylistCard with smaller size
+
+const PlaylistCard = ({ playlist, navigate }) => (
+  <button
+    // onClick={navigate('/playlist', { state: { playlist: playlist } }) }
+    className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group w-full text-left"
+  >
+    <div className="aspect-square overflow-hidden">
+      <img
+        src={playlist.imageUrl}
+        alt={playlist.title}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        style={{ maxHeight: "400px" }}
+      />
+    </div>
+    <div className="p-3">
+      <h3 className="font-bold text-sm">{playlist.title}</h3>
+      <p className="text-gray-400 text-xs mt-1">{playlist.description}</p>
+    </div>
+  </button>
+);
+
+
+// Updated ReleaseCard for Artists with circular image
+const ReleaseCard = ({ release }) => (
+  <div className="bg-transparent text-center hover:bg-gray-800 rounded-lg p-2 transition-colors group">
+    <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "200px", height: "200px" }}>
+      <img
+        src={release.imageUrl}
+        alt={release.title}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
+    <div className="p-2">
+      <h2 className="font-bold text-l">{release.title}</h2>
+    </div>
+  </div>
+);
+
+// Updated GenreTile with smaller size
+const GenreTile = ({ genre }) => (
+  <div
+    className="h-16 rounded-lg flex items-center justify-center font-semibold bg-gradient-to-r from-purple-900 to-indigo-800 hover:from-purple-800 hover:to-indigo-700 hover:scale-105 transition-all cursor-pointer"
+    style={{
+      backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/api/placeholder/300/300')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}
+  >
+    {genre}
+  </div>
+);
+
+// Updated FeaturedPlaylists to increase grid density
+const FeaturedPlaylists = ({ playlists, navigate }) => (
+  <section className="my-10 relative">
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-3xl font-bold px-5">Featured Playlists</h2>
     </div>
 
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
       {playlists.map((playlist) => (
-        <PlaylistCard key={playlist.id} playlist={playlist} />
+        <PlaylistCard key={playlist.id} playlist={playlist} navigate={navigate} />
       ))}
     </div>
-
-    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-3xl cursor-pointer hover:text-white transition-colors">
-      &gt;
-    </span>
   </section>
 );
 
-// Component for new releases section
-const NewReleases = ({ releases }) => (
-  <section className="my-12 relative">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-bold">New Releases</h2>
+// Updated Artists section with new circular cards
+const Artists = ({ releases }) => (
+  <section className="my-10 relative">
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-3xl font-bold px-5">Browse Artists</h2>
     </div>
 
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
       {releases.map((release) => (
         <ReleaseCard key={release.id} release={release} />
       ))}
     </div>
-
-    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-3xl cursor-pointer hover:text-white transition-colors">
-      &gt;
-    </span>
   </section>
 );
 
-// Component for genres section
+// Updated GenresSection with denser grid
 const GenresSection = ({ genres }) => (
-  <section className="my-12">
-    <div className="flex items-center justify-between mb-6">
+  <section className="my-10">
+    <div className="flex items-center justify-between mb-4">
       <h2 className="text-2xl font-bold">Browse Genres</h2>
       <a href="#" className="text-purple-500 hover:text-purple-400 font-medium">
         View All
       </a>
     </div>
 
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
       {genres.map((genre, index) => (
         <GenreTile key={index} genre={genre} />
       ))}
     </div>
   </section>
 );
-
 // Component for the music player
-
 
 // Component for the footer
 const Footer = () => (
@@ -321,75 +323,55 @@ const Footer = () => (
   </footer>
 );
 
-// Mock data initialization
-const getMockData = () => {
-  // Featured playlists data
-  const featuredPlaylists = [
-    {
-      id: 1,
-      title: "Today's Hits",
-      description: "The biggest hits right now",
-      imageUrl: "/api/placeholder/200/200",
-    },
-    {
-      id: 2,
-      title: "Chill Vibes",
-      description: "Relaxing beats for your day",
-      imageUrl: "/api/placeholder/200/200",
-    },
-    {
-      id: 3,
-      title: "Workout Mix",
-      description: "Energy boosters for your workout",
-      imageUrl: "/api/placeholder/200/200",
-    },
-    {
-      id: 4,
-      title: "Indie Discoveries",
-      description: "Fresh indie tracks for you",
-      imageUrl: "/api/placeholder/200/200",
-    },
-    {
-      id: 5,
-      title: "Classic Rock",
-      description: "Timeless rock anthems",
-      imageUrl: "/api/placeholder/200/200",
-    },
-  ];
+// Main MusicHomepage component
+const MusicHomepage = (params) => {
+  // Router hooks
+  const [loading, setloading] = useState(true);
+  const navigate = useNavigate();
+  const [song, setSong] = useState({
+    title: "Midnight Shadows",
+    artist: "Luna Ray",
+    coverImage: myImage,
+    audioSrc: "",
+    duration: 270,
+    currentTime: 0,
+    isPlaying: false,
+    audioRef: new Audio(),
+  });
+  // Extract data from location state or params
 
-  // New releases data
-  const newReleases = [
+  const [_Artists, setArtists] = useState([
     {
-      id: 1,
-      title: "Midnight Shadows",
-      artist: "Luna Ray",
-      imageUrl: "/api/placeholder/200/200",
+      id: 459633,
+      title: "Atif Aslam",
+      imageUrl: myImage,
     },
     {
-      id: 2,
-      title: "Electric Dreams",
-      artist: "Neon Pulse",
-      imageUrl: "/api/placeholder/200/200",
+      id: 697691,
+      title: "Karan Aujla",
+      imageUrl: myImage,
     },
     {
-      id: 3,
-      title: "Wilderness",
-      artist: "The Explorers",
-      imageUrl: "/api/placeholder/200/200",
+      id: 455144,
+      title: "Kishore Kumar",
+      imageUrl: myImage,
     },
     {
-      id: 4,
-      title: "Urban Poetry",
-      artist: "Street Verses",
-      imageUrl: "/api/placeholder/200/200",
+      id: 459320,
+      title: "Arjit Singh",
+      imageUrl: myImage,
     },
     {
-      id: 5,
-      title: "Celestial",
-      artist: "Astral Echoes",
-      imageUrl: "/api/placeholder/200/200",
+      id: 468245,
+      title: "Diljit Dosanjh",
+      imageUrl: myImage,
     },
-  ];
+    {
+      id: 455130,
+      title: "Shreya Ghoshal",
+      imageUrl: myImage,
+    }
+  ]);
 
   // Genres data
   const genres = [
@@ -403,54 +385,101 @@ const getMockData = () => {
     "Country",
   ];
 
-  return { featuredPlaylists, newReleases, genres };
-};
+  const [featuredPlaylists, setfeaturedPlaylists] = useState([
+    {
+      id: 1208889681,
+      title: "Lofi Music",
+      description: "Relax your mind",
+      imageUrl: myImage,
+    },
+    {
+      id: 1219015193,
+      title: "Old is gold",
+      description: "Relaxing beats for your day",
+      imageUrl: myImage,
+    },
+    {
+      id: 1139074020,
+      title: "Love songs",
+      description: "__",
+      imageUrl: myImage,
+    },
+    {
+      id: 1219169738,
+      title: "Indie Discoveries",
+      description: "Fresh indie tracks for you",
+      imageUrl: myImage,
+    },
+    {
+      id: 156710699,
+      title: "Classic Rock",
+      description: "Timeless rock anthems",
+      imageUrl: myImage,
+    },
+  ]);
 
-
-// Main MusicHomepage component
-const MusicHomepage = (params) => {
-  // Router hooks
-  const [loading, setloading] = useState(true);
-  const [song, setSong] = useState({
-    title: "Midnight Shadows",
-    artist: "Luna Ray",
-    coverImage: myImage,
-    audioSrc: "",
-    duration: 270, 
-    currentTime: 0,
-    isPlaying: false,
-    audioRef: (new Audio())
-  });
-  // Extract data from location state or params
-  const [profileData, setProfileData] = useState({});
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllPlaylists = async () => {
       try {
-        setTimeout(async () => {
-          const userData = await fetchProfile();
-          console.log("Fetched User:", userData);
-          setProfileData(userData);
-          setloading(false);
-        }, 1500);
+        const updatedPlaylists = await Promise.all(
+          featuredPlaylists.map(async (element) => {
+            const response = await fetchPlaylist(element.id);
+            console.log("response Home", response.image);
+            return {
+              ...element,
+              imageUrl: response.image[Object.keys(response.image).length - 1].url,
+              title: response.name,
+              description: response.description,
+              songs: response.songs
+            };
+          })
+        );
+
+        setfeaturedPlaylists(updatedPlaylists); // Update state with new array
+
       } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        setloading(false);
+        console.error("Error fetching playlists:", error);
       }
     };
 
-    fetchData();
+    const fetchAllArtists = async () => {
+      try {
+        const updatedArtists = await Promise.all(
+          _Artists.map(async (element) => {
+            const response = await fetchArtist(element.id);
+            console.log("first check", response);
+            return {
+              ...element,
+              imageUrl: response.image[Object.keys(response.image).length - 1].url,
+              title: response.name,
+              description: response.description,
+              songs: response.topSongs
+            };
+          })
+        );
+        setArtists(updatedArtists);
+        setloading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchAllArtists();
+    fetchAllPlaylists();
+
   }, []);
+
+
+
 
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchPage, setShowSearchPage] = useState(false);
 
   // Check if profile data needs to be set from params
-  console.log(profileData);
+
 
   // Get mock data for display
-  const { featuredPlaylists, newReleases, genres } = getMockData();
 
   // Toggle search page visibility
   const toggleSearchPage = () => {
@@ -474,7 +503,6 @@ const MusicHomepage = (params) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header Component */}
-      <Header profileData={profileData} />
 
       {/* Search Page Component (conditionally rendered) */}
       {showSearchPage && (
@@ -483,8 +511,8 @@ const MusicHomepage = (params) => {
           setSearchQuery={setSearchQuery}
           onClose={closeSearchPage}
           MusicPlayer={MusicPlayer}
-          setSong = {setSong}
-          song = {song}
+          setSong={setSong}
+          song={song}
         />
       )}
 
@@ -498,10 +526,10 @@ const MusicHomepage = (params) => {
         />
 
         {/* Featured Playlists */}
-        <FeaturedPlaylists playlists={featuredPlaylists} />
+        <FeaturedPlaylists playlists={featuredPlaylists} navigate={navigate} />
 
         {/* New Releases */}
-        <NewReleases releases={newReleases} />
+        <Artists releases={_Artists} />
 
         {/* Genres */}
         <GenresSection genres={genres} />
