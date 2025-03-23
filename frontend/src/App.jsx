@@ -10,21 +10,27 @@ import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
 import { AudioProvider } from './pages/AudioProvider';
+import ConnectPage from "./pages/ConnectPage";
 
 function App() {
   
   return (
-    <div>
-     <AudioProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/Login" element={<LoginForm />} />
-        <Route path="/Profile" element={<Profile />} />
-        <Route path="/verification-email" element={<VerifyEmail />} />
-        <Route path="/set-username" element={<Set_username />} />
-      </Routes>
-      </AudioProvider>
+    <div >
+    
+   
+    <AudioProvider>
+    
+     <Routes>
+       <Route path="/" element={<Home />} />
+       <Route path="/Signup" element={<Signup />} />
+       <Route path="/Login" element={<LoginForm />} />
+       <Route path="/Profile" element={<Profile />} />
+       <Route path="/verification-email" element={<VerifyEmail />} />
+       <Route path="/set-username" element={<Set_username />} />
+       <Route path= "/connect-page" element = {<ConnectPage/>}/>
+     </Routes>
+     </AudioProvider>
+    
     </div>
   );
 }
