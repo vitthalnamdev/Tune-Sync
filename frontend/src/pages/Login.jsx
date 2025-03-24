@@ -111,14 +111,14 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen box-content bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen box-content bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Particle background */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full bg-blue-${
-              Math.floor(Math.random() * 3) + 4
+            className={`absolute rounded-full bg-slate-${
+              Math.floor(Math.random() * 3) + 6
             }00 opacity-${Math.floor(Math.random() * 3) + 1}0`}
             style={{
               top: `${Math.random() * 100}%`,
@@ -134,19 +134,19 @@ const LoginForm = () => {
         ))}
       </div>
 
-      {/* Animated gradient orbs */}
+      {/* Animated gradient orbs - updated to more muted colors */}
       <div
-        className={`absolute -top-60 -right-60 w-96 h-96 bg-gradient-to-br from-indigo-900 to-purple-800 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 ${
+        className={`absolute -top-60 -right-60 w-96 h-96 bg-gradient-to-br from-slate-800 to-gray-900 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 ${
           isLoaded ? "translate-y-10" : ""
         }`}
       ></div>
       <div
-        className={`absolute top-20 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-900 to-cyan-800 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 delay-300 ${
+        className={`absolute top-20 -left-40 w-80 h-80 bg-gradient-to-tr from-slate-900 to-gray-800 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 delay-300 ${
           isLoaded ? "translate-x-16" : ""
         }`}
       ></div>
       <div
-        className={`absolute bottom-10 right-20 w-72 h-72 bg-gradient-to-tl from-purple-900 to-pink-800 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 delay-700 ${
+        className={`absolute bottom-10 right-20 w-72 h-72 bg-gradient-to-tl from-gray-900 to-slate-800 rounded-full filter blur-3xl opacity-20 transition-all duration-1000 delay-700 ${
           isLoaded ? "translate-y-0" : "translate-y-20"
         }`}
       ></div>
@@ -159,8 +159,8 @@ const LoginForm = () => {
         }`}
       >
         <div className="flex justify-center">
-          <div className="relative h-20 w-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 p-4 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-300 overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative h-20 w-20 rounded-full bg-gradient-to-br bg-purple-500 p-4 shadow-lg shadow-slate-500/30 hover:shadow-slate-500/40 transition-all duration-300 overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br bg-purple-500   opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -177,10 +177,10 @@ const LoginForm = () => {
             </svg>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
+        <h2 className="mt-6 text-center text-5xl font-bold bg-gradient-to-r bg-purple-700 via-slate-500 bg-purple-500 bg-clip-text text-transparent drop-shadow-sm">
           Welcome Back
         </h2>
-        <p className="mt-2 text-center text-cyan-400 text-opacity-90">
+        <p className="mt-2 text-center text-slate-400 text-opacity-90">
           Enter your credentials to access your account
         </p>
       </div>
@@ -190,12 +190,12 @@ const LoginForm = () => {
           isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
       >
-        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-indigo-500/10 sm:rounded-2xl sm:px-10 border border-gray-800 relative overflow-hidden">
+        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-slate-500/10 sm:rounded-2xl sm:px-10 border border-gray-800 relative overflow-hidden">
           {/* Animated border effect */}
           <div className="absolute inset-px rounded-2xl overflow-hidden pointer-events-none">
             <div className="absolute -top-[500px] -left-[500px] w-[1000px] h-[1000px] opacity-30 animate-[spin_10s_linear_infinite]">
-              <div className="absolute top-1/2 left-1/2 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
-              <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-blue-500 to-transparent"></div>
+              <div className="absolute top-1/2 left-1/2 w-full h-1 bg-gradient-to-r from-transparent via-slate-500 to-transparent"></div>
+              <div className="absolute top-1/2 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-slate-500 to-transparent"></div>
             </div>
           </div>
 
@@ -209,7 +209,7 @@ const LoginForm = () => {
             >
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-cyan-400"
+                className="block text-sm font-medium text-purple-500"
               >
                 Email address
               </label>
@@ -232,7 +232,7 @@ const LoginForm = () => {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-4 py-3 bg-gray-800 bg-opacity-50 border-0 border-b-2 border-gray-700 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-200 shadow-sm transition-all duration-150 text-base"
+                  className="appearance-none block w-full pl-10 pr-4 py-3 bg-gray-800 bg-opacity-50 border-0 border-b-2 border-gray-700 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-200 shadow-sm transition-all duration-150 text-base"
                   placeholder="Your email address"
                 />
                 {errors.email && (
@@ -265,13 +265,13 @@ const LoginForm = () => {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-cyan-400"
+                  className="block text-sm font-medium text-purple-500"
                 >
                   Password
                 </label>
                 <a
                   href="#"
-                  className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors duration-150 hover:underline"
+                  className="text-sm font-medium text-purple-500 hover:text-slate-300 transition-colors duration-150 hover:underline"
                 >
                   Forgot password?
                 </a>
@@ -298,7 +298,7 @@ const LoginForm = () => {
                   autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-10 py-3 bg-gray-800 bg-opacity-50 border-0 border-b-2 border-gray-700 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-200 shadow-sm transition-all duration-150 text-base"
+                  className="appearance-none block w-full pl-10 pr-10 py-3 bg-gray-800 bg-opacity-50 border-0 border-b-2 border-gray-700 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-200 shadow-sm transition-all duration-150 text-base"
                   placeholder="Enter your password"
                 />
                 <button
@@ -363,18 +363,6 @@ const LoginForm = () => {
                   : "opacity-0 translate-y-4"
               }`}
             >
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  className="sr-only peer"
-                />
-                <div className="relative w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                <span className="ml-3 text-sm font-medium text-gray-300">
-                  Remember me
-                </span>
-              </label>
             </div>
 
             <div
@@ -387,7 +375,7 @@ const LoginForm = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-3 px-4 border-0 rounded-xl shadow-lg shadow-blue-700/30 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 focus:outline-none disabled:opacity-50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full flex justify-center py-3 px-4 border-0 rounded-xl shadow-lg shadow-slate-700/30 text-base font-medium text-white bg-gradient-to-r bg-purple-500 hover:from-slate-700 hover:to-gray-800 focus:outline-none disabled:opacity-50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
               >
                 {isSubmitting ? (
                   <span className="flex items-center">
@@ -430,7 +418,7 @@ const LoginForm = () => {
                 Don't have an account?{" "}
                 <a
                   href="/signup"
-                  className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent hover:from-cyan-300 hover:to-blue-400 transition-colors duration-150"
+                  className="font-medium bg-gradient-to-r bg-purple-500 bg-clip-text text-transparent hover:from-slate-300 hover:to-gray-400 transition-colors duration-150"
                 >
                   Create one now
                 </a>
@@ -498,13 +486,13 @@ const LoginForm = () => {
 
       {/* Animated lines */}
       <div className="absolute bottom-0 left-0 w-full h-px overflow-hidden">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-pulse"></div>
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-500 to-transparent animate-pulse"></div>
       </div>
       <div className="absolute top-0 left-0 h-full w-px overflow-hidden">
-        <div className="w-px h-full bg-gradient-to-b from-transparent via-blue-500 to-transparent animate-pulse"></div>
+        <div className="w-px h-full bg-gradient-to-b from-transparent via-slate-500 to-transparent animate-pulse"></div>
       </div>
       <div className="absolute top-0 right-0 h-full w-px overflow-hidden">
-        <div className="w-px h-full bg-gradient-to-b from-transparent via-indigo-500 to-transparent animate-pulse"></div>
+        <div className="w-px h-full bg-gradient-to-b from-transparent via-gray-500 to-transparent animate-pulse"></div>
       </div>
     </div>
   );

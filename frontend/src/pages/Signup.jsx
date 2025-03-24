@@ -115,7 +115,7 @@ const SignUpForm = () => {
       {loading ? (
         <div className="text-white">loading</div>
       ) : (
-        <div className="min-h-screen  bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="min-h-screen bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
           <Header_Signup />
           <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-md z-10">
             <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg py-8 px-4 shadow-2xl shadow-indigo-500/10 sm:rounded-xl sm:px-10 border border-gray-800">

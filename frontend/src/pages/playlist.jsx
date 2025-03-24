@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Play, Clock, Heart, MoreHorizontal, ChevronLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import MusicPlayer from "./Music_player";
@@ -45,10 +45,10 @@ const getArtists = (artists) => {
 const getTime = (time) => {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
-  return `${minutes}:${seconds}`;
+  return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 };
 
-const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
+const Playlist = ({ playlistData, similarPlaylists }) => {
   const [hoveredTrack, setHoveredTrack] = useState(null);
   const {
     next,
@@ -64,16 +64,20 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
     peekprev,
     sizeprev,
   } = useQueue();
-  const {loadSong}  = useAudio();
+  
+  const {
+    loadSong,
+    currentSongId,
+    isPlaying
+  } = useAudio();
+  
   const handleSongClick = (track, index) => {
     // Clear queue before adding new songs
-    // console.log(next);
     clearnext();
 
-    // console.log("before update" , song);
-    // Set current song
-    loadSong({
-      title: track.name, // Fixed: was track.naame
+    // Prepare current song data
+    const songData = {
+      title: track.name,
       artists: getArtists(track.artists.primary),
       coverImage:
         track.image[Object.keys(track.image).length - 1].url ||
@@ -83,13 +87,23 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
       duration: track.duration,
       currentTime: 0,
       isPlaying: true,
-    });
+      id: track.id // Add the song ID to highlight the current track
+    };
+    
+    // Load the song
+    loadSong(songData);
     
     // Add remaining songs to queue one by one
     for (let i = index + 1; i < Object.keys(playlistData.songs).length; i++) {
-       enqueuenext(playlistData.songs[i]);
+      enqueuenext(playlistData.songs[i]);
     }
-    
+  };
+  
+  // Add play all functionality
+  const handlePlayAll = () => {
+    if (playlistData.songs && playlistData.songs.length > 0) {
+      handleSongClick(playlistData.songs[0], 0);
+    }
   };
 
   return (
@@ -116,7 +130,10 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
                 className="w-full h-full object-cover rounded-lg shadow-lg"
               />
               <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                <button className="bg-green-500 p-4 rounded-full shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <button 
+                  className="bg-green-500 p-4 rounded-full shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                  onClick={handlePlayAll}
+                >
                   <Play size={24} fill="white" />
                 </button>
               </div>
@@ -137,7 +154,10 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
             </div>
 
             <div className="flex gap-4 mb-8">
-              <button className="bg-green-500 hover:bg-green-600 transition-colors py-3 px-8 rounded-full font-medium flex items-center gap-2">
+              <button 
+                className="bg-green-500 hover:bg-green-600 transition-colors py-3 px-8 rounded-full font-medium flex items-center gap-2"
+                onClick={handlePlayAll}
+              >
                 <Play size={18} fill="white" /> Play
               </button>
               <button className="bg-transparent border border-gray-600 hover:border-white transition-colors py-3 px-6 rounded-full">
@@ -186,20 +206,22 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
             {playlistData?.songs?.map((track, index) => (
               <div
                 key={track.id}
-                className="group grid grid-cols-12 gap-4 items-center p-3 hover:bg-gray-800/40 transition-colors rounded-md mb-1 cursor-pointer"
+                className={`group grid grid-cols-12 gap-4 items-center p-3 rounded-md mb-1 cursor-pointer transition-colors ${
+                  currentSongId === track.id 
+                    ? "bg-green-900/40 hover:bg-green-800/50" 
+                    : "hover:bg-gray-800/40"
+                }`}
                 onMouseEnter={() => setHoveredTrack(track.id)}
                 onMouseLeave={() => setHoveredTrack(null)}
-                onClick={() =>
-                  handleSongClick(
-                    track , index
-                  )
-                }
+                onClick={() => handleSongClick(track, index)}
               >
-                <div className="col-span-1 text-center text-gray-400 flex justify-center">
+                <div className="col-span-1 text-center flex justify-center">
                   {hoveredTrack === track.id ? (
                     <Play size={14} className="text-white" />
+                  ) : currentSongId === track.id ? (
+                    <Play size={14} className="text-green-400" />
                   ) : (
-                    <span>{index + 1}</span>
+                    <span className="text-gray-400">{index + 1}</span>
                   )}
                 </div>
                 <div className="col-span-7 flex items-center">
@@ -208,7 +230,11 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
                     alt={track.name}
                     className="w-10 h-10 rounded shadow-md mr-3"
                   />
-                  <h3 className="text-white font-medium group-hover:text-green-400 transition-colors">
+                  <h3 className={`font-medium transition-colors ${
+                    currentSongId === track.id 
+                      ? "text-green-400" 
+                      : "text-white group-hover:text-green-400"
+                  }`}>
                     {track.name}
                   </h3>
                 </div>
@@ -216,7 +242,11 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
                   {getArtists(track.artists.primary)}
                 </div>
                 <div className="col-span-1 flex justify-end items-center gap-3">
-                  <span className="text-gray-400 text-sm">
+                  <span className={`text-sm ${
+                    currentSongId === track.id 
+                      ? "text-green-400" 
+                      : "text-gray-400"
+                  }`}>
                     {getTime(track.duration)}
                   </span>
                   <Heart
@@ -229,7 +259,7 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
           </div>
         </div>
       </div>
-      <MusicPlayer song={song} />
+      <MusicPlayer />
     </div>
   );
 };
@@ -237,16 +267,7 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
 const MyPlaylist = () => {
   const location = useLocation();
   const playlist = location?.state?.playlist || {}; // Ensure playlistData is an empty object if not found
-  const [song, setSong] = useState({
-    title: "Midnight Shadows",
-    artist: "Luna Ray",
-    coverImage: myImage,
-    audioSrc: "",
-    duration: 270,
-    currentTime: 0,
-    isPlaying: false,
-    audioRef: new Audio(),
-  });
+  
   const similarPlaylistsData = [
     {
       id: 1,
@@ -279,8 +300,6 @@ const MyPlaylist = () => {
     <Playlist
       playlistData={playlist}
       similarPlaylists={similarPlaylistsData}
-      song={song}
-      setSong={setSong}
     />
   );
 };

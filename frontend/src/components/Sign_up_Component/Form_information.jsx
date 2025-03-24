@@ -6,7 +6,7 @@ const Info = (params) => {
     <>
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-cyan-400">
+          <label htmlFor="firstName" className="block text-sm font-medium text-purple-500">
             First name
           </label>
           <div className="mt-1 relative">
@@ -27,7 +27,7 @@ const Info = (params) => {
         </div>
 
         <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-cyan-400">
+          <label htmlFor="lastName" className="block text-sm font-medium text-purple-500">
             Last name
           </label>
           <div className="mt-1">
@@ -49,7 +49,7 @@ const Info = (params) => {
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-cyan-400">
+        <label htmlFor="email" className="block text-sm font-medium text-purple-500">
           Email address
         </label>
         <div className="mt-1 relative">
@@ -71,7 +71,7 @@ const Info = (params) => {
 
       {/* Password Field with Eye Icon */}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-cyan-400">
+        <label htmlFor="password" className="block text-sm font-medium text-purple-500">
           Password
         </label>
         <div className="mt-1 relative">
@@ -100,7 +100,7 @@ const Info = (params) => {
 
       {/* Confirm Password Field with Eye Icon */}
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-cyan-400">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-purple-500">
           Confirm password
         </label>
         <div className="mt-1 relative">

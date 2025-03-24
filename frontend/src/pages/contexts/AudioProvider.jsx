@@ -12,13 +12,15 @@ const AudioContext = createContext();
 export const AudioProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [currentSongId, setCurrentSongId] = useState(null);
   const [currentSong, setCurrentSong] = useState({
     title: "Apna Bana Le",
-    artists : "Sachin-Jigar, Arijit Singh",
+    artists: "Sachin-Jigar, Arijit Singh",
     coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
     audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
     duration: 261,
-    currentTime: 0
+    currentTime: 0,
+    id: null
   });
   
   const audioRef = useRef(new Audio(currentSong.audioSrc));
@@ -39,6 +41,7 @@ export const AudioProvider = ({ children }) => {
     peekprev,
     sizeprev,
   } = useQueue();
+
   useEffect(() => {
     const audio = audioRef.current;
     
@@ -50,9 +53,9 @@ export const AudioProvider = ({ children }) => {
       setDuration(audio.duration);
     };
     
-
     const handleEnded = () => {
-
+      // When current song ends, play the next song automatically
+      nextSong();
     };
 
     // Add event listeners
@@ -69,9 +72,8 @@ export const AudioProvider = ({ children }) => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, []);  // Keep this dependency array empty to only run once
   
-
   const togglePlay = () => {
     const audio = audioRef.current;
 
@@ -84,7 +86,6 @@ export const AudioProvider = ({ children }) => {
     setIsPlaying(!isPlaying);
   };
 
-
   const prevSong = () => {
     const length = sizeprev();
 
@@ -94,23 +95,30 @@ export const AudioProvider = ({ children }) => {
       loadSong(curr);
     } 
   };
+  
   // Load and play a song
-  function loadSong(song){
+  function loadSong(song) {
     const audio = audioRef.current;
   
     // If it's the same song that was already loaded, don't reload
     if (currentSong && song.audioSrc === currentSong.audioSrc) {
       return;
     }
-    console.log("SONG:" , song);
-    setCurrentSong(song);
+    
+    // Update current song ID for highlighting
+    setCurrentSongId(song.id);
+    
     // Set the new song
+    setCurrentSong(song);
+    
+    // Set the new audio source
     audio.src = song.audioSrc;
+    
     // Load the new audio source
     audio.load();
+    setIsPlaying(true);
     audio.play();
-    
-  };
+  }
 
   const getArtists = (artists) => {
     let updatedArtists = "";
@@ -131,16 +139,19 @@ export const AudioProvider = ({ children }) => {
     return updatedArtists;
   };
 
-  function nextSong(){
+  function nextSong() {
     const length = sizenext();
   
-    
     if (length > 0) {
       const curr = peeknext();
       dequeuenext();
-      enqueueprev(currentSong);
+      // Only enqueue previous if there's a valid current song
+      if (currentSong && currentSong.title) {
+        enqueueprev(currentSong);
+      }
+      
       const _currentSong = {
-        title: curr.name, // Fixed: was track.naame
+        title: curr.name,
         artists: getArtists(curr.artists.primary),
         coverImage:
           curr.image[Object.keys(curr.image).length - 1].url ||
@@ -150,23 +161,24 @@ export const AudioProvider = ({ children }) => {
         duration: curr.duration,
         currentTime: 0,
         isPlaying: true,
-        audioRef: new Audio(
-          curr.downloadUrl[Object.keys(curr.downloadUrl).length - 1].url || ""
-        ),
-      }
+        id: curr.id // Store the song ID for highlighting
+      };
       
       if (!_currentSong || !_currentSong.audioSrc) {
         console.error("Invalid song object:", curr);
         return false;
       }
+      
       loadSong(_currentSong);
-      console.log("HELLO after setting");
     } else {
       console.warn("No next song available");
+      // If no next song, stop playing or loop back to the beginning
+      const audio = audioRef.current;
+      audio.pause();
+      setIsPlaying(false);
     }
-  };
+  }
   
-
   const seekTo = (time) => {
     const audio = audioRef.current;
     audio.currentTime = time;
@@ -188,6 +200,7 @@ export const AudioProvider = ({ children }) => {
         duration,
         volume,
         currentSong,
+        currentSongId, // Expose currentSongId to components
         loadSong,
         togglePlay,
         seekTo,
