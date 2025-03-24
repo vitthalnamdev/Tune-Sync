@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar"
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
-import { AudioProvider } from './pages/AudioProvider';
+import { AudioProvider } from './services/AudioProvider';
 import ConnectPage from "./pages/ConnectPage";
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
         <Route path="/verification-email" element={<VerifyEmail />} />
         <Route path="/set-username" element={<Set_username />} />
         <Route path="/playlist" element = {<PlaylistPage/>}/>
+        <Route path="connect-page" element = {<ConnectPage/>}/>
       </Routes>
       </AudioProvider>
     </div>

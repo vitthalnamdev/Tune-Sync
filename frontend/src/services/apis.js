@@ -13,3 +13,14 @@ export const songEndpoints = {
     GET_PLAYLIST: BASE_URL + "songs/playlists/",
     GET_ARTIST: BASE_URL + "songs/artists/"
 }
+
+
+export const friendEndpoints = {
+    SEARCH_FRIEND: BASE_URL + "friend/search-friend",
+    GET_FRIEND_LIST : BASE_URL + "friend/get-friends",
+    SEND_FRIEND_REQUEST : BASE_URL + "friend/send-friend-request",
+    ACCEPT_FRIEND_REQUEST : BASE_URL + "friend/accept-friend-request",
+    REJECT_FRIEND_REQUEST : BASE_URL + "friend/reject-friend-request",
+    
+    GET_PEDDING_REQUEST : BASE_URL + "friend/get_pedding_request"
+}

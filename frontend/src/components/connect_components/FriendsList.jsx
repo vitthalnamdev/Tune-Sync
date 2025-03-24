@@ -13,12 +13,15 @@ function FriendsList({ friends, onRemove }) {
     <div className="bg-gray-700 rounded-lg overflow-hidden">
       <ul className="divide-y divide-gray-600">
         {friends.map(friend => (
-          <li key={friend.id} className="p-4 flex justify-between items-center">
+          <li key={friend._id} className="p-4 flex justify-between items-center">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center mr-3">
-                <span className="text-lg font-bold">{friend.user.username.charAt(0).toUpperCase()}</span>
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-600 flex items-center justify-center mr-3">
+                <img src={friend.image}/>
               </div>
-              <span className="text-gray-200">{friend.user.username}</span>
+              <div className=''>
+                <h3 className="text-white font-medium">{`${friend.firstName} ${friend.lastName}`}</h3>
+                <p className="text-gray-400 text-xs"> {friend.Username}</p>
+              </div>
             </div>
             <button 
               onClick={() => onRemove(friend.id)}
