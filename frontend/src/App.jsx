@@ -7,27 +7,32 @@ import LoginForm from "./pages/Login";
 import VerifyEmail from "./pages/verify_Email";
 import Set_username from "./pages/Set_username";
 import PlaylistPage from "./pages/playlist";
-import Navbar from "./components/Navbar"
+import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
-import MusicPlayer from "./pages/Music_player"; 
-import { AudioProvider } from './services/AudioProvider';
+import MusicPlayer from "./pages/Music_player";
+import { AudioProvider } from "./pages/contexts/AudioProvider";
+import { QueueProvider } from "./pages/contexts/queueContext";
+import ConnectPage from "./pages/ConnectPage";
+// import
 function App() {
-  
   return (
     <div className="bg-gray-900">
-      <Navbar/>  
-     <AudioProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/Login" element={<LoginForm />} />
-        <Route path="/Profile" element={<Profile />} />
-        <Route path="/verification-email" element={<VerifyEmail />} />
-        <Route path="/set-username" element={<Set_username />} />
-        <Route path="/playlist" element = {<PlaylistPage/>}/>
-      </Routes>
-      </AudioProvider>
+      <Navbar />
+      <QueueProvider>
+        <AudioProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Signup" element={<Signup />} />
+            <Route path="/Login" element={<LoginForm />} />
+            <Route path="/Profile" element={<Profile />} />
+            <Route path="/verification-email" element={<VerifyEmail />} />
+            <Route path="/set-username" element={<Set_username />} />
+            <Route path="/playlist" element={<PlaylistPage />} />
+            <Route path="/connect-page" element={<ConnectPage />} />
+          </Routes>
+        </AudioProvider>
+      </QueueProvider>
     </div>
   );
 }

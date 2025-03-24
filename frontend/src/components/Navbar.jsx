@@ -4,6 +4,8 @@ import { fetchProfile } from "../services/operations/auth";
 
 const Header = (params) => {
   const navigate = useNavigate();
+  const [currentTab,setCurrentTab] = useState("Home");
+  
   const [profileData, setProfileData] = useState({});
   useEffect(() => {
     const fetchData = async () => {
@@ -41,14 +43,16 @@ const Header = (params) => {
             <nav className="hidden md:block">
               <ul className="flex space-x-8">
                 <li>
-                  <a href="/" className="text-white font-medium">
+                  <a onClick={()=>setCurrentTab("Home")}
+                  href="/"  className = {`${currentTab == "Home"? "text-white":"text-gray-400"} font-medium hover:text-white transition-colors`}>
                     Home
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                    href="/connect-page"
+                    onClick={()=>setCurrentTab("Connect")}
+                    className = {`${currentTab == "Connect"? "text-white":"text-gray-400"} font-medium hover:text-white transition-colors`}
                   >
                     Connect
                   </a>
@@ -56,7 +60,8 @@ const Header = (params) => {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                    onClick={()=>setCurrentTab("Library")}
+                    className = {`${currentTab == "Library"? "text-white":"text-gray-400"} font-medium hover:text-white transition-colors`}
                   >
                     Library
                   </a>
@@ -64,7 +69,8 @@ const Header = (params) => {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-400 hover:text-white transition-colors font-medium"
+                    onClick={()=>setCurrentTab("Artists")}
+                    className = {`${currentTab == "Artists"? "text-white":"text-gray-400"} font-medium hover:text-white transition-colors`}
                   >
                     Artists
                   </a>

@@ -51,7 +51,7 @@ const SearchPage = (params) => {
             {
               title: song.name ?? "Placeholder",
               coverImageUrl: song.image[Object.keys(song.image).length - 1].url ?? myImage, 
-              downloadUrl: song.downloadUrl[Object.keys(song.image).length - 1].url,
+              downloadUrl: song.downloadUrl[Object.keys(song.downloadUrl).length - 1].url,
               artists:getArtists(song.artists.primary),
               duration:song.duration
             }))
@@ -268,7 +268,7 @@ const SearchPage = (params) => {
                   onClick={() => handleSongSelect(result)}
                 >
                   <img
-                    src={result.coverImageUrl || "/api/placeholder/100/100"}
+                    src={result.coverImageUrl}
                     alt={result.name || result.title}
                     className="w-12 h-12 rounded object-cover mr-4"
                   />
