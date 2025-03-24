@@ -151,4 +151,43 @@ exports.rejectFriendReq = async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+}
+
+
+
+exports.removeFriend = async (req, res) => {
+  try {
+    const { userId1, userId2 } = req.body; // Extract user IDs from the request body
+
+    // Validate input: Ensure both user IDs are provided
+    if (!userId1 || !userId2) {
+      return res.status(400).json({ message: "Both userId1 and userId2 are required." });
+    }
+
+    // Step 1: Remove the friend relationship from the Friend collection
+    const deletedFriend = await Friend.findOneAndDelete({
+      $or: [
+        { user1: userId1, user2: userId2 },
+        { user1: userId2, user2: userId1 },
+      ],
+    });
+
+    if (!deletedFriend) {
+      return res.status(404).json({ message: "Friend relationship not found." });
+    }
+
+    // Step 2: Optionally, remove any related accepted friend request
+    await FriendRequest.deleteOne({
+      $or: [
+        { sender: userId1, recipient: userId2, status: "accepted" },
+        { sender: userId2, recipient: userId1, status: "accepted" },
+      ],
+    });
+
+    // Return success response
+    return res.status(200).json({ message: "Friend removed successfully." });
+  } catch (error) {
+    console.error("Error removing friend:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
+};

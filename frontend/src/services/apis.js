@@ -21,6 +21,6 @@ export const friendEndpoints = {
     SEND_FRIEND_REQUEST : BASE_URL + "friend/send-friend-request",
     ACCEPT_FRIEND_REQUEST : BASE_URL + "friend/accept-friend-request",
     REJECT_FRIEND_REQUEST : BASE_URL + "friend/reject-friend-request",
-    
+    REMOVE_FRIEND : BASE_URL + "friend/remove_friend",
     GET_PEDDING_REQUEST : BASE_URL + "friend/get_pedding_request"
 }

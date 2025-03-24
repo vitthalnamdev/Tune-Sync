@@ -7,6 +7,7 @@ import {
   accept_friend_request,
   get_friends_list,
   get_pedding_request,
+  remove_friend,
   search_friend,
   send_request,
 } from "../services/operations/friends";
@@ -57,7 +58,7 @@ const FriendConnectSidebar = () => {
 
     // Remove from friends list
     setFriends(friends.filter((f) => f.id !== friendId));
-    
+    const response = remove_friend(token,{data:friendId});
     alert(`${friend.user.username} has been removed from your friends list`);
   };
 
