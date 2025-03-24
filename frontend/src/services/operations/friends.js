@@ -98,7 +98,24 @@ export const accept_friend_request = async(token,data)=>{
 export const remove_friend = async(token,data)=>{
   console.log("data",data);
   try {
-    const response = await apiConnector("DELETE",REMOVE_FRIEND,{userId:data},
+    const response = await apiConnector("POST",REMOVE_FRIEND,{userId1:data},
+      {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      }
+    );
+
+    toast.success(response.data.message);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const reject_friend_request = async(token,data)=>{
+  console.log("data",data);
+  try {
+    const response = await apiConnector("POST",REJECT_FRIEND_REQUEST,{requestId:data},
       {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,

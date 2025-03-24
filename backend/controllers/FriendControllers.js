@@ -146,6 +146,7 @@ exports.rejectFriendReq = async (req, res) => {
       // Update request status
       request.status = "rejected";
       await request.save();
+      await FriendRequest.findByIdAndDelete(requestId);
   
       res.status(200).json({ message: "Friend request rejected" });
     } catch (error) {
@@ -157,8 +158,10 @@ exports.rejectFriendReq = async (req, res) => {
 
 exports.removeFriend = async (req, res) => {
   try {
-    const { userId1, userId2 } = req.body; // Extract user IDs from the request body
-
+    const { userId1 } = req.body; // Extract user IDs from the request body
+    const userId2 = req.user.id;
+    console.log(req.body);
+    console.log(userId1, userId2);
     // Validate input: Ensure both user IDs are provided
     if (!userId1 || !userId2) {
       return res.status(400).json({ message: "Both userId1 and userId2 are required." });

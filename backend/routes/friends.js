@@ -17,7 +17,7 @@ const {
 router.post("/send-friend-request", auth, sendFriendReq );
 
 router.get("/get_pedding_request",auth, getPendingFriendRequests);
-router.delete("/remove_friend",removeFriend);
+router.post("/remove_friend",auth, removeFriend);
 
 // Accept a friend request
 router.post("/accept-friend-request", auth, acceptFriendReq);

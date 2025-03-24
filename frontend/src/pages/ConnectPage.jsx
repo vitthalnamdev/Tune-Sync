@@ -12,7 +12,7 @@ import {
   send_request,
 } from "../services/operations/friends";
 
-const FriendConnectSidebar = () => {
+const ConnectPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("suggested");
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,11 +28,6 @@ const FriendConnectSidebar = () => {
 
   const currentUser = { id: 5, username: "currentUser" };
 
-  // State for pending requests and friends
-  const [pendingRequests, setPendingRequests] = useState([
-    { id: 1, from: mockUsers[0], to: currentUser, status: "pending" },
-    { id: 2, from: mockUsers[1], to: currentUser, status: "pending" },
-  ]);
 
   const [friends, setFriends] = useState([]);
 
@@ -48,18 +43,19 @@ const FriendConnectSidebar = () => {
        }
      }
      fetch();
-  },[friendRequests]);
+  },[]);
 
   // Function to remove a friend
   const removeFriend = (friendId) => {
-    const friend = friends.find((f) => f.id === friendId);
-
+    const friend = friends.find((f) => f._id === friendId);
+    console.log(friendId)
     if (!friend) return;
 
     // Remove from friends list
-    setFriends(friends.filter((f) => f.id !== friendId));
-    const response = remove_friend(token,{data:friendId});
-    alert(`${friend.user.username} has been removed from your friends list`);
+    setFriends(friends.filter((f) => f._id !== friendId));
+    console.log(friendId)
+    const response = remove_friend(token,friendId);
+    
   };
 
  
@@ -97,7 +93,13 @@ const FriendConnectSidebar = () => {
     setActiveTab(tab);
   };
 
-
+  const updateFriend = (id,data)=>{
+    if(data){
+      setFriends((prev)=>[...prev,data]);
+    }
+    setFriendRequests(friendRequests.filter((f)=>f._id !== id));
+    
+  }
  
 
   return (
@@ -114,10 +116,12 @@ const FriendConnectSidebar = () => {
         {/* Toggle Button */}
         <button
           onClick={toggleSidebar}
-          className="fixed z-10 right-0 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-2 rounded-l-md shadow-lg"
+          className="group fixed z-10 right-0 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-2 rounded-l-md shadow-lg"
         >
           {isOpen ? <X size={20} /> : <Users size={20} />}
+          <div className="absolute text-sm pointer-events-none border-[1px] border-white px-2 bg-black bg-opacity-50  opacity-0 group-hover:opacity-80 transition-opacity duration-500 right-12 top-0">Connect Friend</div>
         </button>
+        
       </div>
 
       {/* Friend Connect Sidebar */}
@@ -214,8 +218,7 @@ const FriendConnectSidebar = () => {
                     key={friend._id}
                     id = {friend._id}
                     friend={friend.sender}
-                    setFriendRequests
-                    friendRequests
+                    updateFriend = {updateFriend}
                     isPending={activeTab === "requests"}
                   />
                 ))
@@ -236,4 +239,4 @@ const FriendConnectSidebar = () => {
   );
 };
 
-export default FriendConnectSidebar;
+export default ConnectPage;

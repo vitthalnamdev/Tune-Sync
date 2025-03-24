@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { accept_friend_request, send_request } from '../../services/operations/friends';
+import { accept_friend_request, reject_friend_request, send_request } from '../../services/operations/friends';
 import { UserPlus } from 'lucide-react';
 import { GiCheckMark } from "react-icons/gi";
 
-const FriendCard = ({id, friend, setFriendRequests,friendRequests, isPending }) => {
+const FriendCard = ({id, friend, updateFriend, isPending }) => {
     const token = localStorage.getItem("token");
     const [accepted, setAccepted] = useState([]);
 
@@ -11,16 +11,25 @@ const FriendCard = ({id, friend, setFriendRequests,friendRequests, isPending }) 
         send_request(token, userId);
     };
 
-    const handleAcceptReq = async(id) =>{
+    const handleAcceptReq = async() =>{
        try {
           console.log(id);
           const response = await accept_friend_request(token,id);
           setAccepted((prevAccepted) => [...prevAccepted, id]);
-          setFriendRequests(friendRequests.filter((f)=>f._id !== id));
+          updateFriend(id,friend);
           console.log("accepted",accepted)
        } catch (error) {
           console.log( error);
        }
+    }
+
+    const handleReject  = async()=>{
+      try {
+        const response = await reject_friend_request(token,id);
+        updateFriend(id);
+      } catch (error) {
+        
+      }
     }
 
   return (
@@ -49,7 +58,9 @@ const FriendCard = ({id, friend, setFriendRequests,friendRequests, isPending }) 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
                 Accept
                 </button>
-                <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md text-sm">
+                <button
+                 onClick={()=>handleReject(id)}
+                 className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md text-sm">
                 Decline
                 </button>
             </>
