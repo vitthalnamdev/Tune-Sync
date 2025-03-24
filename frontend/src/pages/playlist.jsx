@@ -3,6 +3,7 @@ import { Play, Clock, Heart, MoreHorizontal, ChevronLeft } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
+import { useQueue } from "./contexts/queueContext";
 
 const totaltime = (songs) => {
   let time = 0;
@@ -46,24 +47,51 @@ const getTime = (time) => {
   return `${minutes}:${seconds}`;
 };
 
-const handleSongClick = (track, setSong) => {
-  setSong({
-    title: track.name, // Replacing 'name' with 'title'
-    artists: getArtists(track.artists.primary),
-    coverImage:
-      track.image[Object.keys(track.image).length - 1].url ||
-      "https://via.placeholder.com/50",
-    audioSrc:
-      track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || "", // Assuming there's an audio URL
-    duration: track.duration,
-    currentTime: 0,
-    isPlaying: true,
-    audioRef: new Audio(track.audioUrl || ""),
-  });
-};
-
 const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
   const [hoveredTrack, setHoveredTrack] = useState(null);
+  const {
+    next,
+    prev,
+    enqueuenext,
+    dequeuenext,
+    clearnext,
+    peeknext,
+    sizenext,
+    enqueueprev,
+    dequeueprev,
+    clearprev,
+    peekprev,
+    sizeprev,
+  } = useQueue();
+
+  const handleSongClick = (track, index) => {
+    // Clear queue before adding new songs
+    clearprev();
+    // console.log("before update" , song);
+    // Set current song
+    setSong({
+      title: track.name, // Fixed: was track.naame
+      artists: getArtists(track.artists.primary),
+      coverImage:
+        track.image[Object.keys(track.image).length - 1].url ||
+        "https://via.placeholder.com/50",
+      audioSrc:
+        track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || "",
+      duration: track.duration,
+      currentTime: 0,
+      isPlaying: true,
+      audioRef: new Audio(
+        track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || ""
+      ), // Fixed: using downloadUrl instead of audioUrl
+    });
+    
+    // Add remaining songs to queue one by one
+
+    for (let i = index + 1; i < Object.keys(playlistData.songs).length; i++) {
+       enqueuenext(playlistData.songs[i]);
+    }
+    
+  };
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black min-h-screen w-screen text-white font-sans">
@@ -162,7 +190,11 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
                 className="group grid grid-cols-12 gap-4 items-center p-3 hover:bg-gray-800/40 transition-colors rounded-md mb-1 cursor-pointer"
                 onMouseEnter={() => setHoveredTrack(track.id)}
                 onMouseLeave={() => setHoveredTrack(null)}
-                onClick={() => handleSongClick(track, setSong)}
+                onClick={() =>
+                  handleSongClick(
+                    track , index
+                  )
+                }
               >
                 <div className="col-span-1 text-center text-gray-400 flex justify-center">
                   {hoveredTrack === track.id ? (

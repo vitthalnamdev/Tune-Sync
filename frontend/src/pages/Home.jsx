@@ -332,16 +332,7 @@ const MusicHomepage = (params) => {
   // Router hooks
   const [loading, setloading] = useState(true);
   const navigate = useNavigate();
-  const [song, setSong] = useState({
-    title: "Midnight Shadows",
-    artist: "Luna Ray",
-    coverImage: myImage,
-    audioSrc: "",
-    duration: 270,
-    currentTime: 0,
-    isPlaying: false,
-    audioRef: new Audio(),
-  });
+  
   // Extract data from location state or params
 
   const [_Artists, setArtists] = useState([
@@ -510,9 +501,6 @@ const MusicHomepage = (params) => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onClose={closeSearchPage}
-          MusicPlayer={MusicPlayer}
-          setSong={setSong}
-          song={song}
         />
       )}
 
@@ -536,7 +524,7 @@ const MusicHomepage = (params) => {
       </main>
 
       {/* Music Player (fixed at bottom) */}
-      <MusicPlayer song={song} />
+      <MusicPlayer/>
 
       {/* Footer */}
       <Footer />
