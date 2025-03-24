@@ -28,12 +28,18 @@ const MusicPlayer = () => {
   
   // Update formatted duration when duration changes
   useEffect(() => {
+    if (duration > 0 && (duration - currentTime < 0)) {
+       nextSong();
+    }
+  
     if (duration) {
       const minutes = Math.floor(duration / 60);
       const seconds = Math.floor(duration % 60);
       setFormattedDuration(`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
     }
-  }, [duration]);
+  }, [currentTime, duration]);
+  
+ 
   
   // Format time from seconds to MM:SS
   const formatTime = (timeInSeconds) => {
@@ -45,7 +51,6 @@ const MusicPlayer = () => {
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Skip forward/backward by 10 seconds
 
   // Handle volume change
   const handleVolumeChange = (e) => {
@@ -148,7 +153,7 @@ const MusicPlayer = () => {
 
           <button
             className="text-gray-400 hover:text-white"
-            onClick={()=>{nextSong()}}
+            onClick={()=>{console.log("hello");nextSong()}}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

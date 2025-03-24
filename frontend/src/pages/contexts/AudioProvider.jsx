@@ -18,8 +18,7 @@ export const AudioProvider = ({ children }) => {
     coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
     audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
     duration: 261,
-    currentTime: 0,
-    isPlaying: false
+    currentTime: 0
   });
   
   const audioRef = useRef(new Audio(currentSong.audioSrc));
@@ -53,13 +52,7 @@ export const AudioProvider = ({ children }) => {
     
 
     const handleEnded = () => {
-        const length = sizenext();
-        console.log("HELLO from ended");
-        if(length > 0){
-          nextSong();
-          return;
-        }
-        setIsPlaying(false);
+
     };
 
     // Add event listeners
@@ -94,10 +87,10 @@ export const AudioProvider = ({ children }) => {
 
   const prevSong = () => {
     const length = sizeprev();
+
     if (length > 0) {
       const curr = peekprev();
       dequeueprev();
-      enqueuenext(currentSong);
       loadSong(curr);
     } 
   };
@@ -111,13 +104,12 @@ export const AudioProvider = ({ children }) => {
     }
     console.log("SONG:" , song);
     setCurrentSong(song);
-    setIsPlaying(false);
     // Set the new song
     audio.src = song.audioSrc;
-  
     // Load the new audio source
     audio.load();
-     
+    audio.play();
+    
   };
 
   const getArtists = (artists) => {
@@ -141,10 +133,12 @@ export const AudioProvider = ({ children }) => {
 
   function nextSong(){
     const length = sizenext();
-    console.log("length" , length);
-    console.log("HELLO" , next);
+  
+    
     if (length > 0) {
       const curr = peeknext();
+      dequeuenext();
+      enqueueprev(currentSong);
       const _currentSong = {
         title: curr.name, // Fixed: was track.naame
         artists: getArtists(curr.artists.primary),
@@ -165,8 +159,6 @@ export const AudioProvider = ({ children }) => {
         console.error("Invalid song object:", curr);
         return false;
       }
-      console.log(_currentSong);
-      dequeuenext();
       loadSong(_currentSong);
       console.log("HELLO after setting");
     } else {

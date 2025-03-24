@@ -67,7 +67,8 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
   const {loadSong}  = useAudio();
   const handleSongClick = (track, index) => {
     // Clear queue before adding new songs
-    clearprev();
+    // console.log(next);
+    clearnext();
 
     // console.log("before update" , song);
     // Set current song
@@ -85,7 +86,6 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
     });
     
     // Add remaining songs to queue one by one
-
     for (let i = index + 1; i < Object.keys(playlistData.songs).length; i++) {
        enqueuenext(playlistData.songs[i]);
     }
