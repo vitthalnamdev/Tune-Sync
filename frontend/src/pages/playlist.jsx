@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { useQueue } from "./contexts/queueContext";
+import { useAudio } from "./contexts/AudioProvider";
 
 const totaltime = (songs) => {
   let time = 0;
@@ -63,13 +64,14 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
     peekprev,
     sizeprev,
   } = useQueue();
-
+  const {loadSong}  = useAudio();
   const handleSongClick = (track, index) => {
     // Clear queue before adding new songs
     clearprev();
+
     // console.log("before update" , song);
     // Set current song
-    setSong({
+    loadSong({
       title: track.name, // Fixed: was track.naame
       artists: getArtists(track.artists.primary),
       coverImage:
@@ -80,9 +82,6 @@ const Playlist = ({ playlistData, similarPlaylists, song, setSong }) => {
       duration: track.duration,
       currentTime: 0,
       isPlaying: true,
-      audioRef: new Audio(
-        track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || ""
-      ), // Fixed: using downloadUrl instead of audioUrl
     });
     
     // Add remaining songs to queue one by one

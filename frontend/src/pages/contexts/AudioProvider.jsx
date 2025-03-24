@@ -10,20 +10,19 @@ import myImage from "../coverImage.jpg";
 const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
-  const audioRef = useRef(new Audio());
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSong, setCurrentSong] = useState({
-      title: "Apna Bana Le",
-      artists : "Sachin-Jigar, Arijit Singh",
-      coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
-      audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
-      duration: 261,
-      currentTime: 0,
-      isPlaying: false,
-      audioRef: new Audio(),
-    });
+    title: "Apna Bana Le",
+    artists : "Sachin-Jigar, Arijit Singh",
+    coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
+    audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
+    duration: 261,
+    currentTime: 0,
+    isPlaying: false
+  });
   
+  const audioRef = useRef(new Audio(currentSong.audioSrc));
    
   const [duration, setDuration] = useState(currentSong.duration);
   const [volume, setVolume] = useState(0.7);
@@ -43,7 +42,7 @@ export const AudioProvider = ({ children }) => {
   } = useQueue();
   useEffect(() => {
     const audio = audioRef.current;
-
+    
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
     };
@@ -54,8 +53,12 @@ export const AudioProvider = ({ children }) => {
     
 
     const handleEnded = () => {
-    // const nextSongIsAvailable = nextSong()
-    //   if(!nextSongIsAvailable)
+        const length = sizenext();
+        console.log("HELLO from ended");
+        if(length > 0){
+          nextSong();
+          return;
+        }
         setIsPlaying(false);
     };
 
@@ -138,6 +141,7 @@ export const AudioProvider = ({ children }) => {
 
   function nextSong(){
     const length = sizenext();
+    console.log("length" , length);
     console.log("HELLO" , next);
     if (length > 0) {
       const curr = peeknext();
