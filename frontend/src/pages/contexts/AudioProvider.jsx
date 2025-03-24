@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-
+import { useQueue } from "./queueContext";
 const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
@@ -9,7 +9,7 @@ export const AudioProvider = ({ children }) => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.7);
   const [currentSong, setCurrentSong] = useState(null);
-
+  const { queue, enqueue, dequeue, peek, size, clearQueue } = useQueue();
   useEffect(() => {
     const audio = audioRef.current;
     
@@ -22,6 +22,7 @@ export const AudioProvider = ({ children }) => {
     };
     
     const handleEnded = () => {
+      
       setIsPlaying(false);
     };
     
@@ -48,7 +49,7 @@ export const AudioProvider = ({ children }) => {
     if (currentSong && song.audioSrc === currentSong.audioSrc) {
       return;
     }
-    
+    setIsPlaying(true);
     setCurrentSong(song);
     audio.src = song.audioSrc;
     audio.load();
