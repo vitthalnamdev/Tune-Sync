@@ -1,83 +1,109 @@
-import React, { useState } from 'react'
-import { accept_friend_request, reject_friend_request, send_request } from '../../services/operations/friends';
-import { UserPlus } from 'lucide-react';
-import { GiCheckMark } from "react-icons/gi";
+import React, { useState } from "react";
+import { UserPlus, MessageCircle, Check } from "lucide-react";
+import {
+  accept_friend_request,
+  reject_friend_request,
+  send_request,
+} from "../../services/operations/friends";
 
-const FriendCard = ({id, friend, updateFriend, isPending }) => {
-    const token = localStorage.getItem("token");
-    const [accepted, setAccepted] = useState([]);
+const FriendCard = ({ id, friend,handleSendFriendReq, updateFriend, isPending }) => {
+  const token = localStorage.getItem("token");
+  const [accepted, setAccepted] = useState([]);
 
-    const handleSendFriendReq = (userId) => {
-        send_request(token, userId);
-    };
+  
 
-    const handleAcceptReq = async() =>{
-       try {
-          console.log(id);
-          const response = await accept_friend_request(token,id);
-          setAccepted((prevAccepted) => [...prevAccepted, id]);
-          updateFriend(id,friend);
-          console.log("accepted",accepted)
-       } catch (error) {
-          console.log( error);
-       }
+  const handleAcceptReq = async () => {
+    try {
+      const response = await accept_friend_request(token, id);
+      setAccepted((prevAccepted) => [...prevAccepted, id]);
+      updateFriend(id, friend);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    const handleReject  = async()=>{
-      try {
-        const response = await reject_friend_request(token,id);
-        updateFriend(id);
-      } catch (error) {
-        
-      }
+  const handleReject = async () => {
+    try {
+      const response = await reject_friend_request(token, id);
+      updateFriend(id);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
   return (
-    <div className="flex items-center justify-between p-3 mb-2 bg-gray-800 rounded-lg">
-      <div className="flex items-center space-x-3">
-        <div className="relative">
+    <div className="bg-[#1E1E1E] border border-[#2C2C2C] rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+      <div className="relative bg-gradient-to-r from-[#2A2A2A] to-[#1A1A1A] p-4">
+        {/* Profile Image */}
+        <div className="absolute top-1/2 left-4 transform -translate-y-1/2 border-4 border-[#2C2C2C] rounded-full">
           <img
             src={friend.image}
             alt={friend.firstName}
-            className="w-12 h-12 rounded-full bg-gray-700"
+            className="w-20 h-20 rounded-full object-cover"
           />
         </div>
-        <div>
-          <h3 className="text-white font-medium">{`${friend.firstName} ${friend.lastName}`}</h3>
-          <p className="text-gray-400 text-xs"> {friend.Username}</p>
+
+        {/* User Info */}
+        <div className="ml-28 text-white">
+          <h3 className="text-lg font-bold text-[#E0E0E0]">{`${friend.firstName} ${friend.lastName}`}</h3>
+          <p className="text-sm text-[#888888] truncate">{friend.Username}</p>
         </div>
       </div>
-      <div className="flex space-x-2">
+
+      {/* Actions */}
+      <div className="p-4 bg-[#121212] space-y-3">
         {isPending ? (
-            accepted.includes(id) ? (
-               <div><GiCheckMark/></div>
-            ):(
-            <>
-                <button
-                onClick={()=>handleAcceptReq(id)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
-                Accept
-                </button>
-                <button
-                 onClick={()=>handleReject(id)}
-                 className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md text-sm">
+          accepted.includes(id) ? (
+            <div className="flex items-center justify-center text-green-400 font-medium space-x-2">
+              <Check className="w-5 h-5" />
+              <span>Connected</span>
+            </div>
+          ) : (
+            <div className="flex space-x-3">
+              <button
+                onClick={handleAcceptReq}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center justify-center space-x-2"
+              >
+                <Check className="w-5 h-5" />
+                <span>Accept</span>
+              </button>
+              <button
+                onClick={handleReject}
+                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition duration-300"
+              >
                 Decline
-                </button>
-            </>
-            )
-          
+              </button>
+            </div>
+          )
         ) : (
-          <button
-            onClick={() => handleSendFriendReq(friend._id)}
-            className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm"
-          >
-            <UserPlus size={14} />
-            <span>Add</span>
-          </button>
+          <div className="flex space-x-3">
+            {friend.status == "pending" ? (
+              <div className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
+                Requested
+              </div>
+            ) : friend.status == "accepted" ? (
+              <div className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
+                Accepted
+              </div>
+            ) : (
+              <button
+                onClick={() => handleSendFriendReq(friend._id)}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center justify-center space-x-2"
+              >
+                <UserPlus className="w-5 h-5" />
+                <span>Connect</span>
+              </button>
+            )}
+
+            <button className="flex-1 bg-[#2C2C2C] hover:bg-[#3C3C3C] text-[#E0E0E0] px-4 py-2 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
+              <MessageCircle className="w-5 h-5" />
+              <span>Message</span>
+            </button>
+          </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FriendCard
+export default FriendCard;

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import FriendsList from "../components/connect_components/FriendsList";
 import { X, UserPlus, Users, Bell, Search } from "lucide-react";
 import FriendCard from "../components/connect_components/FriendCard";
 import {
@@ -13,60 +12,18 @@ import {
 } from "../services/operations/friends";
 
 const ConnectPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("suggested");
   const [searchQuery, setSearchQuery] = useState("");
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriend] = useState([]);
 
-  const mockUsers = [
-    { id: 1, username: "alex123" },
-    { id: 2, username: "taylor_smith" },
-    { id: 3, username: "jordan42" },
-    { id: 4, username: "casey_j" },
-  ];
-
-  const currentUser = { id: 5, username: "currentUser" };
-
-
-  const [friends, setFriends] = useState([]);
-
-  //fetch friends
-  useEffect(()=>{
-     const fetch = async()=>{
-       try {
-        const response = await get_friends_list(token);
-        console.log("list",response);
-          setFriends(response);
-       } catch (error) {
-          console.log(error);
-       }
-     }
-     fetch();
-  },[]);
-
-  // Function to remove a friend
-  const removeFriend = (friendId) => {
-    const friend = friends.find((f) => f._id === friendId);
-    console.log(friendId)
-    if (!friend) return;
-
-    // Remove from friends list
-    setFriends(friends.filter((f) => f._id !== friendId));
-    console.log(friendId)
-    const response = remove_friend(token,friendId);
-    
-  };
-
- 
-
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     const search = async () => {
       const response = await search_friend(token, searchQuery);
       console.log("response-friend", response);
       setSuggestedFriend(response.data);
-      
     };
     search();
   }, [searchQuery]);
@@ -74,167 +31,157 @@ const ConnectPage = () => {
   useEffect(() => {
     const search = async () => {
       const response = await get_pedding_request(token);
-      console.log("pedding req",response);
+      console.log("pending req", response);
       setFriendRequests(response);
-      
     };
     search();
   }, []);
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  const handleTabChange = (tab) => setActiveTab(tab);
+
+  const updateFriend = (id) => {
+    setFriendRequests(friendRequests.filter((f) => f._id !== id));
   };
 
-  const closeSidebar = () => {
-    setIsOpen(false);
+  const handleSendFriendReq = (userId) => {
+    setSuggestedFriend((prev) =>
+      prev.map((user) =>
+        user._id == userId ? { ...user, status: "pending" } : user
+      )
+    );
+    send_request(token, userId);
   };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const updateFriend = (id,data)=>{
-    if(data){
-      setFriends((prev)=>[...prev,data]);
-    }
-    setFriendRequests(friendRequests.filter((f)=>f._id !== id));
-    
-  }
- 
 
   return (
-    <div className="relative min-h-screen bg-gray-900 w-[1080px] text-white">
-      {/* Main content - would contain your game or app content */}
-      <div className="p-6">
-        <div className="w-full">
-          <h2 className="text-2xl font-semibold mb-6 text-blue-400">
-            My Friends
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black w-full text-white">
+      {/* Main Content */}
+
+      <div className="flex flex-col max-w-[1400px] m-auto  h-full">
+        {/* Header */}
+        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            Connect Friends
           </h2>
-          <FriendsList friends={friends} onRemove={removeFriend} />
         </div>
 
-        {/* Toggle Button */}
-        <button
-          onClick={toggleSidebar}
-          className="group fixed z-10 right-0 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-2 rounded-l-md shadow-lg"
-        >
-          {isOpen ? <X size={20} /> : <Users size={20} />}
-          <div className="absolute text-sm pointer-events-none border-[1px] border-white px-2 bg-black bg-opacity-50  opacity-0 group-hover:opacity-80 transition-opacity duration-500 right-12 top-0">Connect Friend</div>
-        </button>
-        
-      </div>
-
-      {/* Friend Connect Sidebar */}
-      <div
-        className={`fixed top-20 right-0 h-full w-full md:w-1/2 lg:w-1/3 bg-gray-900 shadow-xl transform transition-transform duration-300 ease-in-out z-20 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-            <h2 className="text-xl font-bold">Connect Friends</h2>
-            <button
-              onClick={closeSidebar}
-              className="text-gray-400 hover:text-white"
-            >
-              <X size={24} />
-            </button>
+        {/* Search Bar */}
+        <div className="p-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search friends..."
+              className="w-full bg-gray-800 text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg transition-shadow"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search
+              className="absolute left-3 top-2.5 text-gray-400"
+              size={18}
+            />
           </div>
+        </div>
 
-          {/* Search Bar */}
-          <div className="p-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search friends..."
-                className="w-full bg-gray-800 text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search
-                className="absolute left-3 top-2.5 text-gray-400"
-                size={18}
-              />
+        {/* Tabs */}
+        <div className="flex border-b max-w-[500px] border-gray-800">
+          <button
+            className={`flex-1 py-3 text-center font-medium ${
+              activeTab === "suggested"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+            onClick={() => handleTabChange("suggested")}
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <UserPlus size={18} />
+              <span>Suggested</span>
             </div>
-          </div>
+          </button>
+          <button
+            className={`flex-1 py-3 text-center font-medium ${
+              activeTab === "requests"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+            onClick={() => handleTabChange("requests")}
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <Bell size={18} />
+              <span>Requests</span>
+              <span className="bg-blue-600 text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {friendRequests.length}
+              </span>
+            </div>
+          </button>
+        </div>
 
-          {/* Tabs */}
-          <div className="flex border-b border-gray-800">
-            <button
-              className={`flex-1 py-3 text-center font-medium ${
-                activeTab === "suggested"
-                  ? "text-blue-500 border-b-2 border-blue-500"
-                  : "text-gray-400 hover:text-gray-300"
-              }`}
-              onClick={() => handleTabChange("suggested")}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <UserPlus size={18} />
-                <span>Suggested</span>
-              </div>
-            </button>
-            <button
-              className={`flex-1 py-3 text-center font-medium ${
-                activeTab === "requests"
-                  ? "text-blue-500 border-b-2 border-blue-500"
-                  : "text-gray-400 hover:text-gray-300"
-              }`}
-              onClick={() => handleTabChange("requests")}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <Bell size={18} />
-                <span>Requests</span>
-                <span className="bg-blue-600 text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {friendRequests.length}
-                </span>
-              </div>
-            </button>
-          </div>
-
-          {/* Friend List */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {
-              activeTab === "suggested" ? (
-                  suggestedFriends.length > 0 ? (
-                  suggestedFriends.map((friend) => (
-                    <FriendCard
-                      key={friend._id}
-                      friend={friend}
-                      isPending={activeTab === "requests"}
-                    />
-                  ))
-                  ) : (
-                  <div className="text-center text-gray-500 mt-10">
-                    {searchQuery
-                      ? "No friends match your search"
-                      : `No ${activeTab} available`}
-                  </div>
-                )
-              ):(
-                friendRequests.length > 0 ? (
-                friendRequests.map((friend) => (
-                  <FriendCard
-                    key={friend._id}
-                    id = {friend._id}
-                    friend={friend.sender}
-                    updateFriend = {updateFriend}
-                    isPending={activeTab === "requests"}
+        {/* Friend List */}
+        <div className="flex-1 w-[800px] overflow-y-auto p-4">
+          {activeTab === "suggested" ? (
+            suggestedFriends.length > 0 ? (
+              suggestedFriends.map((friend) => (
+                <FriendCard
+                  key={friend._id}
+                  friend={friend}
+                  handleSendFriendReq={handleSendFriendReq}
+                  isPending={false}
+                />
+              ))
+            ) : (
+              <div className="text-center text-gray-500 mt-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-16 w-16 mx-auto text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 0110 0M14 5a3 3 0 11-6 0 3 3 0 016 0z"
                   />
-                ))
-              ) : (
-                <div className="text-center text-gray-500 mt-10">
+                </svg>
+                <p className="mt-4">
                   {searchQuery
-                    ? "No friends match your search"
-                    : `No ${activeTab} available`}
-                </div>
-              )
-              )
-            }
-            
-          </div>
+                    ? "No matches found"
+                    : "No suggested friends yet"}
+                </p>
+              </div>
+            )
+          ) : friendRequests.length > 0 ? (
+            friendRequests.map((friend) => (
+              <FriendCard
+                key={friend._id}
+                id={friend._id}
+                friend={friend.sender}
+                updateFriend={updateFriend}
+                isPending={true}
+              />
+            ))
+          ) : (
+            <div className="text-center text-gray-500 mt-10">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-16 w-16 mx-auto text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 0110 0M14 5a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <p className="mt-4">No pending requests</p>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Toggle Button */}
     </div>
   );
 };

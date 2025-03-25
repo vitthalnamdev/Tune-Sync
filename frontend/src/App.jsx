@@ -13,12 +13,14 @@ import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
 import { AudioProvider } from './services/AudioProvider';
 import ConnectPage from "./pages/ConnectPage";
+import MyFriendButton from "./components/connect_components/MyFriendButton";
 
 function App() {
   
   return (
     <div className="bg-gray-900">
       <Navbar/>  
+      <MyFriendButton/>
      <AudioProvider>
       <Routes>
         <Route path="/" element={<Home />} />

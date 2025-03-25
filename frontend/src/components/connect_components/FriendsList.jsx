@@ -10,10 +10,10 @@ function FriendsList({ friends, onRemove }) {
   }
 
   return (
-    <div className="bg-gray-700 rounded-lg overflow-hidden">
+    <div className=" ">
       <ul className="divide-y divide-gray-600">
         {friends.map(friend => (
-          <li key={friend._id} className="p-4 flex justify-between items-center">
+          <li key={friend._id} className="p-4 mb-2 bg-gray-800 rounded-lg flex justify-between items-center">
             <div className="flex items-center">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-600 flex items-center justify-center mr-3">
                 <img src={friend.image}/>

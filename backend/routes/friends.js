@@ -29,6 +29,6 @@ router.post("/reject-friend-request", auth, rejectFriendReq);
 router.get("/get-friends", auth, getFriends);
 
 //search friends
-router.get("/search-friend",searchFriends);
+router.get("/search-friend",auth, searchFriends);
 
 module.exports = router;
