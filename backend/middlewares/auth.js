@@ -6,9 +6,9 @@ const verifyToken = async (req, res, next) => {
     try {
         // Extract token from cookies, body, or headers
         const token = req.cookies?.token || 
-                      req.body?.token || 
-                      req.header("Authorization")?.replace("Bearer ", "");
-         
+        req.body?.token || 
+        req.header("Authorization")?.replace("Bearer ", "");
+        
         console.log("middleware reached" , token);
         // If token is missing, return unauthorized error
         if (!token) {
@@ -23,6 +23,7 @@ const verifyToken = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             console.log("Decoded User:", decoded);
             req.user = decoded;
+            console.log("middleware reached" , req.user);
             next();  // Move to next middleware or controller
         } catch (error) {
             // Handle invalid or expired token

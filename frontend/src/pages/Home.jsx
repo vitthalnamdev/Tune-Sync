@@ -7,6 +7,7 @@ import { fetchProfile } from "../services/operations/auth";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
+import Navbar from "../components/Navbar";
 
 
 
@@ -327,6 +328,8 @@ const Footer = () => (
   </footer>
 );
 
+ 
+
 // Main MusicHomepage component
 const MusicHomepage = (params) => {
   // Router hooks
@@ -494,7 +497,7 @@ const MusicHomepage = (params) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header Component */}
-
+      <Navbar show = {"Home"}/>
       {/* Search Page Component (conditionally rendered) */}
       {showSearchPage && (
         <SearchPage

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { login } from "../services/operations/auth";
-
+import { useProfile } from "./contexts/profileContext";
+import { useDispatch } from "react-redux";
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -18,7 +20,9 @@ const LoginForm = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [wrongCrediantials, setwrongCrediantials] = useState(false);
   const [user, setuser] = useState({});
-
+  const {
+    setProfileData
+  } = useProfile();
   useEffect(() => {
     setIsLoaded(true);
     // Check for saved email in localStorage if remember me was checked
@@ -64,47 +68,47 @@ const LoginForm = () => {
 
   const setUser = async (email, password, cb) => {
     try {
-      const response = await login(email, password);
+      const response =  await (login(email, password));
       if (response.data.success) {
-        cb(response.data.user);
-        return true;
+        console.log("Printing user" , response.data.user);
+        cb(true , response.data.user);
       }
-      return false;
+      cb(false , null);
     } catch (error) {
       console.log(error);
       throw error;
     }
   };
-
+// 12@Aa#ok
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (validateForm()) {
       setIsSubmitting(true);
-
       // Handle remember me
       // API call
       const { email, password } = formData;
       try {
-        const check = await setUser(email, password, (data) => {
+        await setUser(email, password, (istrue , data) => {
+          if(!istrue){
+            setErrors({
+              ...errors,
+              password:"Wrong Email or password"
+            })
+            setIsSubmitting(false);
+            return;
+          }
           setTimeout(() => {
             setIsSubmitting(false);
             setIsSuccess(true);
-            console.log("Handle submit", data);
-            // Pass the actual user data to navigate
-            navigate("/", { state: { data: {user: data} } });
+            setProfileData(data);
+            localStorage.setItem("user", JSON.stringify(data));
+            navigate("/");
           });
-        }); // Assuming setUser is an async function
-        if (!check) {
-          setwrongCrediantials(true);
-          return;
-        }
+        });  
         // For demo purposes, show success after 1.5s
       } catch (error) {
         console.error("Error during user authentication:", error);
       }
-    }
-  };
+    };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -270,8 +274,8 @@ const LoginForm = () => {
                   Password
                 </label>
                 <a
-                  href="#"
-                  className="text-sm font-medium text-purple-500 hover:text-slate-300 transition-colors duration-150 hover:underline"
+                  className="text-sm font-medium text-purple-500 hover:text-slate-300 cursor-pointer transition-colors duration-150 hover:underline"
+                  onClick={() => navigate("/forgot-password")}
                 >
                   Forgot password?
                 </a>
@@ -362,8 +366,7 @@ const LoginForm = () => {
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
-            >
-            </div>
+            ></div>
 
             <div
               className={`pt-2 transition-all duration-500 delay-400 ${
@@ -402,7 +405,7 @@ const LoginForm = () => {
                     Authenticating...
                   </span>
                 ) : (
-                  "Sign In"
+                  "Login"
                 )}
               </button>
             </div>

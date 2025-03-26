@@ -3,7 +3,7 @@ import FriendRequestForm from '../components/connect_components/FriendRequestFor
 import PendingRequests from '../components/connect_components/PendingRequests';
 import FriendsList from '../components/connect_components/FriendsList';
 
-import Navbar from '../components/connect_components/Navbar';
+import Navbar from '../components/Navbar';
 
 function ConnectPage() {
   // Mock user data - would come from API in a real application
@@ -146,15 +146,12 @@ function ConnectPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
+      <Navbar show = {"Connect"}/>
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center py-8 text-purple-400">Friend Connection System</h1>
         
         <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden w-full">
-          <Navbar 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
-            pendingCount={pendingRequests.length}
-          />
+          
           
           <div className="p-6">
             {renderContent()}
