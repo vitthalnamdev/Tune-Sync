@@ -7,7 +7,7 @@ import LoginForm from "./pages/Login";
 import VerifyEmail from "./pages/verify_Email";
 import Set_username from "./pages/Set_username";
 import PlaylistPage from "./pages/playlist";
-import Navbar from "./components/Navbar"
+import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
@@ -16,7 +16,6 @@ import ConnectPage from "./pages/ConnectPage";
 import MyFriendButton from "./components/connect_components/MyFriendButton";
 
 function App() {
-  
   return (
     <div className="bg-gray-900">
       <Navbar/>  

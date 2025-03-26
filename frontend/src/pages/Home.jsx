@@ -59,9 +59,9 @@ const HeroSection = ({ searchQuery, setSearchQuery, toggleSearchPage }) => (
 // Updated PlaylistCard with smaller size
 
 const PlaylistCard = ({ playlist, navigate }) => (
-  <button
-    // onClick={navigate('/playlist', { state: { playlist: playlist } }) }
-    className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group w-full text-left"
+  <div
+    onClick={() => navigate('/playlist', { state: { playlist: playlist } })}
+    className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors group w-full text-left cursor-pointer"
   >
     <div className="aspect-square overflow-hidden">
       <img
@@ -75,13 +75,16 @@ const PlaylistCard = ({ playlist, navigate }) => (
       <h3 className="font-bold text-sm">{playlist.title}</h3>
       <p className="text-gray-400 text-xs mt-1">{playlist.description}</p>
     </div>
-  </button>
+  </div>
 );
 
 
 // Updated ReleaseCard for Artists with circular image
-const ReleaseCard = ({ release }) => (
-  <div className="bg-transparent text-center hover:bg-gray-800 rounded-lg p-2 transition-colors group">
+const ReleaseCard = ({ release, navigate}) => (
+  <div 
+     onClick={() => navigate('/playlist', { state: { playlist: release } })}
+    className="bg-transparent text-center hover:bg-gray-800 rounded-lg p-2 transition-colors group cursor-pointer"
+  >
     <div className="aspect-square overflow-hidden rounded-full mx-auto" style={{ width: "200px", height: "200px" }}>
       <img
         src={release.imageUrl}
@@ -125,15 +128,16 @@ const FeaturedPlaylists = ({ playlists, navigate }) => (
 );
 
 // Updated Artists section with new circular cards
-const Artists = ({ releases }) => (
+const Artists = ({ releases , navigate}) => (
   <section className="my-10 relative">
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-3xl font-bold px-5">Browse Artists</h2>
     </div>
 
-    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4"
+    >
       {releases.map((release) => (
-        <ReleaseCard key={release.id} release={release} />
+        <ReleaseCard key={release.id} release={release} navigate={navigate} />
       ))}
     </div>
   </section>
@@ -431,6 +435,7 @@ const MusicHomepage = (params) => {
               imageUrl: response.image[Object.keys(response.image).length - 1].url,
               title: response.name,
               description: response.description,
+              songsCount:response.songCount,
               songs: response.songs
             };
           })
@@ -454,6 +459,7 @@ const MusicHomepage = (params) => {
               imageUrl: response.image[Object.keys(response.image).length - 1].url,
               title: response.name,
               description: response.description,
+              songsCount:10,
               songs: response.topSongs
             };
           })
@@ -492,13 +498,7 @@ const MusicHomepage = (params) => {
     setSearchQuery("");
   };
 
-  if (loading) {
-    return (
-      <div className="bg-gray-800 text-white flex justify-center items-center h-screen">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+   
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
@@ -529,7 +529,7 @@ const MusicHomepage = (params) => {
         <FeaturedPlaylists playlists={featuredPlaylists} navigate={navigate} />
 
         {/* New Releases */}
-        <Artists releases={_Artists} />
+        <Artists releases={_Artists} navigate = {navigate}/>
 
         {/* Genres */}
         <GenresSection genres={genres} />
