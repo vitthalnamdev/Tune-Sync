@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { verify_email } from "../services/operations/auth";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import Success from "../components/Sign_up_Component/Success";
 import Header_Signup from "../components/Sign_up_Component/Header_Signup";
@@ -10,7 +9,6 @@ import Submit from "../components/Sign_up_Component/Submit_button";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
-  const { loading } = useSelector((state) => state.auth);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
