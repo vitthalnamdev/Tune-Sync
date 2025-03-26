@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAudio } from './contexts/AudioProvider';
 
-const MusicPlayer = ({ song }) => {
+const MusicPlayer = () => {
   const { 
     audioRef,
     isPlaying, 
@@ -12,26 +12,34 @@ const MusicPlayer = ({ song }) => {
     loadSong,
     togglePlay,
     seekTo,
-    setAudioVolume
+    setAudioVolume,
+    nextSong,
+    prevSong,
   } = useAudio();
   const progressBarRef = useRef(null);
-  const [formattedDuration, setFormattedDuration] = useState("0:00");
+  const [formattedDuration, setFormattedDuration] = useState(currentSong.duration);
   
   // Load the song when component mounts or song changes
   useEffect(() => {
-    if (song && song.audioSrc) {
-      loadSong(song);
+    if (currentSong && currentSong.audioSrc) {
+      loadSong(currentSong);
     }
-  }, [song, loadSong]);
+  }, []);
   
   // Update formatted duration when duration changes
   useEffect(() => {
+    if (duration > 0 && (duration - currentTime < 0)) {
+       nextSong();
+    }
+  
     if (duration) {
       const minutes = Math.floor(duration / 60);
       const seconds = Math.floor(duration % 60);
       setFormattedDuration(`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
     }
-  }, [duration]);
+  }, [currentTime, duration]);
+  
+ 
   
   // Format time from seconds to MM:SS
   const formatTime = (timeInSeconds) => {
@@ -43,16 +51,6 @@ const MusicPlayer = ({ song }) => {
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Skip forward/backward by 10 seconds
-  const skipForward = () => {
-    const newTime = Math.min(currentTime + 10, duration);
-    seekTo(newTime);
-  };
-
-  const skipBackward = () => {
-    const newTime = Math.max(currentTime - 10, 0);
-    seekTo(newTime);
-  };
 
   // Handle volume change
   const handleVolumeChange = (e) => {
@@ -80,9 +78,9 @@ const MusicPlayer = ({ song }) => {
   };
 
   // Get title, artist, and cover image from the current song or the prop
-  const title = currentSong?.title || song?.title || "Unknown Title";
-  const artists = currentSong?.artists || song?.artists || "Unknown Artist";
-  const coverImage = currentSong?.coverImage || song?.coverImage || "coverImage.jpg";
+  const title = currentSong?.title || "Unknown Title";
+  const artists = currentSong?.artists || "Unknown Artist";
+  const coverImage = currentSong?.coverImage  || "coverImage.jpg";
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4">
@@ -109,7 +107,7 @@ const MusicPlayer = ({ song }) => {
         <div className="flex items-center space-x-4">
           <button
             className="text-gray-400 hover:text-white"
-            onClick={skipBackward}
+            onClick={()=>{prevSong()}}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +127,7 @@ const MusicPlayer = ({ song }) => {
 
           <button
             className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-purple-700 shadow-md transition-all duration-200"
-            onClick={togglePlay}
+            onClick={()=>{togglePlay()}}
           >
             {isPlaying ? (
               <svg
@@ -155,7 +153,7 @@ const MusicPlayer = ({ song }) => {
 
           <button
             className="text-gray-400 hover:text-white"
-            onClick={skipForward}
+            onClick={()=>{console.log("hello");nextSong()}}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

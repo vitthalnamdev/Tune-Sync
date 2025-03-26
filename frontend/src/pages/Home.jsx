@@ -7,6 +7,7 @@ import { fetchProfile } from "../services/operations/auth";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
+import Navbar from "../components/Navbar";
 
 
 
@@ -327,21 +328,14 @@ const Footer = () => (
   </footer>
 );
 
+ 
+
 // Main MusicHomepage component
 const MusicHomepage = (params) => {
   // Router hooks
   const [loading, setloading] = useState(true);
   const navigate = useNavigate();
-  const [song, setSong] = useState({
-    title: "Midnight Shadows",
-    artist: "Luna Ray",
-    coverImage: myImage,
-    audioSrc: "",
-    duration: 270,
-    currentTime: 0,
-    isPlaying: false,
-    audioRef: new Audio(),
-  });
+  
   // Extract data from location state or params
 
   const [_Artists, setArtists] = useState([
@@ -503,16 +497,13 @@ const MusicHomepage = (params) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header Component */}
-
+      <Navbar show = {"Home"}/>
       {/* Search Page Component (conditionally rendered) */}
       {showSearchPage && (
         <SearchPage
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onClose={closeSearchPage}
-          MusicPlayer={MusicPlayer}
-          setSong={setSong}
-          song={song}
         />
       )}
 
@@ -536,7 +527,7 @@ const MusicHomepage = (params) => {
       </main>
 
       {/* Music Player (fixed at bottom) */}
-      <MusicPlayer song={song} />
+      <MusicPlayer/>
 
       {/* Footer */}
       <Footer />

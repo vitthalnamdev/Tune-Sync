@@ -7,7 +7,7 @@ const Already_registered = () => {
         Already registered?{" "}
         <a
           href="/login"
-          className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors duration-150"
+          className="font-medium text-purple-500 hover:text-cyan-300 transition-colors duration-150"
         >
           Sign in to your account
         </a>

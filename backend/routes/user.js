@@ -12,6 +12,7 @@ const {
     IsValidEmail,
     IsValidUsername
 } = require("../controllers/Auth");
+const { resetPasswordToken  , resetPassword} = require("../controllers/ResetPassword");
 
   // Route for user login
 router.post("/login", login)
@@ -28,9 +29,11 @@ router.post("/validEmail" , IsValidEmail)
 
 router.post("/validUsername" , IsValidUsername)
 
-router.get("/profile", verifyToken, async (req, res) => {
+router.get("/profile", verifyToken , async (req, res) => {
   console.log("hello" , typeof verifyToken);
+  console.log("Getting here");
   try {
+    
       const user = await User.findById(req.user.id).select("-password"); // Exclude password
       if (!user) {
           return res.status(404).json({ success: false, message: "User not found" });
@@ -40,5 +43,8 @@ router.get("/profile", verifyToken, async (req, res) => {
       res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 });
+
+router.post("/update-password" , resetPasswordToken);
+router.post("/reset-password" , resetPassword);
 
 module.exports = router

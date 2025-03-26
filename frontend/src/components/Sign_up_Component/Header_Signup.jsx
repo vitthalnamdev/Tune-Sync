@@ -12,7 +12,7 @@ const Header_Signup = (params) => {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
         <div className="flex justify-center">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 p-3 shadow-lg shadow-indigo-500/30">
+          <div className="h-12 w-12 rounded-full bg-gradient-to-br bg-purple-400 p-3 shadow-lg shadow-indigo-500/30">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -29,7 +29,7 @@ const Header_Signup = (params) => {
             </svg>
           </div>
         </div>
-        <h1 className="mt-2 text-center text-2xl font-bold text-white">
+        <h1 className="mt-2 text-center text-2xl font-bold text-purple-500">
           Create Account
         </h1>
       </div>

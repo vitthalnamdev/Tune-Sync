@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { fetchSuggetions , fetchArtists} from "../services/operations/songsAPI";
 import myImage from "./coverImage.jpg";
 import Navbar from "../components/Navbar"
+import MusicPlayer from "./Music_player";
+import { useAudio } from "./contexts/AudioProvider";
 
 const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([]);
@@ -12,8 +14,11 @@ const SearchPage = (params) => {
     ...song,
     coverImageUrl: song.coverImageUrl ?? myImage, // Set default if null
   }));
+
+  const {loadSong} = useAudio();
+
   // Sample categories for search suggestions
- 
+   
 
   // Handle search when query changes
   useEffect(() => {
@@ -81,7 +86,7 @@ const SearchPage = (params) => {
   // Handle song selection
   const handleSongSelect = (song) => {
     // Format the song data for the MusicPlayer component
-    params.setSong({
+    loadSong({
       title: song.name || song.title,
       artists: song.artists,
       coverImage: song.coverImageUrl || myImage,
@@ -336,7 +341,7 @@ const SearchPage = (params) => {
       </div>
 
       {/* Music Player - Only show when a song is selected */}
-      <params.MusicPlayer song={params.song} />
+      <MusicPlayer/>
     </div>
   );
 };

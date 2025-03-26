@@ -1,55 +1,100 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from 'react';
+import FriendRequestForm from '../components/connect_components/FriendRequestForm';
+import PendingRequests from '../components/connect_components/PendingRequests';
+import FriendsList from '../components/connect_components/FriendsList';
 
-import { X, UserPlus, Users, Bell, Search } from "lucide-react";
-import FriendCard from "../components/connect_components/FriendCard";
-import {
-  accept_friend_request,
-  get_friends_list,
-  get_pedding_request,
-  remove_friend,
-  search_friend,
-  send_request,
-} from "../services/operations/friends";
+import Navbar from '../components/connect_components/Navbar';
 
-const ConnectPage = () => {
-  const [activeTab, setActiveTab] = useState("suggested");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [suggestedFriends, setSuggestedFriend] = useState([]);
+function ConnectPage() {
+  // Mock user data - would come from API in a real application
+  const mockUsers = [
+    { id: 1, username: 'alex123' },
+    { id: 2, username: 'taylor_smith' },
+    { id: 3, username: 'jordan42' },
+    { id: 4, username: 'casey_j' }
+  ];
+  
+  const currentUser = { id: 5, username: 'currentUser' };
+  
+  // State for pending requests and friends
+  const [pendingRequests, setPendingRequests] = useState([
+    { id: 1, from: mockUsers[0], to: currentUser, status: 'pending' },
+    { id: 2, from: mockUsers[1], to: currentUser, status: 'pending' }
+  ]);
+  
+  const [friends, setFriends] = useState([
+    { id: 1, user: mockUsers[2] },
+    { id: 2, user: mockUsers[3] }
+  ]);
 
-  const token = localStorage.getItem("token");
+  // State for active tab
+  const [activeTab, setActiveTab] = useState('friends'); // 'friends', 'pending', 'request'
 
-  useEffect(() => {
-    const search = async () => {
-      const response = await search_friend(token, searchQuery);
-      console.log("response-friend", response);
-      setSuggestedFriend(response.data);
-    };
-    search();
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const search = async () => {
-      const response = await get_pedding_request(token);
-      console.log("pending req", response);
-      setFriendRequests(response);
-    };
-    search();
-  }, []);
-
-  const handleTabChange = (tab) => setActiveTab(tab);
-
-  const updateFriend = (id) => {
-    setFriendRequests(friendRequests.filter((f) => f._id !== id));
+  // Function to send a friend request
+  const sendFriendRequest = (username) => {
+    // Check if user exists
+    const user = mockUsers.find(user => user.username === username);
+    
+    if (!user) {
+      alert('User not found');
+      return false;
+    }
+    
+    // Check if already friends
+    const alreadyFriend = friends.some(friend => friend.user.username === username);
+    
+    if (alreadyFriend) {
+      alert('You are already friends with this user');
+      return false;
+    }
+    
+    // Check if request is already pending
+    const requestPending = pendingRequests.some(
+      req => (req.from.username === username && req.to.username === currentUser.username) || 
+            (req.from.username === currentUser.username && req.to.username === username)
+    );
+    
+    if (requestPending) {
+      alert('A friend request is already pending with this user');
+      return false;
+    }
+    
+    // In a real app, this would send an API request
+    alert(`Friend request sent to ${username}`);
+    setActiveTab('friends'); // Go back to friends list after sending request
+    return true;
   };
 
-  const handleSendFriendReq = (userId) => {
-    setSuggestedFriend((prev) =>
-      prev.map((user) =>
-        user._id == userId ? { ...user, status: "pending" } : user
-      )
-    );
-    send_request(token, userId);
+  // Function to accept a friend request
+  const acceptFriendRequest = (requestId) => {
+    const request = pendingRequests.find(req => req.id === requestId);
+    
+    if (!request) return;
+    
+    // Add to friends list
+    const newFriend = {
+      id: Date.now(), // Simple way to generate unique ID
+      user: request.from
+    };
+    
+    setFriends([...friends, newFriend]);
+    
+    // Remove from pending requests
+    setPendingRequests(pendingRequests.filter(req => req.id !== requestId));
+    
+    alert(`You are now friends with ${request.from.username}`);
+  };
+
+  // Function to reject a friend request
+  const rejectFriendRequest = (requestId) => {
+    const request = pendingRequests.find(req => req.id === requestId);
+    
+    if (!request) return;
+    
+    // Remove from pending requests
+    setPendingRequests(pendingRequests.filter(req => req.id !== requestId));
+    
+    alert(`Friend request from ${request.from.username} rejected`);
   };
 
   return (
@@ -79,105 +124,25 @@ const ConnectPage = () => {
               size={18}
             />
           </div>
-        </div>
+        );
+    }
+  };
 
-        {/* Tabs */}
-        <div className="flex border-b max-w-[500px] border-gray-800">
-          <button
-            className={`flex-1 py-3 text-center font-medium ${
-              activeTab === "suggested"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-gray-300"
-            }`}
-            onClick={() => handleTabChange("suggested")}
-          >
-            <div className="flex items-center justify-center space-x-2">
-              <UserPlus size={18} />
-              <span>Suggested</span>
-            </div>
-          </button>
-          <button
-            className={`flex-1 py-3 text-center font-medium ${
-              activeTab === "requests"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-gray-300"
-            }`}
-            onClick={() => handleTabChange("requests")}
-          >
-            <div className="flex items-center justify-center space-x-2">
-              <Bell size={18} />
-              <span>Requests</span>
-              <span className="bg-blue-600 text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {friendRequests.length}
-              </span>
-            </div>
-          </button>
-        </div>
-
-        {/* Friend List */}
-        <div className="flex-1 w-[800px] overflow-y-auto p-4">
-          {activeTab === "suggested" ? (
-            suggestedFriends.length > 0 ? (
-              suggestedFriends.map((friend) => (
-                <FriendCard
-                  key={friend._id}
-                  friend={friend}
-                  handleSendFriendReq={handleSendFriendReq}
-                  isPending={false}
-                />
-              ))
-            ) : (
-              <div className="text-center text-gray-500 mt-10">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 mx-auto text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 0110 0M14 5a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <p className="mt-4">
-                  {searchQuery
-                    ? "No matches found"
-                    : "No suggested friends yet"}
-                </p>
-              </div>
-            )
-          ) : friendRequests.length > 0 ? (
-            friendRequests.map((friend) => (
-              <FriendCard
-                key={friend._id}
-                id={friend._id}
-                friend={friend.sender}
-                updateFriend={updateFriend}
-                isPending={true}
-              />
-            ))
-          ) : (
-            <div className="text-center text-gray-500 mt-10">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-16 w-16 mx-auto text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 0110 0M14 5a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <p className="mt-4">No pending requests</p>
-            </div>
-          )}
+  return (
+    <div className="min-h-screen bg-gray-900 text-gray-100">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold text-center py-8 text-purple-400">Friend Connection System</h1>
+        
+        <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden w-full">
+          <Navbar 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            pendingCount={pendingRequests.length}
+          />
+          
+          <div className="p-6">
+            {renderContent()}
+          </div>
         </div>
       </div>
 
