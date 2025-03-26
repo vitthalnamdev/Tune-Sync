@@ -110,7 +110,7 @@ const SignUpForm = () => {
 
   return (
     <div>
-        (
+        
         <div className="min-h-screen bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
           <Header_Signup />
           <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-md z-10">
@@ -143,7 +143,6 @@ const SignUpForm = () => {
           <div className="absolute top-0 left-0 h-full w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent opacity-30"></div>
           <div className="absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-indigo-500 to-transparent opacity-30"></div>
         </div>
-      )
     </div>
   );
 };
