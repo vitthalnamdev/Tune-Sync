@@ -11,15 +11,16 @@ import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import { fetchProfile } from "./services/operations/auth";
 import MusicPlayer from "./pages/Music_player"; 
-import { AudioProvider } from './services/AudioProvider';
+import { AudioProvider } from './pages/contexts/AudioProvider';
 import ConnectPage from "./pages/ConnectPage";
 import MyFriendButton from "./components/connect_components/MyFriendButton";
-
+import { QueueProvider } from "./pages/contexts/queueContext";
 function App() {
   return (
     <div className="bg-gray-900">
       <Navbar/>  
       <MyFriendButton/>
+     <QueueProvider>
      <AudioProvider>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -32,6 +33,7 @@ function App() {
         <Route path="connect-page" element = {<ConnectPage/>}/>
       </Routes>
       </AudioProvider>
+      </QueueProvider>
     </div>
   );
 }
