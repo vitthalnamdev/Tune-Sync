@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { login } from "../services/operations/auth";
 import { useProfile } from "./contexts/profileContext";
-import { useDispatch } from "react-redux";
 const LoginForm = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
