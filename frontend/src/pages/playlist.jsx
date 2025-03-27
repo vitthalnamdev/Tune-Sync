@@ -82,7 +82,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
       artists: getArtists(track.artists.primary),
       coverImage:
         track.image[Object.keys(track.image).length - 1].url ||
-        "https://via.placeholder.com/50",
+        myImage,
       audioSrc:
         track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || "",
       duration: track.duration,
@@ -102,7 +102,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
   
   // Add play all functionality
   const handlePlayAll = () => {
-    handleSongClick(playlistData.songs[0], 0);
+    handleSongClick(playlistData?.songs[0], 0);
   };
 
   return (
@@ -110,7 +110,9 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
       <Navbar show = {"Home"} />
       {/* Header with back button */}
       <header className="p-6 flex items-center">
-        <button className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
+        <button className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors"
+         onClick={() => window.history.back()}
+        >
           <ChevronLeft size={20} />
         </button>
         <h2 className="ml-4 text-xl font-medium">Playlist</h2>

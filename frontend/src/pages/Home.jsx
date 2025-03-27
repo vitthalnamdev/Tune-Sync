@@ -8,7 +8,7 @@ import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 import Navbar from "../components/Navbar";
-
+import {useAudio} from "./contexts/AudioProvider";
 
 
 
@@ -335,7 +335,9 @@ const MusicHomepage = (params) => {
   // Router hooks
   const [loading, setloading] = useState(true);
   const navigate = useNavigate();
-  
+  const {
+    isPlaying
+  } = useAudio();
   // Extract data from location state or params
 
   const [_Artists, setArtists] = useState([
@@ -383,36 +385,43 @@ const MusicHomepage = (params) => {
     "Country",
   ];
 
-  const [featuredPlaylists, setfeaturedPlaylists] = useState([
+  const [featuredPlaylists, setfeaturedPlaylists] = useState(
+
+    [
     {
       id: 1208889681,
       title: "Lofi Music",
       description: "Relax your mind",
       imageUrl: myImage,
+      songsCount:0
     },
     {
       id: 1219015193,
       title: "Old is gold",
       description: "Relaxing beats for your day",
       imageUrl: myImage,
+      songsCount:0
     },
     {
       id: 1139074020,
       title: "Love songs",
       description: "__",
       imageUrl: myImage,
+      songsCount:0
     },
     {
       id: 1219169738,
       title: "Indie Discoveries",
       description: "Fresh indie tracks for you",
       imageUrl: myImage,
+      songsCount:0
     },
     {
       id: 156710699,
       title: "Classic Rock",
       description: "Timeless rock anthems",
       imageUrl: myImage,
+      songsCount:0
     },
   ]);
 
@@ -420,6 +429,9 @@ const MusicHomepage = (params) => {
   useEffect(() => {
     const fetchAllPlaylists = async () => {
       try {
+        if(featuredPlaylists.songsCount > 0){
+           return;
+        }
         const updatedPlaylists = await Promise.all(
           featuredPlaylists.map(async (element) => {
             const response = await fetchPlaylist(element.id);
@@ -434,9 +446,8 @@ const MusicHomepage = (params) => {
             };
           })
         );
-
+         
         setfeaturedPlaylists(updatedPlaylists); // Update state with new array
-
       } catch (error) {
         console.error("Error fetching playlists:", error);
       }
@@ -458,6 +469,7 @@ const MusicHomepage = (params) => {
             };
           })
         );
+       
         setArtists(updatedArtists);
         setloading(false);
       } catch (error) {
@@ -497,7 +509,7 @@ const MusicHomepage = (params) => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header Component */}
-      <Navbar show = {"Home"}/>
+      <Navbar show = {"Home"}  isplaying = {isPlaying}/>
       {/* Search Page Component (conditionally rendered) */}
       {showSearchPage && (
         <SearchPage
