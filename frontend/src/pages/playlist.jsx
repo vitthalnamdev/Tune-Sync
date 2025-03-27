@@ -5,6 +5,7 @@ import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { useQueue } from "./contexts/queueContext";
 import { useAudio } from "./contexts/AudioProvider";
+import Navbar from "../components/Navbar";
 
 const totaltime = (songs) => {
   let time = 0;
@@ -101,13 +102,12 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
   
   // Add play all functionality
   const handlePlayAll = () => {
-    if (playlistData.songs && playlistData.songs.length > 0) {
-      handleSongClick(playlistData.songs[0], 0);
-    }
+    handleSongClick(playlistData.songs[0], 0);
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-black min-h-screen w-screen text-white font-sans">
+    <div className="bg-gradient-to-b from-gray-900 to-black min-h-screen w-full text-white font-sans overflow-x-hidden">
+      <Navbar show = {"Home"} />
       {/* Header with back button */}
       <header className="p-6 flex items-center">
         <button className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
@@ -124,7 +124,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
             <div className="relative group w-64 h-64 mb-8 shadow-2xl">
               <img
                 src={
-                  playlistData?.imageUrl || "https://via.placeholder.com/150"
+                  playlistData?.imageUrl || myImage
                 }
                 alt="Playlist Cover"
                 className="w-full h-full object-cover rounded-lg shadow-lg"
@@ -149,7 +149,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
             <div className="flex items-center gap-3 mb-8">
               <span className="text-gray-400 text-sm">
                 {playlistData?.songsCount || 0} songs • Approximately{" "}
-                {totaltime(playlistData.songs)}
+                {totaltime(playlistData?.songs || [])}
               </span>
             </div>
 
@@ -172,16 +172,16 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
               {similarPlaylists?.map((playlist) => (
                 <div
-                  key={playlist.id}
+                  key={playlist?.id || 0}
                   className="group flex items-center p-3 rounded-lg hover:bg-gray-800/50 transition-colors cursor-pointer"
                 >
                   <img
-                    src={playlist.image || "https://via.placeholder.com/150"}
-                    alt={playlist.playlist_name}
+                    src={playlist?.image || myImage}
+                    alt={playlist?.playlist_name || "Playlist"}
                     className="w-16 h-16 rounded-md shadow-md mr-3"
                   />
                   <span className="text-gray-300 group-hover:text-white transition-colors text-sm font-medium">
-                    {playlist.playlist_name}
+                    {playlist?.playlist_name || "Unknown Playlist"}
                   </span>
                 </div>
               ))}
