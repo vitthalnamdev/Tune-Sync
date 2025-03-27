@@ -14,12 +14,14 @@ import ConnectPage from "./pages/ConnectPage";
 import ForgotPasswordForm from "./pages/ForgotPassword";
 import ResetPasswordForm from "./pages/resetPassword";
 import { ProfileProvider } from "./pages/contexts/profileContext";
+import MyFriendButton from "./components/connect_components/MyFriendButton";
 
 function App() {
   const location = useLocation(); // Get current route
   console.log("HELLO Beautiful");
   return (
     <div>
+      <MyFriendButton/>
       <ProfileProvider>
         {/* Conditionally render Navbar only on the homepage */}
         <QueueProvider>
