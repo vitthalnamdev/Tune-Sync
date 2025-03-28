@@ -22,7 +22,13 @@ const MusicPlayer = () => {
   const [formattedDuration, setFormattedDuration] = useState(
     currentSong.duration
   );
-  const [isLiked, setIsLiked] = useState(false);
+
+  const isPresent = (song) => {
+    const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
+    return likedSongs.some((likedSong) => likedSong.id === song.id);
+  }
+
+  const [isLiked, setIsLiked] = useState(isPresent(currentSong));
   // Load the song when component mounts or song changes
   useEffect(() => {
     if (currentSong && currentSong.audioSrc) {
@@ -82,12 +88,14 @@ const MusicPlayer = () => {
 
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
+    console.log("check is isliked" , isLiked);
     const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
-    if(isLiked){
+    if(!isLiked){
       likedSongs.push(currentSong);
     }else{
       likedSongs.splice(likedSongs.indexOf(currentSong), 1);
     }
+    console.log("checking Songs" , likedSongs);
     localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
   };
 

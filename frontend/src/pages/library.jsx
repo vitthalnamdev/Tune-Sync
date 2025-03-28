@@ -14,7 +14,7 @@ const MusicLibrary = () => {
   // Mock function to simulate fetching liked songs and playlists
   useEffect(() => {
     // In a real app, this would be API calls
-    const mockLikedSongs = [
+    const mockLikedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [
       {
         id: '1',
         name: 'Blinding Lights',
@@ -110,16 +110,16 @@ const MusicLibrary = () => {
               </div>
               <div className="col-span-7 flex items-center">
                 <img
-                  src={track.image[2].url || "https://via.placeholder.com/50"}
-                  alt={track.name}
+                  src={track.coverImage|| myImage}
+                  alt={track.title}
                   className="w-10 h-10 rounded shadow-md mr-3"
                 />
                 <h3 className="font-medium text-white group-hover:text-green-400 transition-colors">
-                  {track.name}
+                  {track.title}
                 </h3>
               </div>
               <div className="col-span-3 text-sm text-gray-400 truncate">
-                {track.artists.primary[0].name}
+                {track.artists}
               </div>
               <div className="col-span-1 flex justify-end items-center gap-3">
                 <span className="text-sm text-gray-400">
