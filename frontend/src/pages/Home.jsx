@@ -1,5 +1,5 @@
 // line 536 may be a part of doubt , when token expires or I want to open Id of some other guy.
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Navbar";
 import SearchPage from "./Search";
@@ -8,10 +8,7 @@ import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 import Navbar from "../components/Navbar";
-
-
-
-
+import { io } from "socket.io-client";
 
 
 // Component for the hero section
@@ -417,6 +414,8 @@ const MusicHomepage = (params) => {
   ]);
 
 
+
+
   useEffect(() => {
     const fetchAllPlaylists = async () => {
       try {
@@ -491,8 +490,8 @@ const MusicHomepage = (params) => {
     setShowSearchPage(false);
     setSearchQuery("");
   };
-
-   
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">

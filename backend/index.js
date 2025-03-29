@@ -5,11 +5,11 @@ const dbConnect = require("./config/databse");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
+const socketConnection = require("./config/socketConnetion");
 
 require("dotenv").config();
 const PORT=process.env.PORT || 4000;
 
-dbConnect();
 app.use(express.json());
 app.use(cookieParser());
 
@@ -24,16 +24,20 @@ app.use(
 
 const userRoutes = require("./routes/user");
 const songRoutes = require("./routes/song");
-const friendRoutes = require("./routes/friends")
+const friendRoutes = require("./routes/friends");
+const messageRoutes = require("./routes/messageRoute");
 
 app.use("/api/v1/auth",userRoutes);
 app.use("/api/v1/songs",songRoutes);
 app.use("/api/v1/friend",friendRoutes);
+app.use("/api/v1/messages",messageRoutes);
 // cloudinaryConnect();
 dbConnect();
 app.get("/" , (req , res)=>{
     res.send("Hello from server");
 })
-app.listen(PORT,()=>{
+const server = app.listen(PORT,()=>{
     console.log(`server started successfully at ${PORT}`);
 });
+
+socketConnection(server);

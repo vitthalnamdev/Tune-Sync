@@ -24,3 +24,9 @@ export const friendEndpoints = {
     REMOVE_FRIEND : BASE_URL + "friend/remove_friend",
     GET_PEDDING_REQUEST : BASE_URL + "friend/get_pedding_request"
 }
+
+export const messageEndpoints = {
+    SEND_MESSAGE : BASE_URL + "messages/addmsg",
+    GET_MESSAGE : BASE_URL + "messages/getmsg",
+    CHECK_LAST_ONLINE: BASE_URL + "messages/lastOnline",
+}

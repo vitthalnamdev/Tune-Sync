@@ -30,7 +30,8 @@ const userSchema=new mongoose.Schema(
         },
         resetPasswordExpires:{
             type:Date
-        }
+        },
+        lastOnline: Date,
     }, { timestamps: true }
 );
 

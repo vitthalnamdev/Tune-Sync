@@ -1,20 +1,26 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import FriendsList from "./FriendsList";
 import { X, Users } from "lucide-react";
+import { useSocket } from "../../pages/contexts/SocketContext";
 import {
-  
   get_friends_list,
-  
   remove_friend,
-  
 } from "../../services/operations/friends";
+import ChatContainer from "./ChatContainer";
 
 const MyFriendButton = () => {
   // Function to remove a friend
   const [isOpen, setIsOpen] = useState(false);
   const [friends, setFriends] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [currentChat, setCurrentChat] = useState([]);
+  const [isChatOpen,setIsChatOpen] = useState(false);
   // Fetch friends
   const token = localStorage.getItem("token");
+
+  const currentUser = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : [];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -29,9 +35,24 @@ const MyFriendButton = () => {
       }
     };
     fetch();
-  }, [isOpen]);
+  }, [isOpen, onlineUsers]);
 
-  
+  //get online users ids
+  const socket = useSocket();
+  console.log(socket);
+  useEffect(() => {
+    socket.emit("getAll-user");
+    socket.on("recieve-user", (data) => {
+      setOnlineUsers(data);
+    });
+
+    return () => {
+      if (socket) {
+        socket.off("recieve-user");
+      }
+    };
+  }, []);
+
   const removeFriend = (friendId) => {
     const friend = friends.find((f) => f._id === friendId);
     if (!friend) return;
@@ -40,6 +61,16 @@ const MyFriendButton = () => {
     setFriends(friends.filter((f) => f._id !== friendId));
     remove_friend(token, friendId);
   };
+
+  const changeChatUser = (data) => {
+    console.log("currentchat user", data);
+    setCurrentChat(data);
+    setIsChatOpen(true);
+  };
+
+  const closeChatBox = (data)=>{
+    setIsChatOpen(false);
+  }
 
   return (
     <div className=" relative z-50">
@@ -65,7 +96,7 @@ const MyFriendButton = () => {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-3 w-full mx-auto">
+        <div className="p-3 relative w-full mx-auto">
           <div className=" flex border-b border-gray-700 mb-4 justify-between items-start">
             <h2 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
               My Friends
@@ -77,7 +108,27 @@ const MyFriendButton = () => {
               <X size={24} />
             </button>
           </div>
-          <FriendsList friends={friends} onRemove={removeFriend} />
+          <div className=" relative scrollbar-thin z-10">
+            <FriendsList
+              friends={friends}
+              onlineUsers={onlineUsers}
+              onRemove={removeFriend}
+              changeChatUser={changeChatUser}
+            />
+          </div>
+          
+            <div
+              className={`fixed z-30 top-0 left-0 border border-gray-600 rounded-md   h-[620px] w-[360px] bg-gradient-to-b from-gray-900 via-gray-800 to-black shadow-2xl transform transition-transform duration-500 ease-in-out scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-900 ${
+                isChatOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+            > 
+              <ChatContainer
+                currentChat={currentChat}
+                currentUser={currentUser}
+                closeChatBox= {closeChatBox}
+              />
+            </div>
+          
         </div>
       </div>
     </div>
