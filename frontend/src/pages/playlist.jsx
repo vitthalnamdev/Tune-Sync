@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Play, Clock, Heart, MoreHorizontal, ChevronLeft } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { useQueue } from "./contexts/queueContext";
@@ -65,6 +65,8 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
     peekprev,
     sizeprev,
   } = useQueue();
+
+  const navigate = useNavigate();
   
   const {
     loadSong,
@@ -110,7 +112,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
       <Navbar show = {"Home"} />
       {/* Header with back button */}
       <header className="p-6 flex items-center">
-        <button className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
+        <button onClick={()=> navigate(-1)} className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
           <ChevronLeft size={20} />
         </button>
         <h2 className="ml-4 text-xl font-medium">Playlist</h2>

@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { PlusIcon } from "lucide-react";
+import { AiTwotoneMessage } from "react-icons/ai";
+import { BsChatDots } from "react-icons/bs";
 
-function FriendsList({ friends,onlineUsers, onRemove,openChatBox ,changeChatUser}) {
- 
+function FriendsList({
+  friends,
+  onlineUsers,
+  onRemove,
+  openChatBox,
+  changeChatUser,
+}) {
   if (friends.length === 0) {
     return (
       <div className="bg-gray-700 rounded-lg p-8 text-center">
@@ -11,10 +18,10 @@ function FriendsList({ friends,onlineUsers, onRemove,openChatBox ,changeChatUser
     );
   }
 
-  const changeUserChat = (friend)=>{
-       changeChatUser(friend)
-       openChatBox(true);
-  }
+  const changeUserChat = (friend) => {
+    changeChatUser(friend);
+    openChatBox(true);
+  };
 
   return (
     <div className=" ">
@@ -22,14 +29,17 @@ function FriendsList({ friends,onlineUsers, onRemove,openChatBox ,changeChatUser
         {friends.map((friend) => (
           <li
             key={friend._id}
-            onClick={()=>changeUserChat(friend)}
             className="p-4 mb-2 cursor-pointer bg-gray-800 rounded-lg flex justify-between items-center"
           >
             <div className="flex items-center">
               <div className=" relative flex items-center justify-center mr-3">
                 <img className="w-12 h-12 rounded-full" src={friend.image} />
                 <span
-                 className={`${onlineUsers.includes(friend._id) ? "bg-green-500":"bg-red-500"} w-[15px] h-[15px] border-2 border-[#3a364f] rounded-full absolute bottom-[3px] right-[-3px] `}
+                  className={`${
+                    onlineUsers.includes(friend._id)
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                  } w-[15px] h-[15px] border-2 border-[#3a364f] rounded-full absolute bottom-[3px] right-[-3px] `}
                 ></span>
               </div>
               <div className="">
@@ -43,9 +53,14 @@ function FriendsList({ friends,onlineUsers, onRemove,openChatBox ,changeChatUser
             >
               Remove
             </button> */}
-            <button>
-              <PlusIcon color="white"/>
-            </button>
+            <div className=" flex gap-3">
+              <button onClick={() => changeUserChat(friend)}>
+              <BsChatDots className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200" size={24} />
+              </button>
+              <button>
+                <PlusIcon className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200" size={24} />
+              </button>
+            </div>
           </li>
         ))}
       </ul>

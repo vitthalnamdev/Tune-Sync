@@ -139,7 +139,7 @@ const ChatContainer = ({
       <div className="flex justify-between items-center p-4">
         <div className="flex items-center gap-4">
           <div onClick={() => closeChatBox(false)}>
-            <IoMdArrowRoundBack color="white" size={25} />
+            <IoMdArrowRoundBack className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200" size={24} size={25} />
           </div>
           <div>
             <img src={currentChat.image} alt="" className="h-12 rounded-full" />
