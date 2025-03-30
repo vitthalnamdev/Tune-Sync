@@ -31,13 +31,14 @@ const socketConnection = (server) => {
       for (let [userId, id] of onlineUsers.entries()) {
         if (id === socket.id) {
           onlineUsers.delete(userId);
+          const user = await User.findByIdAndUpdate(userId,{lastOnline:new Date()});
+          console.log("ofline",user);
           // Notify all clients that this user is offline
           io.emit("user-offline", userId);
           //send all online user list to all user
           const onlineUserIds = Array.from(onlineUsers.keys());
           io.emit("recieve-user", onlineUserIds);
-          const user = await User.findByIdAndUpdate(userId,{lastOnline:new Date()});
-          console.log("ofline",user);
+          
           break;
         }
       }
@@ -47,7 +48,7 @@ const socketConnection = (server) => {
       const sendUserSocket = onlineUsers.get(data.to);
       console.log("msg",data);
       if (sendUserSocket) {
-        socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+        socket.to(sendUserSocket).emit("msg-recieve", data);
       }
     });
 

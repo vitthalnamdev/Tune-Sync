@@ -6,6 +6,6 @@ const { addMessage, getMessages,lastOnlineTime } = require("../controllers/messa
 
 router.post("/addmsg", addMessage);
 router.post("/getmsg", getMessages);
-router.get("/lastOnline",lastOnlineTime);
+router.post("/lastOnline",lastOnlineTime);
 
 module.exports = router;

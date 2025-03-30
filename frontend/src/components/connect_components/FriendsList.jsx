@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PlusIcon } from "lucide-react";
 
-function FriendsList({ friends,onlineUsers, onRemove ,changeChatUser}) {
+function FriendsList({ friends,onlineUsers, onRemove,openChatBox ,changeChatUser}) {
  
   if (friends.length === 0) {
     return (
@@ -11,14 +11,19 @@ function FriendsList({ friends,onlineUsers, onRemove ,changeChatUser}) {
     );
   }
 
+  const changeUserChat = (friend)=>{
+       changeChatUser(friend)
+       openChatBox(true);
+  }
+
   return (
     <div className=" ">
       <ul className="divide-y divide-gray-600">
         {friends.map((friend) => (
           <li
             key={friend._id}
-            onClick={()=>changeChatUser(friend)}
-            className="p-4 mb-2 bg-gray-800 rounded-lg flex justify-between items-center"
+            onClick={()=>changeUserChat(friend)}
+            className="p-4 mb-2 cursor-pointer bg-gray-800 rounded-lg flex justify-between items-center"
           >
             <div className="flex items-center">
               <div className=" relative flex items-center justify-center mr-3">

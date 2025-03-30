@@ -7,6 +7,8 @@ import {
   remove_friend,
 } from "../../services/operations/friends";
 import ChatContainer from "./ChatContainer";
+import Notification from "./Notification";
+import notificationAudio from "./audio/notification.wav"
 
 const MyFriendButton = () => {
   // Function to remove a friend
@@ -15,6 +17,7 @@ const MyFriendButton = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState([]);
   const [isChatOpen,setIsChatOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState(null);
   // Fetch friends
   const token = localStorage.getItem("token");
 
@@ -62,18 +65,47 @@ const MyFriendButton = () => {
     remove_friend(token, friendId);
   };
 
+  const dismissNotification = () => {
+    setNotificationMessage(null);
+  };
+
   const changeChatUser = (data) => {
     console.log("currentchat user", data);
     setCurrentChat(data);
     setIsChatOpen(true);
+    setIsOpen(true);
+    dismissNotification()
   };
 
   const closeChatBox = (data)=>{
     setIsChatOpen(false);
   }
 
+  const openChatBox = (data)=>{
+    setIsChatOpen(true);
+  }
+
+  
+
+  useEffect(() => {
+    if (notificationMessage) {
+      const audio = new Audio(notificationAudio);
+      audio.play();
+    }
+  }, [notificationMessage]);
+    
+
   return (
-    <div className=" relative z-50">
+    <div className=" relative z-40">
+      {/* //notification */}
+      { notificationMessage &&
+        <Notification
+          message={notificationMessage}
+          onClose={dismissNotification}
+          friends = {friends}
+          changeChatUser= {changeChatUser}
+        />
+      }
       <button
         onClick={toggleSidebar}
         className={`fixed ${
@@ -113,6 +145,7 @@ const MyFriendButton = () => {
               friends={friends}
               onlineUsers={onlineUsers}
               onRemove={removeFriend}
+              openChatBox= {openChatBox}
               changeChatUser={changeChatUser}
             />
           </div>
@@ -126,6 +159,8 @@ const MyFriendButton = () => {
                 currentChat={currentChat}
                 currentUser={currentUser}
                 closeChatBox= {closeChatBox}
+                isChatOpen = {isChatOpen}
+                setNotificationMessage={setNotificationMessage}
               />
             </div>
           

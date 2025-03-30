@@ -1,21 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import ChatInput from "./ChatInput";
-import { sendMessage, getMessages, checkLastOnline } from "../../services/operations/messages";
+import {
+  sendMessage,
+  getMessages,
+  checkLastOnline,
+} from "../../services/operations/messages";
 
 import { useSocket } from "../../pages/contexts/SocketContext";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import Notification from "./Notification";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
 
-const ChatContainer = ({ currentChat, currentUser,closeChatBox }) => {
+const ChatContainer = ({
+  currentChat,
+  currentUser,
+  closeChatBox,
+  isChatOpen,
+  setNotificationMessage,
+}) => {
   const scrollRef = useRef();
   const [messages, setMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [isOnline, setIsOnline] = useState(false);
-  const [lastOnline,setLastOnline] = useState();
+  const [lastOnline, setLastOnline] = useState(null);
   const socket = useSocket();
 
   useEffect(() => {
@@ -62,37 +73,55 @@ const ChatContainer = ({ currentChat, currentUser,closeChatBox }) => {
       to: currentChat._id,
       message: msg,
     });
-     console.log("send message",response);
+    console.log("send message", response);
 
     setMessages([...messages, { fromSelf: true, message: msg }]);
   };
 
   useEffect(() => {
-      const fatch = async()=>{
-        const response = checkLastOnline({userId: currentChat._id});
+    const fatch = async () => {
+      if (currentChat) {
+        const response = await checkLastOnline(currentChat._id);
+        setLastOnline(response.lastOnline);
       }
-  },[isOnline]);
+    };
+    fatch();
+  }, [isOnline, currentChat]);
 
   useEffect(() => {
     const fetchMessages = async () => {
-        console.log( currentUser._id, currentChat._id);
+      console.log(currentUser._id, currentChat._id);
       const response = await getMessages({
         from: currentUser._id,
         to: currentChat._id,
       });
-      console.log("messages",response);
+      console.log("messages", response);
       if (response.data) setMessages(response.data);
     };
     fetchMessages();
   }, [currentChat]);
 
+  
+  const isChatOpenRef = useRef(isChatOpen);
   useEffect(() => {
-    if (socket) {
-      socket.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
-      });
+    // Create a ref to track isChatOpen
+  isChatOpenRef.current = isChatOpen; // Update the ref whenever isChatOpen changes
+
+  socket.on("msg-recieve", (msg) => {
+    setArrivalMessage({ fromSelf: false, message: msg.msg });
+    console.log("bahar", isChatOpenRef.current);
+    if (isChatOpenRef.current === false) {
+      console.log("andar", isChatOpenRef.current);
+      setNotificationMessage(msg);
     }
-  }, []);
+  });
+
+  return () => {
+    socket.off("msg-recieve");
+  };
+
+    
+  }, [isChatOpen]);
 
   useEffect(() => {
     if (arrivalMessage) setMessages((prev) => [...prev, arrivalMessage]);
@@ -103,25 +132,27 @@ const ChatContainer = ({ currentChat, currentUser,closeChatBox }) => {
   }, [messages]);
 
   // Format the timestamp using dayjs
-  const formattedTime = dayjs(currentChat.lastOnline).fromNow();
+  const formattedTime = dayjs(lastOnline ? lastOnline : currentChat.lastOnline).fromNow();
 
   return (
-    <div className="grid grid-rows-[10%_80%_10%] gap-1 h-full overflow-hidden md:grid-rows-[15%_70%_15%]">
+    <div className="grid  gap-1 h-full overflow-hidden grid-rows-[15%_70%_15%]">
       <div className="flex justify-between items-center p-4">
         <div className="flex items-center gap-4">
-          <div
-           onClick={()=>closeChatBox(false)}
-          ><IoMdArrowRoundBack color="white" size={25}/></div>
-          <div>
-            <img
-              src={currentChat.image}
-              alt=""
-              className="h-12 rounded-full"
-            />
+          <div onClick={() => closeChatBox(false)}>
+            <IoMdArrowRoundBack color="white" size={25} />
           </div>
           <div>
-            <h3 className="text-white text-lg">{currentChat.firstName} {currentChat.lastName}</h3>
-            <span className={`${isOnline ? "text-green-500" : "text-red-500"} text-sm`}>
+            <img src={currentChat.image} alt="" className="h-12 rounded-full" />
+          </div>
+          <div>
+            <h3 className="text-white text-lg">
+              {currentChat.firstName} {currentChat.lastName}
+            </h3>
+            <span
+              className={`${
+                isOnline ? "text-green-500" : "text-red-500"
+              } text-sm`}
+            >
               {isOnline ? "Online" : formattedTime}
             </span>
           </div>

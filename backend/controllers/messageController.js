@@ -42,8 +42,9 @@ module.exports.addMessage = async(req,res)=>{
 module.exports.lastOnlineTime = async(req,res)=>{
     try {
         const {userId} = req.body;
-        
+        console.log("for last",userId);
         const user = await User.findById(userId);
+        console.log("user",user);
         return res.json({lastOnline : user.lastOnline});
     } catch (error) {
         return res.json({error:error});

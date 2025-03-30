@@ -25,8 +25,13 @@ export const getMessages = async(data)=>{
 
 export const checkLastOnline = async(data)=>{
     try {
-        const response = await apiConnector("GET",CHECK_LAST_ONLINE,data);
-        return response.data;
+        
+        if(data){
+            const response = await apiConnector("POST",CHECK_LAST_ONLINE,{userId:data});
+            console.log("last online",response);
+            return response.data;
+        }
+        
     } catch (error) {
         console.log(error);
     }
