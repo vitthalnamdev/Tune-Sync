@@ -45,7 +45,6 @@ const SearchPage = (params) => {
       }
       return updatedArtists;
     }
- 
     // Fetch suggestions after a short delay
     const timer = setTimeout(async () => {
       try {
@@ -57,8 +56,9 @@ const SearchPage = (params) => {
               title: song.name ?? "Placeholder",
               coverImageUrl: song.image[Object.keys(song.image).length - 1].url ?? myImage, 
               downloadUrl: song.downloadUrl[Object.keys(song.downloadUrl).length - 1].url,
-              artists:getArtists(song.artists.primary),
-              duration:song.duration
+              artists:getArtists(song?.artists?.primary || []),
+              duration:song?.duration,
+              id: song?.id || null,
             }))
           : [];
         setTopResults(updatedUsers || []);
@@ -86,12 +86,14 @@ const SearchPage = (params) => {
   // Handle song selection
   const handleSongSelect = (song) => {
     // Format the song data for the MusicPlayer component
+          
     loadSong({
       title: song.name || song.title,
       artists: song.artists,
       coverImage: song.coverImageUrl || myImage,
       audioSrc: song.downloadUrl || "",
       duration: song.duration || 180, // Default to 3 minutes if duration not available
+      id: song.id || null,
     });
   };
 

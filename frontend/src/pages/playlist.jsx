@@ -7,6 +7,40 @@ import { useQueue } from "./contexts/queueContext";
 import { useAudio } from "./contexts/AudioProvider";
 import Navbar from "../components/Navbar";
 
+export const handleSongClick = (track, index , clearnext , loadSong , enqueuenext , playlistData , currentSong , seekTo) => {
+  // Clear queue before adding new songs
+  
+  // Prepare current song data
+  const songData = {
+    title: track?.name || track?.title || "Unknown Title",
+    artists: track?.artists?.primary ? getArtists(track.artists.primary) : track.artists,
+    coverImage:
+      track?.image?.[Object.keys(track.image).length - 1]?.url || track?.coverImage || myImage,
+    audioSrc:
+      track?.downloadUrl?.[Object.keys(track.downloadUrl).length - 1]?.url || track.audioSrc || "" , 
+    duration: track.duration,
+    currentTime: 0,
+    isPlaying: true,
+    id: track.id, // Add the song ID to highlight the current track
+  };
+  console.log("checking" , songData , currentSong);
+  if(songData.audioSrc===currentSong.audioSrc){
+    console.log("ISEQUAL");
+    seekTo(0);
+    return;
+  }
+  clearnext();
+  // Load the song
+  loadSong(songData);
+  
+  // Add remaining songs to queue one by one
+  const length = playlistData?.songs ? Object.keys(playlistData.songs).length : Object.keys(playlistData).length;
+  for (let i = index + 1; i < length; i++) {
+    enqueuenext(playlistData.songs[i]);
+  }
+};
+
+
 const totaltime = (songs) => {
   let time = 0;
 
@@ -71,40 +105,16 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
   const {
     loadSong,
     currentSongId,
-    isPlaying
+    isPlaying,
+    seekTo,
+    currentSong
   } = useAudio();
   
-  const handleSongClick = (track, index) => {
-    // Clear queue before adding new songs
-    clearnext();
-
-    // Prepare current song data
-    const songData = {
-      title: track.name,
-      artists: getArtists(track.artists.primary),
-      coverImage:
-        track.image[Object.keys(track.image).length - 1].url ||
-        "https://via.placeholder.com/50",
-      audioSrc:
-        track.downloadUrl[Object.keys(track.downloadUrl).length - 1].url || "",
-      duration: track.duration,
-      currentTime: 0,
-      isPlaying: true,
-      id: track.id // Add the song ID to highlight the current track
-    };
-    
-    // Load the song
-    loadSong(songData);
-    
-    // Add remaining songs to queue one by one
-    for (let i = index + 1; i < Object.keys(playlistData.songs).length; i++) {
-      enqueuenext(playlistData.songs[i]);
-    }
-  };
+   
   
   // Add play all functionality
   const handlePlayAll = () => {
-    handleSongClick(playlistData.songs[0], 0);
+    handleSongClick(playlistData?.songs[0], 0 , clearnext , loadSong , enqueuenext , playlistData , currentSong , seekTo);
   };
 
   return (
@@ -112,7 +122,9 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
       <Navbar show = {"Home"} />
       {/* Header with back button */}
       <header className="p-6 flex items-center">
-        <button onClick={()=> navigate(-1)} className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
+        <button className="p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors"
+         onClick={() => window.history.back()}
+        >
           <ChevronLeft size={20} />
         </button>
         <h2 className="ml-4 text-xl font-medium">Playlist</h2>
@@ -215,7 +227,7 @@ const Playlist = ({ playlistData, similarPlaylists }) => {
                 }`}
                 onMouseEnter={() => setHoveredTrack(track.id)}
                 onMouseLeave={() => setHoveredTrack(null)}
-                onClick={() => handleSongClick(track, index)}
+                onClick={() => handleSongClick(track, index , clearnext , loadSong , enqueuenext , playlistData , currentSong , seekTo)}
               >
                 <div className="col-span-1 text-center flex justify-center">
                   {hoveredTrack === track.id ? (

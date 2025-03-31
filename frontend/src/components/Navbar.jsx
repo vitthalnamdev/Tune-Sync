@@ -98,46 +98,45 @@ const Header = ({show}) => {
             <nav className="hidden md:block">
               <ul className="flex space-x-8">
                 <li>
-                  <a
-                    href="/"
+                  <div
                     className={`${
                      ( show === "Home") ? "text-white" : "text-gray-400"
-                    } font-medium hover:text-white transition-colors`}
+                    } font-medium hover:text-white transition-colors cursor-pointer`}
+                    onClick={() => navigate("/")}
                   >
                     Home
-                  </a>
+                  </div>
                 </li>
                 <li>
-                  <a
-                    href="/connect-page"
+                  <div
                     className={`${
                       show === "Connect" ? "text-white" : "text-gray-400"
-                    } font-medium hover:text-white transition-colors`}
+                    } font-medium hover:text-white transition-colors cursor-pointer`}
+                    onClick={() => navigate("/connect-page")}
                   >
                     Connect
-                  </a>
+                  </div>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    onClick={() => setCurrentTab("Library")}
+                  <div
                     className={`${
-                      currentTab === "Library" ? "text-white" : "text-gray-400"
-                    } font-medium hover:text-white transition-colors`}
+                      show === "Library" ? "text-white" : "text-gray-400"
+                    } font-medium hover:text-white transition-colors cursor-pointer`}
+                    onClick={() => navigate("/library")}
                   >
                     Library
-                  </a>
+                  </div>
                 </li>
                 <li>
-                  <a
+                  <div
                     href="#"
                     onClick={() => setCurrentTab("Artists")}
                     className={`${
                       currentTab === "Artists" ? "text-white" : "text-gray-400"
-                    } font-medium hover:text-white transition-colors`}
+                    } font-medium hover:text-white transition-colors cursor-pointer`}
                   >
                     Artists
-                  </a>
+                  </div>
                 </li>
               </ul>
             </nav>
