@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAudio } from "./contexts/AudioProvider";
 import { useLocation } from "react-router";
+import { set } from "mongoose";
  
 
 const MusicPlayer = () => {
@@ -35,6 +36,10 @@ const MusicPlayer = () => {
       loadSong(currentSong);
     }
   }, []);
+
+  useEffect(() =>{
+     setIsLiked(isPresent(currentSong));
+  } , [currentSong]);
 
   // Update formatted duration when duration changes
   useEffect(() => {

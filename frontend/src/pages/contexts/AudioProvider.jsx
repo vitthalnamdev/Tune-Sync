@@ -20,14 +20,18 @@ export const AudioProvider = ({ children }) => {
           coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
           audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
           duration: 261,
-          id: null
+          id: null,
+          isLiked: false,
         }
   );
   const [currentTime, setCurrentTime] = useState(parseFloat(localStorage.getItem("currTime")) || 0);
   const [currentSongId, setCurrentSongId] = useState(null);
   
   const audioRef = useRef(new Audio(currentSong.audioSrc));
-   
+  const isPresent = (song) => {
+    const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
+    return likedSongs.some((likedSong) => likedSong.id === song.id);
+  } 
   const [duration, setDuration] = useState(currentSong.duration);
   const [volume, setVolume] = useState(0.7);
   const {
@@ -103,7 +107,7 @@ export const AudioProvider = ({ children }) => {
   // Load and play a song
   function loadSong(song) {
     const audio = audioRef.current;
-  
+    
     // If it's the same song that was already loaded, don't reload
     if (currentSong && song.audioSrc === currentSong.audioSrc) {
       return;

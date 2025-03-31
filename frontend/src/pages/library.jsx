@@ -4,13 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import myImage from './coverImage.jpg'; // Placeholder image
 import MusicPlayer from './Music_player';
+import { useQueue } from './contexts/queueContext';
+import { handleSongClick } from './playlist';
+import { useAudio } from './contexts/AudioProvider';
 
 const MusicLibrary = () => {
   const [activeTab, setActiveTab] = useState('songs'); // 'songs' or 'playlists'
   const [likedSongs, setLikedSongs] = useState([]);
   const [likedPlaylists, setLikedPlaylists] = useState([]);
   const navigate = useNavigate();
-
+  //track, index , clearnext , loadSong , enqueuenext , playlistData
+  const {
+    clearnext , 
+    enquenext
+  } = useQueue();
+  const {
+    loadSong , 
+    currentSong,
+    seekTo
+  } = useAudio();
   // Mock function to simulate fetching liked songs and playlists
   useEffect(() => {
     // In a real app, this would be API calls
@@ -31,7 +43,7 @@ const MusicLibrary = () => {
       },
       // More mock songs...
     ];
-
+    
     const mockLikedPlaylists = [
       {
         id: '1',
@@ -57,19 +69,7 @@ const MusicLibrary = () => {
   }, []);
 
   const handlePlayAllSongs = () => {
-    if (likedSongs.length > 0) {
-      navigate('/playlist', { 
-        state: { 
-          playlist: {
-            title: 'Liked Songs',
-            description: 'Your favorite tracks',
-            imageUrl: myImage,
-            songs: likedSongs,
-            songsCount: likedSongs.length
-          } 
-        } 
-      });
-    }
+    handleSongClick(likedSongs[0], 0, clearnext, loadSong, enquenext, likedSongs , currentSong , seekTo)
   };
 
   const handleOpenPlaylist = (playlist) => {
@@ -104,6 +104,7 @@ const MusicLibrary = () => {
             <div
               key={track.id}
               className="group grid grid-cols-12 gap-4 items-center p-3 rounded-md mb-1 cursor-pointer hover:bg-gray-800/40 transition-colors"
+              onClick={() => handleSongClick(track, index, clearnext, loadSong, enquenext, likedSongs , currentSong , seekTo)}
             >
               <div className="col-span-1 text-center flex justify-center">
                 <span className="text-gray-400">{index + 1}</span>
