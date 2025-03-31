@@ -13,27 +13,33 @@ import ConnectPage from "./pages/ConnectPage";
 import ForgotPasswordForm from "./pages/ForgotPassword";
 import ResetPasswordForm from "./pages/resetPassword";
 import { ProfileProvider } from "./pages/contexts/profileContext";
-import  MusicLibrary  from  "./pages/library";
- 
+import MusicLibrary from "./pages/library";
+import { SocketProvider } from "./pages/contexts/SocketContext";
+
 function App() {
   return (
     <div>
-      <MyFriendButton/>
       <ProfileProvider>
         <QueueProvider>
           <AudioProvider>
-            <Routes>  
-              <Route path="/" element={<Home />} />
-              <Route path="/Signup" element={<Signup />} />
-              <Route path="/library" element={<MusicLibrary />} />
-              <Route path="/Login" element={<LoginForm />} />
-              <Route path="/Profile" element={<Profile />} />
-              <Route path="/verification-email" element={<VerifyEmail />} />
-              <Route path="/playlist" element={<PlaylistPage />} />
-              <Route path="/connect-page" element={<ConnectPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-              <Route path="/reset-password" element={<ResetPasswordForm />} />
-            </Routes>
+            <SocketProvider>
+              <MyFriendButton />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/Signup" element={<Signup />} />
+                <Route path="/library" element={<MusicLibrary />} />
+                <Route path="/Login" element={<LoginForm />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/verification-email" element={<VerifyEmail />} />
+                <Route path="/playlist" element={<PlaylistPage />} />
+                <Route path="/connect-page" element={<ConnectPage />} />
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPasswordForm />}
+                />
+                <Route path="/reset-password" element={<ResetPasswordForm />} />
+              </Routes>
+            </SocketProvider>
           </AudioProvider>
         </QueueProvider>
       </ProfileProvider>
