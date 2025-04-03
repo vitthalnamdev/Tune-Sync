@@ -5,4 +5,4 @@
 /music_server/node_modules
 /backend/songs
 /desktop.ini
-.env
+/.env
