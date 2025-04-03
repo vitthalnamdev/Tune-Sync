@@ -82,7 +82,9 @@ const ChatContainer = ({
     const fatch = async () => {
       if (currentChat) {
         const response = await checkLastOnline(currentChat._id);
-        setLastOnline(response.lastOnline);
+        if(response){
+          setLastOnline(response.lastOnline);
+        }
       }
     };
     fatch();

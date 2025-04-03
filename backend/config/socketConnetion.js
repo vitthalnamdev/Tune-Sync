@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const User = require("../models/User");
+const Group = require('../models/Group'); // Adjust the path based on your project structure
 
 const socketConnection = (server) => {
   
@@ -51,6 +52,38 @@ const socketConnection = (server) => {
         socket.to(sendUserSocket).emit("msg-recieve", data);
       }
     });
+
+    socket.on("send-invitaion",(data) => {
+      const sendUserSocket = onlineUsers.get(data.to);
+      console.log("invitaion re",data);
+      if(sendUserSocket){
+        socket.to(sendUserSocket).emit("recieved-invitation",data);
+      }
+    })
+
+    socket.on("send-accepted",async(data)=>{
+      const sendUserSocket = await onlineUsers.get(data.to);
+      const groupId = data.groupId;
+      const userId = data.from;
+       // Step 1: Find the group by ID
+    const group = await Group.findById(groupId);
+     // Step 2: Check if the user exists
+      const user = await User.findById(userId);
+      //if user already a member
+      if (group.members.includes(userId)) {
+        if(sendUserSocket){
+          socket.to(sendUserSocket).emit("recieve-accepted",{});
+        }
+      }
+      group.members.push(userId);
+      await group.save();
+     // Step 5: Update the user's `group` field (optional)
+      user.group = groupId;
+      await user.save();
+      if(sendUserSocket){
+        socket.to(sendUserSocket).emit("recieve-accepted",data);
+      }
+    })
 
     // Add a new event to check if a user is online
     socket.on("check-online", (userId) => {

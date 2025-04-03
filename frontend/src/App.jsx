@@ -16,6 +16,8 @@ import ResetPasswordForm from "./pages/resetPassword";
 import { ProfileProvider } from "./pages/contexts/profileContext";
 import MyFriendButton from "./components/connect_components/MyFriendButton";
 import { SocketProvider } from "./pages/contexts/SocketContext";
+import GroupSidebarButton from "./components/groups_components/GroupSidebarButton";
+import { GroupProvider } from "./pages/contexts/GroupContext";
 
 function App() {
   const location = useLocation(); // Get current route
@@ -23,28 +25,34 @@ function App() {
   return (
     <div>
       <ProfileProvider>
-        {/* Conditionally render Navbar only on the homepage */}
-        <QueueProvider>
-          <AudioProvider>
-            <SocketProvider>
-              <MyFriendButton />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/Signup" element={<Signup />} />
-                <Route path="/Login" element={<LoginForm />} />
-                <Route path="/Profile" element={<Profile />} />
-                <Route path="/verification-email" element={<VerifyEmail />} />
-                <Route path="/playlist" element={<PlaylistPage />} />
-                <Route path="/connect-page" element={<ConnectPage />} />
-                <Route
-                  path="/forgot-password"
-                  element={<ForgotPasswordForm />}
-                />
-                <Route path="/reset-password" element={<ResetPasswordForm />} />
-              </Routes>
-            </SocketProvider>
-          </AudioProvider>
-        </QueueProvider>
+        <SocketProvider>
+          <GroupProvider>
+            
+            <QueueProvider>
+              <AudioProvider>
+                <MyFriendButton />
+                <GroupSidebarButton />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/Signup" element={<Signup />} />
+                  <Route path="/Login" element={<LoginForm />} />
+                  <Route path="/Profile" element={<Profile />} />
+                  <Route path="/verification-email" element={<VerifyEmail />} />
+                  <Route path="/playlist" element={<PlaylistPage />} />
+                  <Route path="/connect-page" element={<ConnectPage />} />
+                  <Route
+                    path="/forgot-password"
+                    element={<ForgotPasswordForm />}
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={<ResetPasswordForm />}
+                  />
+                </Routes>
+              </AudioProvider>
+            </QueueProvider>
+          </GroupProvider>
+        </SocketProvider>
       </ProfileProvider>
     </div>
   );

@@ -26,11 +26,13 @@ const userRoutes = require("./routes/user");
 const songRoutes = require("./routes/song");
 const friendRoutes = require("./routes/friends");
 const messageRoutes = require("./routes/messageRoute");
+const groupRoutes = require("./routes/group");
 
 app.use("/api/v1/auth",userRoutes);
 app.use("/api/v1/songs",songRoutes);
 app.use("/api/v1/friend",friendRoutes);
 app.use("/api/v1/messages",messageRoutes);
+app.use("/api/v1/group",groupRoutes);
 // cloudinaryConnect();
 dbConnect();
 app.get("/" , (req , res)=>{
