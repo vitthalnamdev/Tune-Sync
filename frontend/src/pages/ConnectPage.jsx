@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { X, UserPlus, Users, Bell, Search } from "lucide-react";
+import { X, UserPlus, Users, Bell, Search, Music } from "lucide-react";
 import FriendCard from "../components/connect_components/FriendCard";
 import {
   accept_friend_request,
@@ -11,6 +11,7 @@ import {
   send_request,
 } from "../services/operations/friends";
 import Navbar from '../components/Navbar';
+import MusicPlayer from "./Music_player";
 
 const ConnectPage = () => {
   const [activeTab, setActiveTab] = useState("suggested");
@@ -181,7 +182,7 @@ const ConnectPage = () => {
           )}
         </div>
       </div>
-
+      <MusicPlayer/>
       {/* Toggle Button */}
     </div>
   );

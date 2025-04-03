@@ -16,22 +16,27 @@ export const AudioProvider = ({ children }) => {
   const { groupState, updateGroupState } = useGroup();
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentSong, setCurrentSong] = useState(
+    localStorage.getItem("currentSong")
+      ? JSON.parse(localStorage.getItem("currentSong"))
+      : {
+          title: "Apna Bana Le",
+          artists: "Sachin-Jigar, Arijit Singh",
+          coverImage: "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg", 
+          audioSrc: "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
+          duration: 261,
+          id: null,
+          isLiked: false,
+        }
+  );
+  const [currentTime, setCurrentTime] = useState(parseFloat(localStorage.getItem("currTime")) || 0);
   const [currentSongId, setCurrentSongId] = useState(null);
-  const [currentSong, setCurrentSong] = useState({
-    title: "Apna Bana Le",
-    artists: "Sachin-Jigar, Arijit Singh",
-    coverImage:
-      "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg",
-    audioSrc:
-      "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
-    duration: 261,
-    currentTime: 0,
-    id: null,
-  });
-
+  
   const audioRef = useRef(new Audio(currentSong.audioSrc));
-
+  const isPresent = (song) => {
+    const likedSongs = JSON.parse(localStorage.getItem("likedSongs")) || [];
+    return likedSongs.some((likedSong) => likedSong.id === song.id);
+  } 
   const [duration, setDuration] = useState(currentSong.duration);
   const [volume, setVolume] = useState(0.7);
   const {
@@ -51,9 +56,10 @@ export const AudioProvider = ({ children }) => {
 
   useEffect(() => {
     const audio = audioRef.current;
-
+    audio.currentTime = currentTime;
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
+      localStorage.setItem("currTime" , audio.currentTime);
     };
 
     const handleLoadedMetadata = () => {
@@ -106,7 +112,7 @@ export const AudioProvider = ({ children }) => {
   // Load and play a song
   function loadSong(song) {
     const audio = audioRef.current;
-
+    
     // If it's the same song that was already loaded, don't reload
     if (currentSong && song.audioSrc === currentSong.audioSrc) {
       return;
@@ -114,7 +120,7 @@ export const AudioProvider = ({ children }) => {
 
     // Update current song ID for highlighting
     setCurrentSongId(song.id);
-
+    localStorage.setItem("currentSong", JSON.stringify(song));
     // Set the new song
     setCurrentSong(song);
 
@@ -156,7 +162,6 @@ export const AudioProvider = ({ children }) => {
       if (currentSong && currentSong.title) {
         enqueueprev(currentSong);
       }
-
       const _currentSong = {
         title: curr.name,
         artists: getArtists(curr.artists.primary),
@@ -166,9 +171,7 @@ export const AudioProvider = ({ children }) => {
         audioSrc:
           curr.downloadUrl[Object.keys(curr.downloadUrl).length - 1].url || "",
         duration: curr.duration,
-        currentTime: 0,
-        isPlaying: true,
-        id: curr.id, // Store the song ID for highlighting
+        id: curr.id // Store the song ID for highlighting
       };
 
       if (!_currentSong || !_currentSong.audioSrc) {
@@ -189,6 +192,7 @@ export const AudioProvider = ({ children }) => {
   const seekTo = (time) => {
     const audio = audioRef.current;
     audio.currentTime = time;
+    localStorage.setItem("currTime", audio.currentTime);
     setCurrentTime(time);
   };
 
