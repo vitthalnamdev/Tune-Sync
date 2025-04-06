@@ -30,3 +30,9 @@ export const messageEndpoints = {
     GET_MESSAGE : BASE_URL + "messages/getmsg",
     CHECK_LAST_ONLINE: BASE_URL + "messages/lastOnline",
 }
+
+export const groupEndpoints = {
+    GET_USER_GROUP :BASE_URL + "group/get_user_group",
+    GET_ALL_GROUP : BASE_URL + "group/get_all_group",
+    CREATE_GROUP : BASE_URL + "group/create_group",
+}

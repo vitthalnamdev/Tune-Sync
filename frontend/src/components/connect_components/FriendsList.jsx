@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { AiTwotoneMessage } from "react-icons/ai";
 import { BsChatDots } from "react-icons/bs";
+import { useGroup } from "../../pages/contexts/GroupContext";
+import { useSocket } from "../../pages/contexts/SocketContext";
+import { createGroup } from "../../services/operations/groups";
+import toast from "react-hot-toast";
 
 function FriendsList({
   friends,
@@ -10,6 +14,9 @@ function FriendsList({
   openChatBox,
   changeChatUser,
 }) {
+  const { groupState, updateGroupState } = useGroup();
+  const socket = useSocket();
+
   if (friends.length === 0) {
     return (
       <div className="bg-gray-700 rounded-lg p-8 text-center">
@@ -21,6 +28,44 @@ function FriendsList({
   const changeUserChat = (friend) => {
     changeChatUser(friend);
     openChatBox(true);
+  };
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleInviteFriend = async (userId) => {
+    console.log("invite called");
+    if (groupState.isInGroup === false) {
+      console.log("no group");
+      //create group
+      const result = await createGroup({
+        name: `${user.firstName}'s Group`,
+        adminId: user._id,
+      });
+      if (result.success) {
+        toast.success("Group Created Successfully");
+        updateGroupState({
+          isInGroup: true,
+          groupId: result.data._id,
+          isAdmin: true,
+        });
+
+        //send friend a invitaion using socket
+        socket.emit("send-invitaion", {
+          to: userId,
+          groupId: result.data._id,
+          senderName: user.firstName,
+          senderId: user._id,
+        });
+      }
+    } else {
+      console.log("already have group");
+      socket.emit("send-invitaion", {
+        to: userId,
+        groupId: groupState.groupId,
+        senderName: user.firstName,
+        senderId: user._id,
+      });
+    }
   };
 
   return (
@@ -55,10 +100,16 @@ function FriendsList({
             </button> */}
             <div className=" flex gap-3">
               <button onClick={() => changeUserChat(friend)}>
-              <BsChatDots className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200" size={24} />
+                <BsChatDots
+                  className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200"
+                  size={24}
+                />
               </button>
-              <button>
-                <PlusIcon className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200" size={24} />
+              <button onClick={() => handleInviteFriend(friend._id)}>
+                <PlusIcon
+                  className="text-white hover:scale-105 hover:text-gray-300 transition-scale duration-200"
+                  size={24}
+                />
               </button>
             </div>
           </li>
