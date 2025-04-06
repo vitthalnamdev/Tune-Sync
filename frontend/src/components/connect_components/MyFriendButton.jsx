@@ -55,7 +55,7 @@ const MyFriendButton = () => {
         socket.off("recieve-user");
       }
     };
-  }, []);
+  }, [isOpen]);
 
   const removeFriend = (friendId) => {
     const friend = friends.find((f) => f._id === friendId);
