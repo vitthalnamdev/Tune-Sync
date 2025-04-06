@@ -81,8 +81,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
       setIsSubmitting(true);
-      // Handle remember me
-      // API call
+      
       const { email, password } = formData;
       try {
         await setUser(email, password, (istrue , data) => {
