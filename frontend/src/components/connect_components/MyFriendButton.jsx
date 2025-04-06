@@ -46,6 +46,7 @@ const MyFriendButton = () => {
   useEffect(() => {
     socket.emit("getAll-user");
     socket.on("recieve-user", (data) => {
+      console.log("online users",data);
       setOnlineUsers(data);
     });
 
