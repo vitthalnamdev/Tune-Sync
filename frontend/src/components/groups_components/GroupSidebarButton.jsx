@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { GrGroup } from "react-icons/gr";
 import { X, Users } from "lucide-react";
 import { useSocket } from "../../pages/contexts/SocketContext";
 import MusicGroupsSidebar from "./MusicGroupsSidebar";
@@ -10,9 +10,7 @@ import notificationAudio from "../connect_components/audio/notification.wav"
 const GroupSidebarButton = () => {
   // Function to remove a friend
   const [isOpen, setIsOpen] = useState(false);
-  const [friends, setFriends] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const [currentChat, setCurrentChat] = useState([]);
+
   const [isChatOpen,setIsChatOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState(null);
 
@@ -58,7 +56,7 @@ const GroupSidebarButton = () => {
           isOpen ? "hidden" : "block"
         }  group z-10 left-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-full shadow-lg hover:scale-110 transition-transform`}
       >
-        {!isOpen && <Users size={24} />}
+        {!isOpen && <GrGroup size={24}/>}
         <div
           className={`absolute text-white text-sm pointer-events-none border-[1px] border-white px-2 bg-black bg-opacity-50  opacity-0 ${
             !isOpen ? "group-hover:opacity-80" : ""

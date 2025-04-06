@@ -507,6 +507,28 @@ const MusicHomepage = (params) => {
     setSearchQuery("");
   };
   
+  //  Use a "User Interaction Unlock" Mechanism
+     const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+  
+     useEffect(() => {
+       const unlockAudio = async () => {
+         try {
+           const audio = new Audio();
+           audio.src =
+             "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjMyLjEwNQAAAAAAAAAAAAAA//...";
+           await audio.play(); // Play silent audio
+           audio.pause(); // Pause immediately
+           setIsAudioUnlocked(true);
+           console.log("Audio unlocked!");
+         } catch (error) {
+           console.error("Failed to unlock audio:", error);
+         }
+       };
+   
+       // Unlock audio on user interaction
+       document.addEventListener("click", unlockAudio, { once: true });
+     }, []);
+  
   
 
   return (

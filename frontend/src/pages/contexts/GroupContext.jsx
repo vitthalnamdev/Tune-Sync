@@ -39,6 +39,7 @@ export const GroupProvider = ({ children }) => {
 
     fetch();
   },[]);
+  console.log("group state",groupState);
 
   return (
     <GroupContext.Provider value={{ groupState, updateGroupState }}>
