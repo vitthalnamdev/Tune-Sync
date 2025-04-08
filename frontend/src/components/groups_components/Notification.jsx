@@ -33,6 +33,7 @@ const Notification = ({ message, onClose }) => {
       isInGroup: true,
       groupId: message.groupId,
       isAdmin: false,
+      groupName: message.groupName
     });
 
     setTimeout(() => {

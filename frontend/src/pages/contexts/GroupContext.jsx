@@ -27,12 +27,14 @@ export const GroupProvider = ({ children }) => {
         console.log("group of user",result);
         if(result.data !== null){
             const groupId = result.data._id;
+            const groupName = result.data.name;
             const adminId = result.data.admin;
             const isAdmin = adminId == user._id ? true : false;
             setGroupState({
                 isInGroup : true,
                 groupId : groupId,
-                isAdmin : isAdmin
+                isAdmin : isAdmin,
+                groupName : groupName
             })
         }
     }

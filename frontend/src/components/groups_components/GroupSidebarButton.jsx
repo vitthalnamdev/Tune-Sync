@@ -5,16 +5,20 @@ import { useSocket } from "../../pages/contexts/SocketContext";
 import MusicGroupsSidebar from "./MusicGroupsSidebar";
 import Notification from "./Notification";
 import notificationAudio from "../connect_components/audio/notification.wav"
-
+import { getAllGroup } from '../../services/operations/groups';
+import GroupIndicator from "./GroupIndicator";
+import { useGroup } from "../../pages/contexts/GroupContext";
 
 const GroupSidebarButton = () => {
   // Function to remove a friend
   const [isOpen, setIsOpen] = useState(false);
+  const [groups,setGroups] = useState([]);
 
   const [isChatOpen,setIsChatOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState(null);
 
   const socket = useSocket();
+  const {groupState} = useGroup();
   // Fetch friends
   const token = localStorage.getItem("token");
 
@@ -26,7 +30,34 @@ const GroupSidebarButton = () => {
   const closeSidebar = () => setIsOpen(false);
   
 
-  
+  useEffect(()=>{
+    const fetch = async()=>{
+      const response = await getAllGroup();
+      console.log("all groups",response);
+      setGroups(response.data.map(group => 
+        ({ 
+          ...group, 
+          expanded: false 
+        })
+      ));
+      
+    }
+    fetch();
+  },[isOpen]);
+
+  const toggleGroup = (groupId) => {
+    console.log(groupId);
+    setGroups(groups.map(group => 
+      group._id === groupId ? { ...group, expanded: !group.expanded } : group
+    ));
+  };
+
+  useEffect(() => {
+      if (notificationMessage) {
+        const audio = new Audio(notificationAudio);
+        audio.play();
+      }
+  }, [notificationMessage]);
 
   useEffect(()=>{
     socket.on("recieved-invitation",(data)=>{
@@ -41,13 +72,16 @@ const GroupSidebarButton = () => {
   
 
   return (
-    <div className=" relative z-40">
+    <div className=" relative z-30">
       {/* //notification */}
       { notificationMessage &&
         <Notification
           message={notificationMessage}
           onClose={dismissNotification}
         />
+      }
+      {
+        groupState.isInGroup && <GroupIndicator/>
       }
       
       <button
@@ -60,9 +94,9 @@ const GroupSidebarButton = () => {
         <div
           className={`absolute text-white text-sm pointer-events-none border-[1px] border-white px-2 bg-black bg-opacity-50  opacity-0 ${
             !isOpen ? "group-hover:opacity-80" : ""
-          }  transition-opacity duration-700 right-16 top-0`}
+          }  transition-opacity duration-700 left-16 top-0`}
         >
-          Connect Friend
+          Groups
         </div>
       </button>
 
@@ -86,7 +120,8 @@ const GroupSidebarButton = () => {
           </div>
           <div className=" relative overflow-hidden scrollbar-thin ">
             <MusicGroupsSidebar
-              
+              groups = {groups}
+              toggleGroup = {toggleGroup}
             />
           </div>
           

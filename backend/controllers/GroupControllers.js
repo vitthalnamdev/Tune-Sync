@@ -42,8 +42,8 @@ exports.findAllGroups = async (req, res) => {
   try {
     // Fetch all groups from the database
     const groups = await Group.find()
-      .populate('admin', 'username') // Populate the admin field with the username (optional)
-      .populate('members', 'username'); // Populate the members field with usernames (optional)
+      .populate('admin', 'firstName') // Populate the admin field with the username (optional)
+      .populate('members', 'firstName'); // Populate the members field with usernames (optional)
 
     // Check if any groups exist
     if (groups.length === 0) {
@@ -107,3 +107,58 @@ exports.createGroup = async (req, res) => {
     });
   }
 };
+
+
+exports.exitGroup = async (req, res) => {
+  try {
+    const { groupId } = req.body;
+    const userId = req.user.id;  
+
+    // Remove user from group's members array
+    await Group.findByIdAndUpdate(groupId, {
+      $pull: { members: userId },
+    });
+
+    // Set user's group field to null
+    await User.findByIdAndUpdate(userId, {
+      $set: { group: null },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully exited from group",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+exports.deleteGroup = async(req,res)=>{
+  try {
+    const {groupId} = req.body;
+    const userId = req.user.id;
+
+    // find group by id
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    // find all users of group and remove from group
+    await User.updateMany(
+      {_id: {$in: group.members}},
+      {$set : {group:null}}
+    )
+    //delete group
+    await Group.findByIdAndDelete(groupId);
+    return res.status(200).json({ message: "Group deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+}

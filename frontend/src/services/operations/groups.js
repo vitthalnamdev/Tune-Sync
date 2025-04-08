@@ -1,10 +1,13 @@
 import { groupEndpoints } from "../apis";
 import { apiConnector } from "../apiConnector";
+import toast from "react-hot-toast";
 
 const {
     GET_ALL_GROUP,
     GET_USER_GROUP,
-    CREATE_GROUP
+    CREATE_GROUP,
+    EXIT_GROUP,
+    DELETE_GROUP
 } = groupEndpoints;
 
 
@@ -34,5 +37,37 @@ export const createGroup = async(data) => {
         return response.data;
     } catch (error) {
         console.log("erroe",error);
+    }
+}
+
+export const exitGroup = async(data,token)=>{
+    try {
+        const response = await apiConnector("POST",EXIT_GROUP,data,
+            {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            }
+        );
+        toast.success(response.data.message);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        toast.error("something went wrong");
+    }
+}
+
+export const deleteGroup = async(data,token)=>{
+    try {
+        const response = await apiConnector("POST",DELETE_GROUP,data,
+            {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            }
+        );
+        toast.success(response.data.message);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        toast.error("something went wrong");
     }
 }

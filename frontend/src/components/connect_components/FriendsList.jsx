@@ -47,12 +47,14 @@ function FriendsList({
           isInGroup: true,
           groupId: result.data._id,
           isAdmin: true,
+          groupName: result.data.name
         });
 
         //send friend a invitaion using socket
         socket.emit("send-invitaion", {
           to: userId,
           groupId: result.data._id,
+          groupName: user.firstName+"'s Group",
           senderName: user.firstName,
           senderId: user._id,
         });
@@ -62,6 +64,7 @@ function FriendsList({
       socket.emit("send-invitaion", {
         to: userId,
         groupId: groupState.groupId,
+        groupName: user.firstName+"'s Group",
         senderName: user.firstName,
         senderId: user._id,
       });

@@ -35,4 +35,6 @@ export const groupEndpoints = {
     GET_USER_GROUP :BASE_URL + "group/get_user_group",
     GET_ALL_GROUP : BASE_URL + "group/get_all_group",
     CREATE_GROUP : BASE_URL + "group/create_group",
+    EXIT_GROUP : BASE_URL +"group/exit-group",
+    DELETE_GROUP: BASE_URL + "group/delete_group",
 }
