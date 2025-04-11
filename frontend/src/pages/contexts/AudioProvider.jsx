@@ -9,6 +9,7 @@ import { useQueue } from "./queueContext";
 import myImage from "../coverImage.jpg";
 import { useSocket } from "./SocketContext";
 import { useGroup } from "./GroupContext";
+import toast from "react-hot-toast";
 const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
@@ -58,8 +59,6 @@ export const AudioProvider = ({ children }) => {
     sizeprev,
   } = useQueue();
 
-   
-   
   useEffect(() => {
     const audio = audioRef.current;
     audio.currentTime = currentTime;
@@ -137,7 +136,7 @@ export const AudioProvider = ({ children }) => {
     // Load the new audio source
     audio.load();
     setIsPlaying(true);
-    
+
     audio.play();
   }
 
@@ -197,7 +196,7 @@ export const AudioProvider = ({ children }) => {
     }
   }
 
-  const [songTimeChange,setSongTimeChange] = useState();
+  const [songTimeChange, setSongTimeChange] = useState();
 
   const seekTo = (time) => {
     const audio = audioRef.current;
@@ -213,14 +212,24 @@ export const AudioProvider = ({ children }) => {
     setVolume(newVolume);
   };
 
- 
   //socket to send current song data to friend
   useEffect(() => {
     // Listen for "recieve-accept" event (when another user accepts the invitation)
-    socket.on("recieve-accept", (data) => {
+    socket.on("receive-accept", (data) => {
+      toast.success(data.message);
+      if(data.set){
+        //means user joined group
+        updateGroupState({
+          isInGroup : true,
+          groupId : data.groupId,
+          isAdmin : false,
+          groupName : data.groupName
+      })
+      }
+      console.log("group is joined", data.message);
       // Send the current song data to the accepting user
       const songData = {
-        to: data.from,
+        groupId: groupState.groupId,
         currentSong: {
           title: currentSong.title,
           artists: currentSong.artists,
@@ -232,14 +241,17 @@ export const AudioProvider = ({ children }) => {
         currentTime: currentTime, // Current playback position
         isPlaying: isPlaying, // Whether the song is currently playing
       };
-      socket.emit("send-songs-to-user", songData);
+
+      if (groupState.isAdmin) {
+        socket.emit("send-songs-to-user", songData);
+      }
     });
 
     // Clean up socket listeners
     return () => {
       socket.off("recieve-accept");
     };
-  }, []); // Re-run when song data changes
+  }, []);
 
   //send song data to all group firends
   useEffect(() => {
@@ -260,7 +272,7 @@ export const AudioProvider = ({ children }) => {
     if (groupState.isAdmin) {
       socket.emit("send-songs-to-user", songData);
     }
-  }, [currentSong,isPlaying,songTimeChange]); // Re-run when song data changes
+  }, [currentSong, isPlaying, songTimeChange]); // Re-run when song data changes
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -285,8 +297,7 @@ export const AudioProvider = ({ children }) => {
           audio.play();
           // console.log("togal is working");
           // togglePlay(); // Start playback if the sender is playing
-        }
-        else{
+        } else {
           audio.pause();
           setIsPlaying(false);
         }

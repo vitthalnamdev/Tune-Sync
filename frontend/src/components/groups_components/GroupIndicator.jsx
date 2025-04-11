@@ -2,19 +2,33 @@ import { Users, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useGroup } from "../../pages/contexts/GroupContext";
 import { deleteGroup, exitGroup } from "../../services/operations/groups";
+import { MessageCircle } from "lucide-react";
+import GroupChat from "./GroupChat";
 
 export default function GroupIndicator() {
   const [groupName, setGroupName] = useState("Design Team");
   const { groupState, updateGroupState } = useGroup();
+  const [activeChat, setActiveChat] = useState(null);
+
+  // Open chat for a group
+  const openChat = (groupId) => {
+    setActiveChat(groupId);
+  };
 
   const token = localStorage.getItem("token");
   const handleLeaveGroup = async (data) => {
     try {
-        if(groupState.isAdmin){
-            const response = await deleteGroup({groupId:groupState.groupId},token);
-        }else{
-            const response = await exitGroup({groupId:groupState.groupId}, token);
-        }
+      if (groupState.isAdmin) {
+        const response = await deleteGroup(
+          { groupId: groupState.groupId },
+          token
+        );
+      } else {
+        const response = await exitGroup(
+          { groupId: groupState.groupId },
+          token
+        );
+      }
 
       await updateGroupState({
         isInGroup: false,
@@ -48,24 +62,47 @@ export default function GroupIndicator() {
     };
   }, []);
 
-  return (
-    <div
-      className={`fixed ${position} transition-all duration-300 left-0 right-0 z-0 flex justify-center`}
-    >
-      <div className="flex items-center justify-between px-4 py-2 mt-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white">
-        <div className="flex items-center gap-2">
-          <Users size={18} className="text-green-400" />
-          <span className="text-sm font-medium">{groupState.groupName}</span>
-        </div>
+  const closeChat = () => {
+    setActiveChat(null);
+  };
 
-        <button
-          onClick={handleLeaveGroup}
-          className="flex items-center gap-1 ml-6 text-xs text-gray-300 hover:text-red-400 transition-colors duration-200"
-        >
-          <LogOut size={14} />
-          <span>Leave</span>
-        </button>
+  return (
+    <div className=" realtive">
+      <div
+        className={`fixed ${position}  transition-all duration-300 left-[50%] -translate-x-[50%] z-0 flex justify-center`}
+      >
+        <div className="flex items-center justify-between px-4 py-3 mt-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white">
+          <div className="flex items-center gap-2">
+            <Users size={18} className="text-green-400" />
+            <span className="text-sm font-medium">{groupState.groupName}</span>
+          </div>
+
+          <div className=" flex items-center ml-9">
+            <button
+              className={`px-2 py-1  text-xs rounded flex items-center justify-center ${
+                activeChat
+                  ? "bg-green-600 hover:bg-green-500"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
+              onClick={() => openChat(groupState.groupId)}
+            >
+              <MessageCircle size={14} />
+            </button>
+
+            <button
+              onClick={handleLeaveGroup}
+              className="flex items-center  gap-1 ml-5 text-xs text-gray-300 hover:text-red-400 transition-colors duration-200"
+            >
+              <LogOut size={14} />
+              <span>Leave</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {activeChat && (
+        <GroupChat closeChat={closeChat} activeChat={activeChat} />
+      )}
     </div>
   );
 }

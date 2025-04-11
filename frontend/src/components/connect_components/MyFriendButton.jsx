@@ -24,6 +24,7 @@ const MyFriendButton = () => {
   const currentUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : [];
+    console.log("current user", currentUser);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -56,6 +57,7 @@ const MyFriendButton = () => {
     };
   }, []);
 
+ 
   const removeFriend = (friendId) => {
     const friend = friends.find((f) => f._id === friendId);
     if (!friend) return;
@@ -96,7 +98,7 @@ const MyFriendButton = () => {
     
 
   return (
-    <div className=" relative z-40">
+    <div className=" relative z-30">
       {/* //notification */}
       { notificationMessage &&
         <Notification

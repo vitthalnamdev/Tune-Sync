@@ -75,18 +75,21 @@ const socketConnection = (server) => {
       //if user already a member
       if (group.members.includes(userId)) {
         if (sendUserSocket) {
-          socket.to(sendUserSocket).emit("recieve-accepted", {});
+          // socket.to(sendUserSocket).emit("receive-accept", {});
+        }
+      } else {
+        group.members.push(userId);
+        await group.save();
+        
+        user.group = groupId;
+        await user.save();
+        if (sendUserSocket) {
+          socket.to(sendUserSocket).emit("receive-accept", data);
         }
       }
-      group.members.push(userId);
-      await group.save();
-      // Step 5: Update the user's `group` field (optional)
-      user.group = groupId;
-      await user.save();
-      if (sendUserSocket) {
-        socket.to(sendUserSocket).emit("recieve-accepted", data);
-      }
     });
+
+    
 
     //send and recive songs data
     socket.on("send-songs-to-user", async (data) => {

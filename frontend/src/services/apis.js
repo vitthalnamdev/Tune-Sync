@@ -37,4 +37,7 @@ export const groupEndpoints = {
     CREATE_GROUP : BASE_URL + "group/create_group",
     EXIT_GROUP : BASE_URL +"group/exit-group",
     DELETE_GROUP: BASE_URL + "group/delete_group",
+
+    ADD_MESSAGE: BASE_URL +"group/add_message",
+    GET_MESSAGES: BASE_URL + "group/get_messages"
 }

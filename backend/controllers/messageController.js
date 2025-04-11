@@ -16,6 +16,7 @@ module.exports.getMessages = async(req,res)=>{
             return {
                 fromSelf: msg.sender.toString() === from,
                 message:msg.message.text,
+                _id: msg._id
             };
         })
         return res.json(projectedMessages)

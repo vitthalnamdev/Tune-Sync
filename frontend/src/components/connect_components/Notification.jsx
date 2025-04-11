@@ -11,8 +11,12 @@ const Notification = ({ message, onClose, friends, changeChatUser }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 5000);
-
+    }, 5500);
+    
+    const timer2 = setTimeout(()=>{
+      setIsVisible(false);
+    },[5000]);
+    
     return () => clearTimeout(timer);
   }, [onClose]);
 
@@ -21,6 +25,14 @@ const Notification = ({ message, onClose, friends, changeChatUser }) => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const closeBox =()=>{
+    setIsVisible(false);
+    setTimeout(()=>{
+       onClose();
+    },300);
+}
+
 
   return (
     <div
@@ -67,7 +79,7 @@ const Notification = ({ message, onClose, friends, changeChatUser }) => {
         <button
           onClick={(e) => {
             e.stopPropagation(); // Stop the event from bubbling up
-            onClose();
+            closeBox();
           }}
           className="text-gray-400 hover:text-gray-200 text-2xl focus:outline-none transition-colors duration-200"
         >

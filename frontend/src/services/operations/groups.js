@@ -7,7 +7,9 @@ const {
     GET_USER_GROUP,
     CREATE_GROUP,
     EXIT_GROUP,
-    DELETE_GROUP
+    DELETE_GROUP,
+    ADD_MESSAGE,
+    GET_MESSAGES
 } = groupEndpoints;
 
 
@@ -70,4 +72,38 @@ export const deleteGroup = async(data,token)=>{
         console.log(error);
         toast.error("something went wrong");
     }
+}
+
+export const sendGroupMessage = async(data,token)=>{
+    try {
+        const response = await apiConnector("POST",ADD_MESSAGE,data,
+            {
+                "Content-type": "multipart/form-data",
+                Authorization:`Bearer ${token}`,
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getGroupMessages = async(data,token)=>{
+    let result =[];
+    try {
+        const response = await apiConnector("POST",GET_MESSAGES,data,
+            {
+                "Content-type": "multipart/form-data",
+                Authorization:`Bearer ${token}`,
+            }
+        );
+        console.log("responce of group chat",response);
+        if(response.data.success){
+            result = response.data.projectedMessages;
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+    return result;
 }

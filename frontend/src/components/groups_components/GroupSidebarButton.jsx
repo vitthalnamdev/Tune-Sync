@@ -72,7 +72,7 @@ const GroupSidebarButton = () => {
   
 
   return (
-    <div className=" relative z-30">
+    <div className=" relative z-40">
       {/* //notification */}
       { notificationMessage &&
         <Notification
@@ -81,7 +81,7 @@ const GroupSidebarButton = () => {
         />
       }
       {
-        groupState.isInGroup && <GroupIndicator/>
+        groupState.isInGroup && <GroupIndicator />
       }
       
       <button

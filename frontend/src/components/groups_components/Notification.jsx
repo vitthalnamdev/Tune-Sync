@@ -8,17 +8,23 @@ const Notification = ({ message, onClose }) => {
   // State to manage visibility
   const [isVisible, setIsVisible] = useState(false);
   const [buttonState, setButtonState] = useState("pending");
+  
   const socket = useSocket();
   const { groupState, updateGroupState } = useGroup();
 
   // Automatically close the notification after 5 seconds
   useEffect(() => {
+    
     const timer = setTimeout(() => {
       onClose();
-    }, 5000);
+    }, 5500);
+
+    const timer2 = setTimeout(()=>{
+      setIsVisible(false);
+    },[5000]);
 
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, []);
 
   // Trigger visibility animation
   useEffect(() => {
@@ -28,13 +34,20 @@ const Notification = ({ message, onClose }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const handleAccept = () => {
     setButtonState("accepted");
-    socket.emit("send-accepted", { from: user._id, groupId: message.groupId, to: message.senderId });
-    updateGroupState({
-      isInGroup: true,
-      groupId: message.groupId,
-      isAdmin: false,
-      groupName: message.groupName
-    });
+    if(message.message){
+      //if another user request you to join you group
+      socket.emit("send-accepted", { from: message.senderId, groupId: message.groupId, to: message.senderId,message:`You joined ${message.groupName}`,groupName: message.groupName,set:"setuser" });
+    }
+    else{
+      //if anyone accept your invitation request
+      socket.emit("send-accepted", { from: user._id, groupId: message.groupId, to: message.senderId ,message:`Group join request accepted`});
+      updateGroupState({
+        isInGroup: true,
+        groupId: message.groupId,
+        isAdmin: false,
+        groupName: message.groupName
+      });
+    }
 
     setTimeout(() => {
       onClose();
@@ -42,10 +55,12 @@ const Notification = ({ message, onClose }) => {
   };
 
   const handleDecline = () => {
+    
     setButtonState("declined");
     setTimeout(() => {
       onClose();
-    }, 1000);
+    }, 400);
+    setIsVisible(false);
   };
 
   return (
@@ -68,7 +83,7 @@ const Notification = ({ message, onClose }) => {
       <div className="p-4 ">
         {/* Heading */}
         <h3 className="text-base font-bold text-purple-400 ">
-          Invitation Request
+          {message.message ? "Group join Request":"Invitation Request"}
         </h3>
 
         {/* Message Content */}

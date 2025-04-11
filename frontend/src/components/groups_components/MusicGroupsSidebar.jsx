@@ -12,54 +12,45 @@ import {
 } from "lucide-react";
 import { useGroup } from "../../pages/contexts/GroupContext";
 import { deleteGroup, exitGroup } from "../../services/operations/groups";
+import { useSocket } from "../../pages/contexts/SocketContext";
 
 const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
   const { groupState, updateGroupState } = useGroup();
-  // Sample data for music listening groups
-  // const [groups, setGroups] = useState([
-  //   {
-  //     id: 1,
-  //     name: "Rock Enthusiasts",
-  //     expanded: true,
-  //     currentlyPlaying: "Bohemian Rhapsody - Queen",
-  //     isPlaying: true,
-  //     members: [
-  //       { id: 1, name: "Alex Johnson", host: true, online: true },
-  //       { id: 2, name: "Jamie Smith", host: false, online: true },
-  //       { id: 3, name: "Taylor Brown", host: false, online: true }
-  //     ]
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Chill Vibes",
-  //     expanded: false,
-  //     currentlyPlaying: "Lofi Study Mix",
-  //     isPlaying: true,
-  //     members: [
-  //       { id: 4, name: "Sam Wilson", host: true, online: true },
-  //       { id: 5, name: "Morgan Lee", host: false, online: true },
-  //       { id: 6, name: "Casey Martinez", host: false, online: false }
-  //     ]
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Friday Night Party",
-  //     expanded: false,
-  //     currentlyPlaying: null,
-  //     isPlaying: false,
-  //     members: [
-  //       { id: 7, name: "Riley Cooper", host: true, online: true },
-  //       { id: 8, name: "Jordan Evans", host: false, online: false }
-  //     ]
-  //   }
-  // ]);
-  console.log("groups", groups);
-  // Toggle group expansion
+  const [joinReq, setJoinReq] = useState(false);
+  const socket = useSocket();
+  const [onlineUsers,setOnlineUsers] = useState([]);
+  
+ useEffect(() => {
+
+     socket.on("recieve-user", (data) => {
+       setOnlineUsers(data);
+     });
+ 
+     return () => {
+       if (socket) {
+         socket.off("recieve-user");
+       }
+     };
+   }, []);
+  
 
   // Join a group
-  const joinGroup = (groupId) => {
-    // This would be implemented with your actual join logic
-    console.log(`Joining group ${groupId}`);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const joinGroup = (group) => {
+    setJoinReq(true);
+
+    socket.emit("send-invitaion", {
+      to: group.admin._id,
+      groupId: group._id,
+      groupName: group.name,
+      senderName: user.firstName,
+      senderId: user._id,
+      message: "to_join_group",
+    });
+
+    setTimeout(() => {
+      setJoinReq(false);
+    }, 5000);
   };
 
   const token = localStorage.getItem("token");
@@ -117,23 +108,22 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
                 ) : (
                   <ChevronRight size={16} className="mr-2 text-gray-400" />
                 )}
+                <div className=" flex flex-col">
                 <span className="font-medium">{group.name}</span>
+                {group._id == groupState.groupId && (
+                  <span
+                    className=" text-green-600 text-[10px]"
+                  >
+                    Current Group
+                  </span>
+                )}
+                </div>
               </div>
               <div className="flex gap-2 items-center">
-                {group._id == groupState.groupId && (
-                  <button
-                    className=" text-red-500 font-semibold hover:scale-110 "
-                    onClick={(e) => {
-                      e.preventDefault();
-                      leaveGroup({ groupId: group._id });
-                    }}
-                  >
-                    Leave
-                  </button>
-                )}
+                
 
-                {group.isPlaying && (
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                {onlineUsers.includes(group.admin._id) && (
+                  <div className=" text-green-500 rounded-full mr-2 animate-pulse">Active</div>
                 )}
                 <span className="text-xs text-gray-400">
                   {group.members.length}
@@ -169,7 +159,7 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
                         <User size={16} className="text-gray-400" />
                         <div
                           className={`absolute -bottom-1 -right-1 w-2 h-2 rounded-full ${
-                            member.online ? "bg-green-500" : "bg-gray-500"
+                            onlineUsers.includes(member._id) ? "bg-green-500" : "bg-gray-500"
                           }`}
                         />
                       </div>
@@ -187,12 +177,21 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
 
                 {/* Join button */}
                 <div className="px-6 pt-2">
-                  <button
-                    className="w-full py-1 text-xs bg-purple-700 hover:bg-purple-600 rounded text-white"
-                    onClick={() => joinGroup(group.id)}
-                  >
-                    Join Session
-                  </button>
+                  {groupState.groupId === group._id ? (
+                    <button
+                      className="w-full py-1 text-xs bg-purple-700 hover:bg-purple-600 rounded text-white"
+                      onClick={() => leaveGroup(group._id)}
+                    >
+                     Leave Group
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full py-1 text-xs bg-purple-700 hover:bg-purple-600 rounded text-white"
+                      onClick={() => joinGroup(group)}
+                    >
+                      {joinReq ? "Request send" : "Request to join"}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
