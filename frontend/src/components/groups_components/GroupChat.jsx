@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Headphones,
   Users,
-  ChevronDown,
   X,
   Send,
-  Smile,
-  Image,
-  Paperclip,
   MoreVertical,
 } from "lucide-react";
 import {
@@ -15,13 +10,16 @@ import {
   sendGroupMessage,
 } from "../../services/operations/groups";
 import { useGroup } from "../../pages/contexts/GroupContext";
+import { useSocket } from "../../pages/contexts/SocketContext";
 
 const GroupChat = ({ closeChat, activeChat }) => {
   const [newMessage, setNewMessage] = useState("");
+  const [arrivalMessage,setArrivalMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [visible,setVisible] = useState(false);
   const { groupState } = useGroup();
   const scrollRef = useRef();
+  const socket = useSocket();
  
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -42,14 +40,24 @@ const GroupChat = ({ closeChat, activeChat }) => {
   const sendMessage = async (groupId) => {
     if (!newMessage.trim()) return;
     
-
+    
     const newObject = {
+      groupId: groupId,
       _id: messages.length+1,
       fromSelf:true,
       sender: { firstName:user.firstName, lastName:user.lastName, image: user.image},
       text: newMessage,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }
+
+    socket.emit("send-group-msg",{
+      groupId: groupId,
+      _id: messages.length+1,
+      fromSelf:false,
+      sender: { firstName:user.firstName, lastName:user.lastName, image: user.image},
+      text: newMessage,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    });
 
     setMessages([...messages,newObject]);
 
@@ -63,6 +71,23 @@ const GroupChat = ({ closeChat, activeChat }) => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(()=>{
+     socket.on("recieve-group-msg",(data)=>{
+      console.log(data);
+      setArrivalMessage(data);
+     })
+
+     return () => {
+      socket.off("recieve-group-msg");
+    };
+  },[]);
+
+  useEffect(()=>{
+    if(arrivalMessage){
+       setMessages((prev)=>[...prev,arrivalMessage]);
+    }
+  },[arrivalMessage]);
 
   useEffect(()=>{
     setVisible(true);
@@ -110,7 +135,7 @@ const GroupChat = ({ closeChat, activeChat }) => {
         className=" flex-1 px-4 py-3 overflow-y-auto scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-500 space-y-4 bg-gradient-to-b from-gray-900 to-gray-800"
       >
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <div className="flex flex-col w-full items-center justify-center h-full text-gray-400">
             <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-3">
               <Users size={24} />
             </div>
@@ -131,7 +156,7 @@ const GroupChat = ({ closeChat, activeChat }) => {
                     <img
                       src={message.sender.image}
                       alt={message.sender.firstName}
-                      className="w-6 h-6 rounded-full object-cover"
+                      className="w-7 h-7 mr-1 rounded-full object-cover"
                     />
                
               )}
@@ -151,7 +176,7 @@ const GroupChat = ({ closeChat, activeChat }) => {
                 ) : (
                   <div className="font-medium text-sm text-green-600">You</div>
                 )}
-                <div className="text-base pr-7">{message.text}</div>
+                <div className="text-base pr-9">{message.text}</div>
                 <div className=" absolute bottom-1 right-1 text-right mt-1">
                   <span className=" text-[10px] opacity-70">{message.time}</span>
                 </div>

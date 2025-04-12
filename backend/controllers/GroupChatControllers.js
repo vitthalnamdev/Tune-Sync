@@ -41,7 +41,7 @@ exports.getGroupMessages = async (req, res) => {
         _id:groupMsg._id,
         fromSelf: groupMsg.sender._id == userId,
         sender:groupMsg.sender,
-        group: groupMsg.group,
+        groupId: groupMsg.group,
         text: groupMsg.message,
         time: groupMsg.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };

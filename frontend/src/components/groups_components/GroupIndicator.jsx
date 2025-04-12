@@ -2,7 +2,7 @@ import { Users, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useGroup } from "../../pages/contexts/GroupContext";
 import { deleteGroup, exitGroup } from "../../services/operations/groups";
-import { MessageCircle } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
 import GroupChat from "./GroupChat";
 
 export default function GroupIndicator() {
@@ -86,7 +86,7 @@ export default function GroupIndicator() {
               }`}
               onClick={() => openChat(groupState.groupId)}
             >
-              <MessageCircle size={14} />
+              <MessageCircleMore size={14} />
             </button>
 
             <button

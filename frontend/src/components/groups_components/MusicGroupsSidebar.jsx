@@ -11,14 +11,39 @@ import {
   Pause,
 } from "lucide-react";
 import { useGroup } from "../../pages/contexts/GroupContext";
-import { deleteGroup, exitGroup } from "../../services/operations/groups";
+import { createGroup, deleteGroup, exitGroup } from "../../services/operations/groups";
 import { useSocket } from "../../pages/contexts/SocketContext";
+import toast from "react-hot-toast";
 
 const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
   const { groupState, updateGroupState } = useGroup();
   const [joinReq, setJoinReq] = useState(false);
   const socket = useSocket();
   const [onlineUsers,setOnlineUsers] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const createNewGroup = async()=>{
+    if (groupState.isInGroup === false) {
+      console.log("no group");
+      //create group
+      const result = await createGroup({
+        name: `${user.firstName}'s Group`,
+        adminId: user._id,
+      });
+      if (result.success) {
+        toast.success("Group Created Successfully");
+        updateGroupState({
+          isInGroup: true,
+          groupId: result.data._id,
+          isAdmin: true,
+          groupName: result.data.name
+        });
+      }
+    }
+    else{
+      toast.error("You already in a group, to create new group first leave the group");
+    }
+  }
   
  useEffect(() => {
 
@@ -35,7 +60,6 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
   
 
   // Join a group
-  const user = JSON.parse(localStorage.getItem("user"));
   const joinGroup = (group) => {
     setJoinReq(true);
 
@@ -88,9 +112,10 @@ const MusicGroupsSidebar = ({ groups, toggleGroup }) => {
 
       {/* Create Group Button */}
       <div className="px-4 py-3">
-        <button className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md flex items-center justify-center">
+        <button onClick={()=> createNewGroup()}
+        className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md flex items-center justify-center">
           <Users className="mr-2" size={16} />
-          <span>Create New Group</span>
+          <span>{groupState.isInGroup ? "Already in a Group":"Create New Group"}</span>
         </button>
       </div>
 

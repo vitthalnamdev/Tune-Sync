@@ -56,6 +56,7 @@ const socketConnection = (server) => {
       }
     });
 
+    
     socket.on("send-invitaion", (data) => {
       const sendUserSocket = onlineUsers.get(data.to);
       console.log("invitaion re", data);
@@ -63,7 +64,7 @@ const socketConnection = (server) => {
         socket.to(sendUserSocket).emit("recieved-invitation", data);
       }
     });
-
+    
     socket.on("send-accepted", async (data) => {
       const sendUserSocket = await onlineUsers.get(data.to);
       const groupId = data.groupId;
@@ -88,7 +89,29 @@ const socketConnection = (server) => {
         }
       }
     });
+    
+    socket.on("send-group-msg", async(data) => {
+      const groupId = data.groupId;
+      const group = await Group.findById(groupId);
 
+      if(group){
+        const members = group.members;
+        for(const memberId of members){
+           try {
+            const sendUserSocket = await onlineUsers.get(memberId.toString());
+            if (sendUserSocket) {
+              socket.to(sendUserSocket).emit("recieve-group-msg", data);
+            }
+           } catch (error) {
+            console.error(
+              `Error sending song data to user ${memberId}:`,
+              error
+            );
+           }
+        }
+      }
+
+    });
     
 
     //send and recive songs data
