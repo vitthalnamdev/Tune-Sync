@@ -337,7 +337,7 @@ export const AudioProvider = ({ children }) => {
       socket.emit("send-songs-to-user", songData);
     }
   }, [currentSong, isPlaying, songTimeChange]); // Re-run when song data changes
-  }, [currentSong, isPlaying, songTimeChange]); // Re-run when song data changes
+  
 
   useEffect(() => {
     const audio = audioRef.current;
