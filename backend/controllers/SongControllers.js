@@ -36,7 +36,6 @@ exports.getSong = async (req, res) => {
       console.error("Error fetching songs:", error);
       res.status(500).json({ message: "Internal Server Error" });
     } 
-     
 }
 
 exports.getPlaylist = async (req, res) => {
@@ -68,3 +67,4 @@ exports.getArtistsSongs = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   } 
 }
+

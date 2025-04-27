@@ -36,7 +36,7 @@ export const QueueProvider = ({ children }) => {
   const [state, dispatch] = useReducer(queueReducer, initialState);
 
   // Queue 1 functions
-  const enqueuenext = (item) => {dispatch({ type: "ENQUEUE_1", payload: item });}
+  const enqueuenext = (item) => dispatch({ type: "ENQUEUE_1", payload: item });
   const dequeuenext = () => dispatch({ type: "DEQUEUE_1" });
   const clearnext = () => dispatch({ type: "CLEAR_1" });
   const peeknext = () => (state.next.length > 0 ? state.next[0] : null);
@@ -48,6 +48,11 @@ export const QueueProvider = ({ children }) => {
   const clearprev = () => dispatch({ type: "CLEAR_2" });
   const peekprev = () => (state.prev.length > 0 ? state.prev[0] : null);
   const sizeprev = () => state.prev.length;
+
+   
+  const printQueue = () => {
+     return state.next;
+  };
 
   return (
     <QueueContext.Provider
@@ -64,6 +69,7 @@ export const QueueProvider = ({ children }) => {
         clearprev,
         peekprev,
         sizeprev,
+        printQueue
       }}
     >
       {children}

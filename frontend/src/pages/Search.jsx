@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchSuggetions , fetchArtists} from "../services/operations/songsAPI";
+import { fetchSuggetions} from "../services/operations/songsAPI";
 import myImage from "./coverImage.jpg";
 import Navbar from "../components/Navbar"
 import MusicPlayer from "./Music_player";
 import { useAudio } from "./contexts/AudioProvider";
+import { fetchArtist} from "../services/operations/songsAPI";
+import { useQueue } from "./contexts/queueContext";
+
+
 
 const SearchPage = (params) => {
   const [recentSearches, setRecentSearches] = useState([]);
@@ -14,11 +18,32 @@ const SearchPage = (params) => {
     ...song,
     coverImageUrl: song.coverImageUrl ?? myImage, // Set default if null
   }));
-
-  const {loadSong} = useAudio();
-
-  // Sample categories for search suggestions
-   
+  
+  const {currentSong , loadSong} = useAudio();
+   const {
+     next,
+     prev,
+     enqueuenext,
+     dequeuenext,
+     clearnext,
+     peeknext,
+     sizenext,
+     enqueueprev,
+     dequeueprev,
+     clearprev,
+     peekprev,
+     sizeprev,
+     prevSongs
+    } = useQueue();
+    
+    // Sample categories for search suggestions
+    
+    const isPresent = (song) => {
+      for(let i = 0 ;i < prevSongs.length ;i++){
+        if(prevSongs[i] === song) return true;
+     }
+      return false;
+    }
 
   // Handle search when query changes
   useEffect(() => {
@@ -59,6 +84,7 @@ const SearchPage = (params) => {
               artists:getArtists(song?.artists?.primary || []),
               duration:song?.duration,
               id: song?.id || null,
+              suggestionArtists: song?.artists?.primary || ""
             }))
           : [];
         setTopResults(updatedUsers || []);
@@ -82,7 +108,57 @@ const SearchPage = (params) => {
 
     return () => clearTimeout(timer);
   }, [params.searchQuery]);
+ 
 
+   
+
+  function getArtist(artist){
+     
+    const ids = [];
+    artist.forEach(element => {
+       ids.push(element.id);
+    }); 
+    return ids;
+  }
+
+
+  const filter = (arr) => {
+    const filteredArray = []
+    for(let i = 0 ;i < arr.length ;i++){
+        if(filteredArray.length >= 15) break;
+        console.log("checking" , arr[i]);
+        if(isPresent(arr[i].name)){
+          continue;
+        }
+        filteredArray.push(arr[i]);
+        prevSongs.push(arr[i].name);
+        if(prevSongs.length >= 20){
+          prevSongs.shift();
+        }
+    }
+    return filteredArray;
+  }
+
+  const handleQueue = async (artist) => {
+    try{ 
+      const ids = getArtist(artist);
+      const Artistresp = [];
+      for(let i = 0 ;i < ids.length ;i++){
+        const response = await fetchArtist(ids[i]);
+        response.topSongs.forEach((element)=>{
+           Artistresp.push(element);
+        }) 
+      }
+      const filterArtist = filter(Artistresp); 
+      clearnext();
+      for(let i = 0; i < filterArtist.length; i++) {
+        enqueuenext(filterArtist[i]);
+      }
+    }catch(error){
+      console.error("Error fetching artist data:", error);
+    }
+  }
+  
   // Handle song selection
   const handleSongSelect = (song) => {
     // Format the song data for the MusicPlayer component
@@ -95,6 +171,8 @@ const SearchPage = (params) => {
       duration: song.duration || 180, // Default to 3 minutes if duration not available
       id: song.id || null,
     });
+    console.log("check song" , song.suggestionArtists);
+    handleQueue(song.suggestionArtists);
   };
 
   // Clear a specific recent search
@@ -347,5 +425,5 @@ const SearchPage = (params) => {
     </div>
   );
 };
-
+ 
 export default SearchPage;

@@ -9,8 +9,26 @@ import { useQueue } from "./queueContext";
 import myImage from "../coverImage.jpg";
 import { useSocket } from "./SocketContext";
 import { useGroup } from "./GroupContext";
+import { fetchArtist } from "../../services/operations/songsAPI";
 import toast from "react-hot-toast";
 const AudioContext = createContext();
+const defaultSong = {
+  title: "Apna Bana Le",
+  artists: "Sachin-Jigar, Arijit Singh",
+  coverImage:
+    "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg",
+  audioSrc:
+    "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
+  duration: 261,
+  id: null,
+  isLiked: false,
+};
+
+const defaultIds = [
+  {id: 459320},
+  {id: 468245},
+  {id: 459633}
+]
 
 export const AudioProvider = ({ children }) => {
   const socket = useSocket();
@@ -20,17 +38,7 @@ export const AudioProvider = ({ children }) => {
   const [currentSong, setCurrentSong] = useState(
     localStorage.getItem("currentSong")
       ? JSON.parse(localStorage.getItem("currentSong"))
-      : {
-          title: "Apna Bana Le",
-          artists: "Sachin-Jigar, Arijit Singh",
-          coverImage:
-            "https://c.saavncdn.com/815/Bhediya-Hindi-2023-20230927155213-500x500.jpg",
-          audioSrc:
-            "https://aac.saavncdn.com/815/483a6e118e8108cbb3e5cd8701674f32_320.mp4",
-          duration: 261,
-          id: null,
-          isLiked: false,
-        }
+      : defaultSong
   );
   const [currentTime, setCurrentTime] = useState(
     parseFloat(localStorage.getItem("currTime")) || 0
@@ -57,7 +65,60 @@ export const AudioProvider = ({ children }) => {
     clearprev,
     peekprev,
     sizeprev,
+    prevSongs,
   } = useQueue();
+
+  const _isPresent = (song) => {
+    for (let i = 0; i < prevSongs.length; i++) {
+      if (prevSongs[i] === song) return true;
+    }
+    return false;
+  };
+
+  function getArtist(artist) {
+    console.log(artist);
+    const ids = [];
+    artist.forEach((element) => {
+      ids.push(element.id);
+    });
+    return ids;
+  }
+
+  const filter = (arr) => {
+    const filteredArray = [];
+    for (let i = 0; i < arr.length; i++) {
+      if (filteredArray.length >= 15) break;
+      if (_isPresent(arr[i]?.name || arr[i]?.title || "")) {
+        continue;
+      }
+      filteredArray.push(arr[i]);
+      prevSongs.push(arr[i]?.name || arr[i]?.title || "");
+      if (prevSongs.length >= 20) {
+        prevSongs.shift();
+      }
+    }
+    return filteredArray;
+  };
+
+  const handleQueue = async (artist) => {
+    try {
+      const ids = getArtist(artist);
+      const Artistresp = [];
+      for (let i = 0; i < ids.length; i++) {
+        const response = await fetchArtist(ids[i]);
+        response.topSongs.forEach((element) => {
+          Artistresp.push(element);
+        });
+      }
+      const filterArtist = filter(Artistresp);
+      clearnext();
+      for (let i = 0; i < filterArtist.length; i++) {
+        enqueuenext(filterArtist[i]);
+      }
+    } catch (error) {
+      console.error("Error fetching artist data:", error);
+    }
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -137,6 +198,7 @@ export const AudioProvider = ({ children }) => {
     audio.load();
     setIsPlaying(true);
 
+
     audio.play();
   }
 
@@ -161,7 +223,7 @@ export const AudioProvider = ({ children }) => {
 
   function nextSong() {
     const length = sizenext();
-
+    console.log(length);
     if (length > 0) {
       const curr = peeknext();
       dequeuenext();
@@ -187,16 +249,17 @@ export const AudioProvider = ({ children }) => {
       }
 
       loadSong(_currentSong);
+      if (curr.artists.primary !== undefined) {
+        handleQueue(curr.artists.primary);
+      }
     } else {
-      console.warn("No next song available");
-      // If no next song, stop playing or loop back to the beginning
-      const audio = audioRef.current;
-      audio.pause();
-      setIsPlaying(false);
+      // handleQueue(defaultIds);
+      // nextSong();
+      togglePlay();
     }
   }
 
-  const [songTimeChange, setSongTimeChange] = useState();
+  const [songTimeChange,  setSongTimeChange] = useState();
 
   const seekTo = (time) => {
     const audio = audioRef.current;
@@ -211,6 +274,7 @@ export const AudioProvider = ({ children }) => {
     audio.volume = newVolume;
     setVolume(newVolume);
   };
+
 
   //socket to send current song data to friend
   useEffect(() => {
@@ -272,6 +336,7 @@ export const AudioProvider = ({ children }) => {
     if (groupState.isAdmin) {
       socket.emit("send-songs-to-user", songData);
     }
+  }, [currentSong, isPlaying, songTimeChange]); // Re-run when song data changes
   }, [currentSong, isPlaying, songTimeChange]); // Re-run when song data changes
 
   useEffect(() => {
