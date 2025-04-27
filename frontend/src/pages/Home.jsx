@@ -8,7 +8,6 @@ import MusicPlayer from "./Music_player";
 import myImage from "./coverImage.jpg";
 import { fetchArtist, fetchPlaylist } from "../services/operations/songsAPI";
 import Navbar from "../components/Navbar";
-import { io } from "socket.io-client";
 import {useAudio} from "./contexts/AudioProvider";
 
 
@@ -508,26 +507,26 @@ const MusicHomepage = (params) => {
   };
   
   //  Use a "User Interaction Unlock" Mechanism
-     const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+    //  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
   
-     useEffect(() => {
-       const unlockAudio = async () => {
-         try {
-           const audio = new Audio();
-           audio.src =
-             "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjMyLjEwNQAAAAAAAAAAAAAA//...";
-           await audio.play(); // Play silent audio
-           audio.pause(); // Pause immediately
-           setIsAudioUnlocked(true);
-           console.log("Audio unlocked!");
-         } catch (error) {
-           console.error("Failed to unlock audio:", error);
-         }
-       };
+    //  useEffect(() => {
+    //    const unlockAudio = async () => {
+    //      try {
+    //        const audio = new Audio();
+    //        audio.src =
+    //          "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjMyLjEwNQAAAAAAAAAAAAAA//...";
+    //        await audio.play(); // Play silent audio
+    //        audio.pause(); // Pause immediately
+    //        setIsAudioUnlocked(true);
+    //        console.log("Audio unlocked!");
+    //      } catch (error) {
+    //        console.error("Failed to unlock audio:", error);
+    //      }
+    //    };
    
-       // Unlock audio on user interaction
-       document.addEventListener("click", unlockAudio, { once: true });
-     }, []);
+    //    // Unlock audio on user interaction
+    //    document.addEventListener("click", unlockAudio, { once: true });
+    //  }, []);
   
   
 
