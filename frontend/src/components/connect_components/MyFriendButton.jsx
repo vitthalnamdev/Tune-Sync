@@ -47,6 +47,7 @@ const MyFriendButton = () => {
   useEffect(() => {
     socket.emit("getAll-user");
     socket.on("recieve-user", (data) => {
+      console.log("online users",data);
       setOnlineUsers(data);
     });
 
@@ -55,7 +56,7 @@ const MyFriendButton = () => {
         socket.off("recieve-user");
       }
     };
-  }, []);
+  }, [isOpen]);
 
  
   const removeFriend = (friendId) => {

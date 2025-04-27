@@ -4,9 +4,12 @@ const Group = require("../models/Group"); // Adjust the path based on your proje
 
 const socketConnection = (server) => {
   const io = socket(server, {
-    cors: {
-      origin: "*", // Allow all origins (adjust in production)
-    },
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["*"],
+    credentials: true,
+  },
   });
 
   global.onlineUsers = new Map();
