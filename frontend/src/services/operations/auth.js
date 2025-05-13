@@ -75,7 +75,7 @@ export const fetchProfile = async () => {
     });
     console.log("checking token" , response);
     if (response.data.success) {
-       return response.data.user;
+       return true;
     }else{
        if(response.data.message==="Session expired, please login again"){
          localStorage.removeItem('token');
@@ -85,7 +85,7 @@ export const fetchProfile = async () => {
        }
     }
 
-    return undefined;
+    return false;
   } catch (error) {
     
     console.error('Error fetching profile:', error.response?.data?.message || error.message);

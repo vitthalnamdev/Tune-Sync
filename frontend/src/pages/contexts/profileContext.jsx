@@ -6,11 +6,17 @@ import { useSelector } from "react-redux";
 export const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
+  const [profileData,setProfileData] = useState(localStorage.getItem("user")? JSON.parse(localStorage.getItem("user")) : null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-         await fetchProfile();
+        const check =  await fetchProfile();
+        if(!check){
+           setProfileData(null);
+        }
       } catch (error) {
+        setProfileData(null);
         console.error("Failed to fetch profile:", error);
       }
     };
@@ -18,7 +24,6 @@ export const ProfileProvider = ({ children }) => {
     fetchData();
   }, []);
   
-  const [profileData,setProfileData] = useState(localStorage.getItem("user")? JSON.parse(localStorage.getItem("user")) : null);
   return (
     <ProfileContext.Provider value={{ profileData , setProfileData }}>
       {children}
