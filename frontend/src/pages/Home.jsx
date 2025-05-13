@@ -342,8 +342,8 @@ const MusicHomepage = (params) => {
 
   const [_Artists, setArtists] = useState([
     {
-      id: 459633,
-      title: "Atif Aslam",
+      id: 485956,
+      title: "Yo Yo Honey Singh",
       imageUrl: myImage,
     },
     {
@@ -352,8 +352,8 @@ const MusicHomepage = (params) => {
       imageUrl: myImage,
     },
     {
-      id: 455144,
-      title: "Kishore Kumar",
+      id: 455109,
+      title: "Lata Mangeshkar",
       imageUrl: myImage,
     },
     {
@@ -362,8 +362,8 @@ const MusicHomepage = (params) => {
       imageUrl: myImage,
     },
     {
-      id: 468245,
-      title: "Diljit Dosanjh",
+      id: 464656,
+      title: "Armaan Malik",
       imageUrl: myImage,
     },
     {
@@ -437,7 +437,7 @@ const MusicHomepage = (params) => {
         const updatedPlaylists = await Promise.all(
           featuredPlaylists.map(async (element) => {
             const response = await fetchPlaylist(element.id);
-            console.log("response Home", response.image);
+            console.log("response Home", response);
             return {
               ...element,
               imageUrl: response.image[Object.keys(response.image).length - 1].url,
@@ -460,11 +460,12 @@ const MusicHomepage = (params) => {
         const updatedArtists = await Promise.all(
           _Artists.map(async (element) => {
             const response = await fetchArtist(element.id);
+
             console.log("first check", response);
             return {
               ...element,
               imageUrl: response.image[Object.keys(response.image).length - 1].url,
-              title: response.name,
+              title: response.name || "HELLO",
               description: response.description,
               songsCount:10,
               songs: response.topSongs

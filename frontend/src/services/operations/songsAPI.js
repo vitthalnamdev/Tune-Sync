@@ -47,10 +47,10 @@ export const fetchPlaylist = async(data)=> {
 
 export const fetchArtist = async(data)=> {
     let result = [];
-    
     try {
         const response = await apiConnector("GET",GET_ARTIST + `${data}`,null,null, null);
-        console.log("suggestion Artist Data", response);
+        
+        console.log("suggestion Artist Data", response.data.data);
         if(!response.data.success){
             throw new Error(response);
         }
