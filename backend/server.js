@@ -11,7 +11,14 @@ const SONG_DIR = path.join(__dirname, "songs");
 
 // CORS middleware (if you want to allow frontend access)
 const cors = require("cors");
-app.use(cors());
+
+app.use(cors({
+  origin: 'https://tune-sync-teal.vercel.app',  // Your frontend's exact domain
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true
+}));
+
+app.options('*', cors());  // Handles preflight OPTIONS requests
 
 // Streaming route
 app.get("/song/:filename", (req, res) => {
